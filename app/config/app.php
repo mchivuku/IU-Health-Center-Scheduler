@@ -26,7 +26,7 @@ return array(
 	|
 	*/
 
-	'url' => 'https://seville.iuhc.iub.edu/comm/hcScheduler/public',
+	'url' => 'https://seville.iuhc.iub.edu/comm/hcScheduler/public/',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -113,6 +113,8 @@ return array(
 		'Illuminate\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider'
+
+
 
 
 

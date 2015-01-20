@@ -1,13 +1,18 @@
+<nav class="navbar navbar-inverse navbar-fixed-top">
+     <div class="container">
+<div class="navbar-header">
+        <a class="navbar-brand" href="#">Health Center Scheduler</a>
+  </div>
+  <div id="navbar" class="collapse navbar-collapse float-right">
+          <ul class="nav navbar-nav">
+             {{ HTML::nav_link('home', ('home'),'Appointments')}}
+             {{ HTML::nav_link('settings',('settings'),'Settings')}}
+             {{ HTML::nav_link('logout', ('logout'),'Logout')}}
 
-<div class="navbar">
-    <div class="navbar-inner">
-        <a id="logo" href="/">Single Malt</a>
-        <ul class="nav">
-            <li><a href="/">Home</a></li>
-            <li><a href="/about">About</a></li>
-            <li><a href="/projects">Projects</a></li>
-            <li><a href="/contact">Contact</a></li>
         </ul>
-    </div>
-</div>
+
+                </div>
+   </div>
+       </nav>
+
 

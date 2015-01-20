@@ -7,7 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Scheduler\\Repository\\' => array($baseDir . '/app/repository'),
-    'Scheduler\\Models\\' => array($baseDir . '/app/models'),
     'Scheduler\\Controllers\\' => array($baseDir . '/app/controllers'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
 );

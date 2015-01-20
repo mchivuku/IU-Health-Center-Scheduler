@@ -72,28 +72,11 @@ require $framework.'/Illuminate/Foundation/start.php';
 | from the actual running of the application and sending responses.
 |
 */
+require app_path().'/providers/RepositoryServiceProvider.php';
+require app_path().'/providers/ControllerServiceProvider.php';
 
-
- $app->bind('ShibbolethRepository',
-    function(){
-    return new \Scheduler\Repository\ShibbolethRepository();
-});
-
-
-$app->bind('UserRepository', function() {
-    return new \Scheduler\Repository\UserRepository();
-});
-
-
-$app->bind('AppointmentRepository',function(){
-    return new \Scheduler\Repository\AppointmentRepository();
-});
-
-$app->bind('HomeController', function($app) {
-    return new \Scheduler\Controllers\HomeController($app->UserRepository,
-        $app->ShibbolethRepository,$app->AppointmentRepository);
-});
-
+$app->register('RepositoryServiceProvider');
+$app->register('ControllerServiceProvider');
 
 
 return $app;

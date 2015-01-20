@@ -12,25 +12,11 @@
 */
 use Scheduler\Controllers;
 
-/* Blade extensions */
 
-Blade::extend(function($view, $compiler)
-{
-    $pattern = $compiler->createMatcher('datetime');
+Route::get('/', array(
+    'as' => 'home',
+    'uses' => 'HomeController@getIndex'
+));
 
-    return preg_replace($pattern, '$1<?php echo $2->format(\'m/d/Y H:i\'); ?>', $view);
-});
-
-
-Blade::extend(function($view, $compiler)
-{
-    $pattern = $compiler->createMatcher('datetime');
-
-    return preg_replace($pattern, '$1<?php echo $2->format(\'m/d/Y H:i\'); ?>', $view);
-});
-
-
-
-Route::get('/', 'HomeController@getIndex');
 
 

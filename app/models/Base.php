@@ -31,7 +31,7 @@ abstract class Base
     public function formatDate($input)
     {
         $date = date_create($input);
-        return date_format($date,'Y-m-d');
+        return date_format($date,'m-d-Y');
 
     }
 

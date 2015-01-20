@@ -1,6 +1,7 @@
 <?php
 
 namespace Scheduler\Controllers;
+
 use Illuminate\Routing\Controllers\Controller;
 use Illuminate\Support\Facades\View;
 
@@ -19,7 +20,7 @@ abstract class BaseController extends Controller {
     protected $layout = 'layouts.master';
 
     // data to be passed to the view
-    protected $data = array();
+    protected $data;
 
     // subview
     protected  $subview;
@@ -67,7 +68,7 @@ abstract class BaseController extends Controller {
         return $this;
     }
 
-    protected function viewdata(array $data)
+    protected function viewdata($data)
     {
         $this->data = $data;
         return $this;
@@ -83,8 +84,8 @@ abstract class BaseController extends Controller {
 
     protected function title($title)
     {
-        $this->title = $title;
-       return $this->render();
+        View::share(array('title'=>$title));
+        return $this->render();
     }
 
 
@@ -95,8 +96,8 @@ abstract class BaseController extends Controller {
 
         // render the view
         return View::make($this->layout)
-             ->nest('content', $this->view, $this->data)
-             ->with('title', $this->title);
+             ->nest('content', $this->view, $this->data);
+
     }
 
     protected  function view($layoutName){
@@ -120,6 +121,7 @@ abstract class BaseController extends Controller {
 
 
     }
+
 
 
 }

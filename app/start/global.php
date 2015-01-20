@@ -18,10 +18,9 @@ ClassLoader::addDirectories(array(
     app_path().'/models',
     app_path().'/database/seeds',
     app_path().'/repository',
-    app_path().'/classes',
+    app_path().'/providers',
 
 ));
-
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +52,7 @@ Log::useDailyFiles(storage_path().'/logs/'.$logFile);
 
 App::error(function(Exception $exception, $code)
 {
+
 	Log::error($exception);
 });
 
@@ -72,6 +72,8 @@ App::down(function()
 	return Response::make("Be right back!", 503);
 });
 
+
+
 /*
 |--------------------------------------------------------------------------
 | Require The Filters File
@@ -86,3 +88,4 @@ App::down(function()
 
 
 require app_path().'/filters.php';
+include app_path().'/helpers/HtmlBuilderExtensions.php';

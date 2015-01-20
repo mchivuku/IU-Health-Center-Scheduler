@@ -6,6 +6,7 @@
  * Time: 11:55 AM
  */
 require_once 'Base.php';
+
 class Appointment extends Base{
 
     protected $id;

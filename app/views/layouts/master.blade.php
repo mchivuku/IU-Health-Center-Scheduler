@@ -1,27 +1,39 @@
-<!Doctype html>
-<html>
-<head>
-    @include('includes.header')
-</head>
+@include('...includes.header')
 <body>
-<div class="container">
 
-    <header class="row">
-             @include('includes.userprofile')
-    </header>
-    <p>
-@include('includes.emergencyinfo')</p>
-    <div id="main" class="row">
+ <!-- Navigation -->
+ @include('...includes.navigation')
 
-            @yield('content')
 
+   <!-- HEADER -->
+   <div class="jumbotron">
+         <div class="container">
+
+            <div class="row">
+                 <div class="col-md-4">
+                   @include('...includes.userprofile')
+                 </div>
+                  <div class="col-md-4">
+                         @include('...includes.emergencyinfo')
+                                  </div>
+            </div>
+
+          </div>
+       </div>
+
+
+   <!-- Yield Content -->
+    <div class="container">
+
+    @yield('content')
 
     </div>
 
-    <footer class="row">
-        @include('includes.footer')
-    </footer>
+    <!-- /.container -->
+@yield('javascript')
 
-</div>
-</body>
-</html>
+  <!-- Footer -->
+ @include('...includes.footer')
+
+
+
