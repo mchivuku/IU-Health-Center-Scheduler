@@ -14,7 +14,8 @@ class FacilitiesRepository{
 
         $facilities_list = \DB::table($this->table)
             ->select( array('Id','Name'
-            ))->get();
+            ))->orderBy('Name', 'ASC')
+            ->get();
 
         return $facilities_list;
 

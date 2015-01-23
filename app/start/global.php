@@ -89,3 +89,4 @@ App::down(function()
 
 require app_path().'/filters.php';
 include app_path().'/helpers/HtmlBuilderExtensions.php';
+include app_path().'/helpers/FormBuilderExtensions.php';

@@ -33,7 +33,8 @@
 @yield('javascript')
 
   <!-- Footer -->
- @include('...includes.footer')
+ <!---->
+
 
 
 

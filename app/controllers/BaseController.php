@@ -6,14 +6,23 @@ use Illuminate\Routing\Controllers\Controller;
 use Illuminate\Support\Facades\View;
 
 use Scheduler\Repository\AppointmentRepository;
+use Scheduler\Repository\SchedulerLogRepository;
 use Scheduler\Repository\ShibbolethRepository;
 use Scheduler\Repository\UserRepository;
+use Scheduler\Repository\FacilitiesRepository;
+use Scheduler\Repository\VisitTypeRepository;
+
+require_once app_path().'/models/Filter.php';
+
 
 abstract class BaseController extends Controller {
 
     protected $shibboleth;
     protected $userRepo;
     protected $apptRepo;
+    protected $facilitiesRepo;
+    protected $visitTypeRepo;
+    protected $schedulerLogRepo;
 
     // view - to render
     protected $view;
@@ -32,12 +41,20 @@ abstract class BaseController extends Controller {
     protected $title = array();
 
     public function __construct(UserRepository $userRepo,
-                                ShibbolethRepository $shibb,AppointmentRepository $apptRepo,
+                                ShibbolethRepository $shibb,
+                                AppointmentRepository $apptRepo,
+                                FacilitiesRepository $facilitiesRepo,
+                                VisitTypeRepository $visitTypeRepo,SchedulerLogRepository $schedulerLogRepo,
+
                                 $sublayout = null){
 
         $this->shibboleth=$shibb;
         $this->userRepo = $userRepo;
         $this->apptRepo=$apptRepo;
+        $this->facilitiesRepo=$facilitiesRepo;
+        $this->visitTypeRepo=$visitTypeRepo;
+        $this->schedulerLogRepo=$schedulerLogRepo;
+
         $this->view = $sublayout;
 
         // Layout - pass data for the partial views in the layout
@@ -122,6 +139,17 @@ abstract class BaseController extends Controller {
 
     }
 
+    protected function getUserSessionId()
+    {
+
+        if (isset($_SERVER['Shib-Session-ID'])) {
+            return $_SERVER['Shib-Session-ID'];
+        }
+
+        //reading laravel session cookie - TEMP will remove;
+        $val= explode('=',$_SERVER['HTTP_COOKIE']);
+        return $val[1];
+    }
 
 
 }

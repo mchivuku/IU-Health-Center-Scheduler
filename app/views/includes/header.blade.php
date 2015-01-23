@@ -23,8 +23,14 @@
            array('media' => 'screen')) }}
            {{ HTML::style('css/jquery.dataTables.css',
                                  array('media' => 'screen')) }}
+
            {{ HTML::style('css/dataTables.responsive.css',
                       array('media' => 'screen')) }}
+           {{ HTML::style('//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css',
+                                                       array('media' => 'screen')) }}
+
+                                  {{ HTML::style('css/jquery-ui.structure.css',
+                                                                  array('media' => 'screen')) }}
            {{ HTML::script('js/jquery.js')}}
            {{ HTML::script('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js')}}
            {{ HTML::script('js/jquery.dataTables.js')}}

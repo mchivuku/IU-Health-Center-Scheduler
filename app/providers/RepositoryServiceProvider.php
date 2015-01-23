@@ -35,11 +35,19 @@
             });
 
             $app->bind('FacilitiesRepository',function(){
-                return new \Scheduler\Repository\AppointmentRepository();
+                return new \Scheduler\Repository\FacilitiesRepository();
             });
 
             $app->bind('VisitTypeRepository',function(){
-                return new \Scheduler\Repository\AppointmentRepository();
+                return new \Scheduler\Repository\VisitTypeRepository();
+            });
+
+            $app->bind('SchedulerLogRepository',function(){
+                return new \Scheduler\Repository\SchedulerLogRepository();
+            });
+
+            $app->bind('ProviderRepository',function(){
+                return new \Scheduler\Repository\ProviderRepository();
             });
 
         }

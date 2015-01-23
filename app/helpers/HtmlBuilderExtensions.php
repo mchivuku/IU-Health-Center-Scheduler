@@ -79,3 +79,4 @@
 
     return '<li '  .  HTML::attributes($attributes) . '><a href=' .$href. '>'.$title.'</a></li>';
 });
+

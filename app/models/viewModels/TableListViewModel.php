@@ -6,6 +6,7 @@
  * Time: 1:47 PM
  */
 
+
 class TableListViewModel{
     public $data;
     public $sortColumnsClasses;

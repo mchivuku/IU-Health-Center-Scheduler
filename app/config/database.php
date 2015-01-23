@@ -45,21 +45,18 @@ return array(
 	*/
 
 	'connections' => array(
-
-
-		'mysql' => array(
+ 		'mysql' => array(
 			'driver'    => 'mysql',
-			'host'      => '',
-                        'port'=>4928,
+			'host'      => 'bl-iuhc-tokyo.ads.iu.edu',
+             'port'=>4928,
 
-			'database'  => ' ',
-			'username'  => ' ',
-			'password'  => '',
+			'database'  => 'mobiledoc',
+			'username'  => 'ecwDbUser',
+			'password'  => 'Pwd4db@IUH',
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => '',
 		)
-
 
 	),
 

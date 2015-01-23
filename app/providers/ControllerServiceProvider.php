@@ -24,14 +24,20 @@ use Illuminate\Support\ServiceProvider;
             $app->bind('HomeController', function ($app)
             {
                 return new \Scheduler\Controllers\HomeController($app->UserRepository,
-                    $app->ShibbolethRepository, $app->AppointmentRepository);
+                    $app->ShibbolethRepository, $app->AppointmentRepository,
+                    $app->FacilitiesRepository,
+                    $app->VisitTypeRepository, $app->SchedulerLogRepository);
             });
 
-            $app->bind('AppointmentController', function ($app)
+
+            $app->bind('NewAppointmentController', function ($app)
             {
-                return new \Scheduler\Controllers\AppointmentController($app->UserRepository,
-                    $app->ShibbolethRepository, $app->AppointmentRepository);
+                return new \Scheduler\Controllers\NewAppointmentController($app->UserRepository,
+                    $app->ShibbolethRepository, $app->AppointmentRepository,$app->FacilitiesRepository,
+                    $app->VisitTypeRepository,
+                    $app->SchedulerLogRepository,$app->ProviderRepository);
             });
+
 
 
         }

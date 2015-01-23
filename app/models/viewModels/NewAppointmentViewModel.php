@@ -8,8 +8,11 @@
 
 class NewAppointmentViewModel{
 
-    public $facilities_list;
+    public $facilities;
     public $visitTypes;
+
+    public $selectedFacility;
+    public $selectedvisitType;
 
 
 }

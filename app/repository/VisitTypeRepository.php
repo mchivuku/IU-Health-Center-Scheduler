@@ -7,14 +7,17 @@
  */
 namespace Scheduler\Repository;
 
-class FacilitiesRepository{
-    protected $table = 'edi_facilities';
+class VisitTypeRepository{
+    protected $table = 'visitcodes';
 
-    public function getAllFacilities(){
+    public function getAllVisitTypes(){
 
         $visitTypes_list = \DB::table($this->table)
             ->select( array('Name as Id','Description as Name'
-            ))->get();
+            ))
+            ->where('Name','!=',"' '")
+            ->orderBy('Name', 'ASC')
+            ->get();
 
         return $visitTypes_list;
 
