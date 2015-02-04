@@ -49,6 +49,9 @@
             $app->bind('ProviderRepository',function(){
                 return new \Scheduler\Repository\ProviderRepository();
             });
+            $app->bind('PatientRepository',function(){
+                return new \Scheduler\Repository\PatientRepository();
+            });
 
         }
     }

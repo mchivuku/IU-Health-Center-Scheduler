@@ -44,7 +44,8 @@ abstract class BaseController extends Controller {
                                 ShibbolethRepository $shibb,
                                 AppointmentRepository $apptRepo,
                                 FacilitiesRepository $facilitiesRepo,
-                                VisitTypeRepository $visitTypeRepo,SchedulerLogRepository $schedulerLogRepo,
+                                VisitTypeRepository $visitTypeRepo,
+                                SchedulerLogRepository $schedulerLogRepo,
 
                                 $sublayout = null){
 

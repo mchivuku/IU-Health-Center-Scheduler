@@ -47,14 +47,20 @@ class HomeController extends BaseController
             $model->nextAppointment = $this->apptRepo->getNextAppointment($univId);
 
             $x = new \TableListViewModel();
-            $x->header = array('Date', 'Visit Type', 'Facility', 'Provider');
-            $x->sortColumnsClasses = array(\SortClass::Date, \SortClass::String, \SortClass::String, \SortClass::String);
+            $x->header = array('Date', 'Visit Type', 'Facility', 'Provider', '&nbsp;');
+            $x->sortColumnsClasses = array(\SortClass::Date, \SortClass::String, \SortClass::String,
+                \SortClass::String,\SortClass::NoSort);
 
             $appts = $this->apptRepo->getAllPreviousAppointments($univId);
             array_walk($appts, function ($item) use (&$x) {
 
+                //TODO - fix this
+                $last_column = "<span class='tablesaw-cell-content'><a href='#'>More Information</a><a ".
+                               "href='#'>Schedule Again</a></span>";
+
                 $x->data[] = array($item->getAppointmentDate(), $item->visitType,
-                    $item->facility, $item->getProviderName()
+                    $item->facility, $item->getProviderName(),
+                    $last_column
 
                 );
 

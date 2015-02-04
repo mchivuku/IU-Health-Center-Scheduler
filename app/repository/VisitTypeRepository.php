@@ -7,13 +7,15 @@
  */
 namespace Scheduler\Repository;
 
+
+
 class VisitTypeRepository{
     protected $table = 'visitcodes';
 
     public function getAllVisitTypes(){
 
         $visitTypes_list = \DB::table($this->table)
-            ->select( array('Name as Id','Description as Name'
+            ->select( array('CodeId as Id','Description as Name'
             ))
             ->where('Name','!=',"' '")
             ->orderBy('Name', 'ASC')
@@ -22,4 +24,19 @@ class VisitTypeRepository{
         return $visitTypes_list;
 
     }
+
+    //TODO - get Active Providers
+    public function getProvidersForVisitCodeWithSchedule($visitCode,$facilityId,
+                                                         $dayOfTheWeek,$morning){
+
+        // 1.
+
+
+
+
+    }
+
+
+
+
 }

@@ -15,6 +15,10 @@ class Appointment extends Base{
     protected $providerLastName;
     protected $providerFirstName;
     protected $providerName;
+    protected $providerId;
+
+    protected $displayFormat;
+
 
     protected $date;
     protected $startTime;
@@ -24,16 +28,27 @@ class Appointment extends Base{
     protected $visitType;
     protected $reason;
 
+
+
     public function getProviderName(){
         return $this->formatName($this->providerLastName,$this->providerFirstName);
     }
 
-    public function getStartTime(){
-        return $this->formatTime($this->startTime);
+    public function getStart(){
+        if($this->displayFormat){
+            return $this->formatDisplayTime($this->startTime);
+        }
+
+        return $this->formatSaveTime($this->startTime);
     }
 
     public function getEndTime(){
-        return $this->formatTime($this->endTime);
+        if($this->displayFormat){
+            return $this->formatDisplayTime($this->endTime);
+
+        }
+        return $this->formatSaveTime($this->endTime);
+
     }
 
     public function getAppointmentDate(){

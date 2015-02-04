@@ -18,32 +18,49 @@ Route::get('/', array(
     'uses' => 'HomeController@getIndex'
 ));
 
- //TODO - route grouping
 
+Route::group(array('prefix' => 'settings'), function() {
+
+    Route::get('/', array(
+        'as' => 'settings',
+        'uses' => 'SettingsController@getIndex'
+    ));
+
+    Route::get('/save', array(
+        'as' => 'settings.save',
+        'uses' => 'SettingsController@save'
+    ));
+
+});
+
+
+
+//TODO - route grouping
 Route::group(array('prefix' => 'newAppointment'), function(){
 
     Route::post('/schedule', array(
-        'as' => 'newAppointmentSchedule',
+        'as' => 'newAppointment.schedule',
         'uses' => 'NewAppointmentController@schedule'
     ));
 
     Route::post('/scheduleSave', array(
-        'as' => 'newAppointmentSave',
+        'as' => 'newAppointment.save',
         'uses' => 'NewAppointmentController@scheduleSave'
     ));
 
+    Route::get( '/getTimes', array(
+        'as' => 'newAppointment.getTimes',
+        'uses' => 'NewAppointmentController@getTimes'
+    ) );
+
     Route::get('/{facility?}{visitType?}',
         array(
-            'as' => 'newAppointment',
+            'as' => 'newAppointment.index',
             'uses' => 'NewAppointmentController@getIndex'
         ));
 
-
-
-
-
-
 });
+
 
 
 

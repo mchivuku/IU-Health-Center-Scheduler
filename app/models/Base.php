@@ -35,8 +35,13 @@ abstract class Base
 
     }
 
-    public function formatTime($input){
+    public function formatDisplayTime($input){
         return date("g:i A.", $input);
+
+    }
+
+    public function formatSaveTime($input){
+        return date("H:i:s", $input);
 
     }
 

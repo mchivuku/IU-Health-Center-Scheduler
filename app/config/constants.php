@@ -6,3 +6,5 @@
  * Time: 12:55 PM
  */
 
+define('SLOT_DURATION',300);
+

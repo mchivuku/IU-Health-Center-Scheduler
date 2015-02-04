@@ -2,39 +2,24 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>
-            {{$title}}
-        </title>
-         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-        <style>
-            html { height: 100%; }
+         <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0">
+           <meta http-equiv="X-UA-Compatible" content="IE=edge">
+               <title>{{$title}}</title>
 
-            body {
-                padding-bottom: 40px;
-                padding-top: 40px;
-            }
-        </style>
+          <!-- stylesheets -->
+          {{ HTML::style('http://www.iu.edu/favicon.ico', array('rel'=>'shortcut icon','type' => 'image/x-icon')) }}
+          {{ HTML::style('//assets.iu.edu/web/2.x/css/global.css',array('media' => 'screen','rel'=>'stylesheet','type'=>'text/css')) }}
+          {{ HTML::style('//assets.iu.edu/brand/2.x/brand.css',array('media' => 'screen','rel'=>'stylesheet',
+ 'type'=>'text/css')) }}
+         {{ HTML::style('//assets.iu.edu/search/2.x/search.css',array('media' => 'screen','rel'=>'stylesheet',
+  'type'=>'text/css')) }}
 
-           {{ HTML::style('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css', array('media' => 'screen')) }}
 
-           {{ HTML::style('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css',
-           array('media' => 'screen')) }}
-           {{ HTML::style('css/jquery.dataTables.css',
-                                 array('media' => 'screen')) }}
+           {{ HTML::style('css/site.css',array('media' => 'screen')) }}
 
-           {{ HTML::style('css/dataTables.responsive.css',
-                      array('media' => 'screen')) }}
-           {{ HTML::style('//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css',
-                                                       array('media' => 'screen')) }}
-
-                                  {{ HTML::style('css/jquery-ui.structure.css',
-                                                                  array('media' => 'screen')) }}
-           {{ HTML::script('js/jquery.js')}}
-           {{ HTML::script('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js')}}
-           {{ HTML::script('js/jquery.dataTables.js')}}
-           {{ HTML::script('js/dataTables.responsive.min.js')}}
+            <!-- javascript files -->
+           {{ HTML::script('https://assets.iu.edu/web/1.5/libs/modernizr.min.js')}}
 
 
   </head>

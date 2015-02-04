@@ -11,21 +11,19 @@
  *
  */
 
-\HTML::macro('build_table', function($data,$header,$attributes=null)
-{
+\HTML::macro('build_table', function ($data, $header, $attributes = null) {
 
-    $build_tr = function($data){
-        if(is_null($data)) return false;
+    $build_tr = function ($data) {
+        if (is_null($data)) return false;
 
-        if(is_object($data)) {
-            $tr_row=(array)($data);
-         }
-        else
-            $tr_row=$data;
+        if (is_object($data)) {
+            $tr_row = (array)($data);
+        } else
+            $tr_row = $data;
 
         $row = '<tr>';
-        array_walk($tr_row,function($item)use(&$row){
-              $row .= '<td>' . $item . '</td>';
+        array_walk($tr_row, function ($item) use (&$row) {
+            $row .= '<td>' . $item . '</td>';
         });
 
         $row .= '</tr>';
@@ -36,7 +34,7 @@
     $table = '<table ' . \HTML::attributes($attributes) . ' >';
 
 
-    if(!is_null($header)) {
+    if (!is_null($header)) {
         $table .= '<thead><tr>';
         foreach ($header as $value) {
             $table .= '<th> ' . $value . ' </th>';
@@ -53,30 +51,92 @@
     $table .= '</tbody>';
     $table .= '</table>';
 
-    return   $table;
+    return $table;
 });
 
-\HTML::macro('nav_link',function($id,$route,$title,$attributes=array()){
+\HTML::macro('build_breadcrumb_navigation',
+    function ($items, $attributes = array()) {
 
-    $defaults   = array('class' => '', 'title' => $title);
-    $attributes = $attributes + $defaults;
+        $default_selected = 'current-step';
 
-    $is_active  = ( \Request::is($route)
-          ||\Request::is($route.'/*'));
+        $html = "<ul" . \HTML::attributes($attributes) . ">";
 
-    // $is_active='true';
-   // if(\Route::find($route) !== null )
-    //{
-        //$href = URL::to_route($route);
-    //}
-    //else
-    //{
-      //  $href = URL::to($route);
-    //}
+        foreach ($items as $liItem) {
 
-    $href=$route;
-   // if($is_active) $attributes['class'] .= ' active';
+            if (\Route::currentRouteName() == $liItem['route_name']) {
 
-    return '<li '  .  HTML::attributes($attributes) . '><a href=' .$href. '>'.$title.'</a></li>';
+                $html .= "<li class='" . $default_selected . "'>";
+
+            } else {
+                $html .= "<li>";
+            }
+
+            $html .= $liItem['text'];
+
+            $html .= "</li>";
+
+        }
+
+        $html .= "</ul>";
+
+        return $html;
+
+    });
+
+
+\HTML::macro('display_times', function ($data, $attributes = null) {
+
+    $num_elements_in_row = 6;
+
+    $html = '<div ' . \HTML::attributes($attributes) . ' >';
+
+
+    $build_min_row = function ($data) {
+        if (is_null($data)) return false;
+
+        $row = sprintf("<div class='minute-row'>");
+        array_walk($data, function ($item) use (&$row) {
+            $link = function ($x) {
+                return sprintf("<a href='#times'>%s</a>", $x);
+            };
+
+            if ($item->flag) {
+                $row .= "<div class='five'>";
+                $row .= "<p>";
+                $row .= $link($item->time);
+                $row .= "</p></div>";
+
+            } else {
+                $row .= "<div class='five full'>";
+                $row .= "<p>";
+                $row .= $link($item->time);
+                $row .= "</p></div>";
+
+            }
+
+
+        });
+
+        $row .= '</div>';
+        return $row;
+    };
+
+
+    foreach ($data as $hr => $minutes) {
+        $html .= "<div class='hour'>";
+        $html .= sprintf("<p>%s</p>", $hr) . "</div>";
+
+
+        $half_one = array_slice($minutes, 0, 6);
+        $half_second = array_slice($minutes, 6);
+        $html .= "<div class='minutes'>";
+        $html .= $build_min_row($half_one);
+        $html .= $build_min_row($half_second);
+        $html .= "</div>";
+
+    }
+    $html .= "</div>";
+    return $html;
+
+
 });
-

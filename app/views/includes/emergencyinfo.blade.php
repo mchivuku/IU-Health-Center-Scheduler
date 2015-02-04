@@ -1,15 +1,10 @@
-
-
-<div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Emergency Information</h3>
-      </div>
-      <div class="panel-body">
-         For Emergencies, Call 911<br/>
-        If this is not an emergency, call (812)855-7688 if you:<br/>
-        Need an appointment in the next hour<br/>
-        Need to schedule multiple appointments<br/>
-        Are enrolled in the intensive english program<br/>
-        Are under 18 years of age<br/>
-      </div>
-    </div>
+   <div class="emergency-info">
+                    <h2>For Emergencies, <span>Call 911</span></h2>
+                    <p>If this is not an emergency, call (555) 123-9876 if you:</p>
+                    <ul>
+                        <li>Need an appointment in the next hour</li>
+                        <li>Need to schedule multiple appointments</li>
+                        <li>Are enrolled in the intensive english program</li>
+                        <li>Are under 18 years of age</li>
+                    </ul>
+                </div>

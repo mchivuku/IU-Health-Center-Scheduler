@@ -16,10 +16,11 @@ class ProviderRepository{
      *  where ActiveEndDate>=date_format(CURDate(),'%m/%d/%Y')
      *
      */
-    public function getAllProviders(){
+    public function getAllProviders($visitType){
 
         $date_format =  "date_format(CURDate(),'%m/%d/%Y')";
 
+        // inactive or active;ActiveEndData is by the ecwdatabase;
         $providers = \DB::table($this->table)
             ->select( array('doctorID as Id','PrintName as Name'
             ))->where('ActiveEndDate','>=',\DB::raw($date_format))

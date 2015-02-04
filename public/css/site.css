@@ -1,0 +1,427 @@
+html {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+
+*, *:before, *:after {
+    -webkit-box-sizing: inherit;
+    -moz-box-sizing: inherit;
+    box-sizing: inherit; }
+
+/* Mixins */
+.clearfix:after, .home .new-appointment:after, .time-of-day:after, .available-timeslots:after {
+    content: "";
+    display: table;
+    clear: both; }
+
+/* Fonts */
+@font-face {
+    font-family: 'BentonSansLightRegular';
+    src: url("https://fonts.iu.edu/fonts/benton-sans-light-regular.eot");
+    src: url("https://fonts.iu.edu/fonts/benton-sans-light-regular.eot?#iefix") format("embedded-opentype"), url("https://fonts.iu.edu/fonts/benton-sans-light-regular.woff") format("woff"), url("https://fonts.iu.edu/fonts/benton-sans-light-regular.ttf") format("truetype"), url("https://fonts.iu.edu/fonts/benton-sans-light-regular.svg#BentonSansLightRegular") format("svg");
+    font-style: normal;
+    font-weight: normal; }
+/* Colors */
+/* Borders */
+/*! Tablesaw - v1.0.3 - 2015-01-27
+* https://github.com/filamentgroup/tablesaw
+* Copyright (c) 2015 Filament Group; Licensed MIT */
+/*! Tablesaw - v1.0.3 - 2015-01-27
+* https://github.com/filamentgroup/tablesaw
+* Copyright (c) 2015 Filament Group; Licensed MIT */
+table.tablesaw {
+    empty-cells: show;
+    max-width: 100%;
+    width: 100%; }
+
+.tablesaw {
+    border-collapse: collapse;
+    width: 100%; }
+
+/* Structure */
+.tablesaw {
+    border: 0;
+    padding: 0; }
+
+.tablesaw th,
+.tablesaw td {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: .5em .7em; }
+
+.tablesaw thead tr:first-child th {
+    padding-top: .9em;
+    padding-bottom: .7em; }
+
+/* Table rows have a gray bottom stroke by default */
+.tablesaw-stack tbody tr {
+    border-bottom: 1px solid #dfdfdf; }
+
+.tablesaw-stack td .tablesaw-cell-label,
+.tablesaw-stack th .tablesaw-cell-label {
+    display: none; }
+
+/* Mobile first styles: Begin with the stacked presentation at narrow widths */
+@media only all {
+    /* Show the table cells as a block level element */
+    .tablesaw-stack td,
+    .tablesaw-stack th {
+        text-align: left;
+        display: block; }
+
+    .tablesaw-stack tr {
+        clear: both;
+        display: table-row; }
+
+    /* Make the label elements a percentage width */
+    .tablesaw-stack td .tablesaw-cell-label,
+    .tablesaw-stack th .tablesaw-cell-label {
+        display: block;
+        padding: 0 .6em 0 0;
+        width: 30%;
+        display: inline-block; }
+
+    /* For grouped headers, have a different style to visually separate the levels by classing the first label in each col group */
+    .tablesaw-stack th .tablesaw-cell-label-top,
+    .tablesaw-stack td .tablesaw-cell-label-top {
+        display: block;
+        padding: .4em 0;
+        margin: .4em 0; }
+
+    .tablesaw-cell-label {
+        display: block; }
+
+    /* Avoid double strokes when stacked */
+    .tablesaw-stack tbody th.group {
+        margin-top: -1px; }
+
+    /* Avoid double strokes when stacked */
+    .tablesaw-stack th.group b.tablesaw-cell-label {
+        display: none !important; } }
+header > div {
+    border-bottom: 1px solid #dbdbdb; }
+header h1 {
+    margin-top: 24px;
+    font-size: 1.4rem;
+    width: 100%; }
+header h1 span {
+    font-family: BentonSansLightRegular, "Arial Narrow", Helvetica, sans-serif; }
+
+/* Persistent Info */
+.persistent-info {
+    padding: 1.5rem 0 0 0; }
+.persistent-info > div {
+    border-bottom: 1px solid #dbdbdb; }
+.persistent-info h2 {
+    font-size: 1.2rem;
+    font-family: BentonSansLightRegular, "Arial Narrow", Helvetica, sans-serif; }
+
+.section.persistent-info + section {
+    margin-top: 0; }
+
+.personal-info,
+.emergency-info {
+    padding: 0.3rem 0.75rem; }
+
+.js .personal-info h2 {
+    position: relative; }
+.js .personal-info h2:after {
+    font-family: Arial;
+    content: "\002B";
+    position: absolute;
+    right: 0.5rem;
+    top: -1px;
+    line-height: 3rem;
+    font-size: 165%; }
+.js .personal-info h2.open:after {
+    content: "\2212"; }
+
+.personal-info h2 {
+    margin: 0;
+    padding: 0.75rem 0;
+    cursor: pointer; }
+.personal-info ul {
+    margin-left: 0;
+    list-style: none; }
+
+.emergency-info h2 span {
+    font-family: BentonSansBold, "Arial Narrow", Arial, sans-serif; }
+
+@media only screen and (min-width: 40.125em) {
+    header h1 {
+        font-size: 1.875rem; }
+    header p {
+        font-size: 0.875rem; }
+
+    .personal-info,
+    .emergency-info {
+        float: left;
+        display: block;
+        margin-right: 2.35765%;
+        width: 48.82117%; }
+    .personal-info:last-child,
+    .emergency-info:last-child {
+        margin-right: 0; }
+    .personal-info h2,
+    .emergency-info h2 {
+        font-size: 1.475rem; }
+    .personal-info p,
+    .personal-info ul,
+    .emergency-info p,
+    .emergency-info ul {
+        font-size: 0.875rem; }
+
+    .emergency-info {
+        margin-left: 51.17883%; }
+
+    .js .personal-info h2:after {
+        content: none; }
+    .js .personal-info h2.open:after {
+        content: none; }
+
+    .personal-info {
+        margin-left: -102.35765%; }
+    .personal-info h2 {
+        margin-top: 0.2rem;
+        padding-top: 0;
+        cursor: inherit; } }
+/* All page styles */
+.light-tan {
+    background-color: #E4E4E4; }
+
+.crimson {
+    background-color: #990000;
+    color: #fff; }
+
+.accordion {
+    margin-bottom: 0.3rem;
+    background: transparent; }
+
+.section-header {
+    padding: 0.3rem 0.75rem; }
+.section-header p {
+    margin-top: 8px;
+    margin-bottom: 8px; }
+
+.section-dropdown,
+.section-confirm {
+    padding: 1rem 0; }
+
+.button.back,
+.button.next {
+    padding-left: 2rem;
+    padding-right: 2rem;
+    width: auto; }
+
+.button.back {
+    float: left; }
+
+.button.next {
+    float: right; }
+
+/* Breadcrumbs */
+.steps {
+    padding: 0; }
+.steps ul {
+    margin: 0;
+    padding: 0.75rem 0.75rem;
+    background: #990000;
+    color: #fff; }
+.steps li {
+    display: none; }
+.steps li.current-step {
+    display: block; }
+
+@media only screen and (min-width: 40.125em) {
+    .steps ul {
+        padding: 0;
+        background: #E4E4E4;
+        font-size: 1.125rem;
+        color: inherit; }
+    .steps ul:after {
+        content: "";
+        display: table;
+        clear: both; }
+    .steps li,
+    .steps li.current-step {
+        display: block;
+        float: left; }
+    .steps li {
+        position: relative;
+        padding: 0.75rem 0.75rem;
+        width: 33%; }
+    .steps .current-step {
+        background: #990000;
+        color: #fff; }
+    .steps:after {
+        content: "";
+        display: table;
+        clear: both; } }
+/* Home page */
+.home .new-appointment p,
+.home .existing-appointments p {
+    font-family: BentonSansLightRegular, "Arial Narrow", Helvetica, sans-serif; }
+.home .new-appointment {
+    padding: 0.3rem 0.75rem;
+    background-color: #C6C3BC; }
+.home .new-appointment p,
+.home .new-appointment .button {
+    display: inline-block; }
+.home .new-appointment p {
+    margin-top: 8px;
+    margin-bottom: 0; }
+.home .new-appointment .button {
+    float: right;
+    font-family: BentonSansLightRegular, "Arial Narrow", Helvetica, sans-serif;
+    width: auto; }
+.home .tablesaw-container {
+    padding: 0.3rem 0.75rem; }
+@media (max-width: 47.9375em) {
+    .home .tablesaw-container .tablesaw-stack thead td,
+    .home .tablesaw-container .tablesaw-stack thead th {
+        display: none; }
+    .home .tablesaw-container .tablesaw-stack tbody td,
+    .home .tablesaw-container .tablesaw-stack tbody th {
+        clear: left;
+        float: left;
+        width: 100%; }
+    .home .tablesaw-container .tablesaw-cell-label {
+        vertical-align: top; }
+    .home .tablesaw-container .tablesaw-cell-content {
+        max-width: 67%;
+        display: inline-block; }
+    .home .tablesaw-container .tablesaw-stack td:empty,
+    .home .tablesaw-container .tablesaw-stack th:empty {
+        display: none; } }
+@media (min-width: 48em) {
+    .home .tablesaw-container {
+        /* Show the table header rows */
+        /* Hide the labels in each cell */ }
+    .home .tablesaw-container .tablesaw-stack tr {
+        display: table-row; }
+    .home .tablesaw-container .tablesaw-stack td,
+    .home .tablesaw-container .tablesaw-stack th,
+    .home .tablesaw-container .tablesaw-stack thead td,
+    .home .tablesaw-container .tablesaw-stack thead th {
+        display: table-cell;
+        margin: 0; }
+    .home .tablesaw-container .tablesaw-stack td .tablesaw-cell-label,
+    .home .tablesaw-container .tablesaw-stack th .tablesaw-cell-label {
+        display: none !important; } }
+.home .tablesaw tr td:last-of-type a {
+    display: block;
+    line-height: 1.6; }
+
+@media only screen and (min-width: 40.125em) {
+    .home .new-appointment,
+    .home .existing-appointments {
+        padding-top: 2.5rem;
+        padding-bottom: 2.5rem; }
+    .home .new-appointment p,
+    .home .existing-appointments p {
+        margin-top: 1rem;
+        font-size: 1.875rem; }
+    .home .new-appointment .button {
+        font-size: 3rem; } }
+@media only screen and (min-width: 48em) {
+    .dataTable th {
+        cursor: pointer; }
+    .dataTable .sorting:hover {
+        background-color: #e8e8e8; } }
+.schedule-appointments .row .step {
+    margin-top: 1rem;
+    margin-right: 8px;
+    float: left;
+    background-color: #990000;
+    color: #fff;
+    border-radius: 16px;
+    text-align: center;
+    width: 24px; }
+.schedule-appointments .row .step.block {
+    display: block;
+    float: none; }
+
+.time-of-day {
+    margin: 0; }
+.time-of-day li {
+    display: block;
+    padding: 0.4rem 0.5rem;
+    float: left;
+    width: 50%;
+    cursor: pointer; }
+.time-of-day .active {
+    background-color: #990000;
+    color: #fff; }
+
+.available-timeslots {
+    margin-top: 16px;
+    margin-bottom: 24px; }
+.available-timeslots .morning > div,
+.available-timeslots .afternoon > div {
+    float: left;
+    padding: 0.4rem 0.5rem;
+    background-color: #990000;
+    color: #fff;
+    border-left: 8px solid #fff;
+    border-bottom: 8px solid #fff;
+    font-size: 0.9rem;
+    text-align: center;
+    width: 25%;
+    cursor: pointer; }
+.available-timeslots .morning > div:hover,
+.available-timeslots .afternoon > div:hover {
+    background-color: #660000; }
+.available-timeslots .morning > div:nth-child(4n),
+.available-timeslots .afternoon > div:nth-child(4n) {
+    margin-right: 0; }
+.available-timeslots .morning > div:nth-child(4n+1),
+.available-timeslots .afternoon > div:nth-child(4n+1) {
+    margin-left: 0;
+    border-left: 0;
+    clear: left; }
+.available-timeslots .morning:after,
+.available-timeslots .afternoon:after {
+    content: "";
+    display: table;
+    clear: both; }
+.available-timeslots .morning .selected,
+.available-timeslots .morning .selected:hover,
+.available-timeslots .afternoon .selected,
+.available-timeslots .afternoon .selected:hover {
+    background-color: #1a0000; }
+
+@media only screen and (max-width: 48em) {
+    .schedule-appointments .row .step {
+        margin-bottom: 0.5rem; }
+
+    .calendar,
+    .timeslots {
+        display: block;
+        width: 100%; } }
+@media only screen and (min-width: 48em) {
+    .schedule-appointments:after {
+        content: "";
+        display: table;
+        clear: both; }
+
+    .calendar {
+        float: left;
+        display: block;
+        margin-right: 2.35765%;
+        width: 31.76157%; }
+    .calendar:last-child {
+        margin-right: 0; }
+
+    .timeslots {
+        margin-left: 8.5298%;
+        float: left;
+        display: block;
+        margin-right: 2.35765%;
+        width: 48.82117%; }
+    .timeslots:last-child {
+        margin-right: 0; } }
+.ui-datepicker-unselectable {
+    background-color: #E4E4E4; }
+
+/*# sourceMappingURL=site.css.map */

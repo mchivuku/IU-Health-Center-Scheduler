@@ -35,10 +35,17 @@ use Illuminate\Support\ServiceProvider;
                 return new \Scheduler\Controllers\NewAppointmentController($app->UserRepository,
                     $app->ShibbolethRepository, $app->AppointmentRepository,$app->FacilitiesRepository,
                     $app->VisitTypeRepository,
-                    $app->SchedulerLogRepository,$app->ProviderRepository);
+                    $app->SchedulerLogRepository,$app->ProviderRepository,$app->PatientRepository);
             });
 
 
+            $app->bind('SettingsController', function ($app)
+            {
+                return new \Scheduler\Controllers\SettingsController($app->UserRepository,
+                    $app->ShibbolethRepository, $app->AppointmentRepository,$app->FacilitiesRepository,
+                    $app->VisitTypeRepository,
+                    $app->SchedulerLogRepository,$app->PatientRepository);
+            });
 
         }
 
