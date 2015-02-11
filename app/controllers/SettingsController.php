@@ -8,28 +8,14 @@
 
 namespace Scheduler\Controllers;
 
-
-use Scheduler\Repository\AppointmentRepository;
-use Scheduler\Repository\FacilitiesRepository;
-use Scheduler\Repository\SchedulerLogRepository;
-use Scheduler\Repository\UserRepository;
-use Scheduler\Repository\ShibbolethRepository;
-use Scheduler\Repository\VisitTypeRepository;
-use Scheduler\Repository\PatientRepository;
-
-
 class SettingsController extends BaseController{
 
     protected $patientRepo;
 
-    public function  __construct(UserRepository $userRepo,
-                                 ShibbolethRepository $shibb,
-                                 AppointmentRepository $apptRepo, FacilitiesRepository $facilitiesRepo,
-                                 VisitTypeRepository $visitTypeRepos,SchedulerLogRepository $schedulerLogRepo,PatientRepository $patientRepo)
+    public function  __construct($app)
     {
-        parent::__construct($userRepo, $shibb, $apptRepo, $facilitiesRepo, $visitTypeRepos,$schedulerLogRepo);
+        parent::__construct($app);
 
-        $this->patientRepo=$patientRepo;
     }
 
 

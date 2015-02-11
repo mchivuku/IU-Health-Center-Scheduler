@@ -33,12 +33,10 @@ Route::group(array('prefix' => 'settings'), function() {
 
 });
 
-
-
 //TODO - route grouping
 Route::group(array('prefix' => 'newAppointment'), function(){
 
-    Route::post('/schedule', array(
+    Route::get('/schedule', array(
         'as' => 'newAppointment.schedule',
         'uses' => 'NewAppointmentController@schedule'
     ));
@@ -53,11 +51,19 @@ Route::group(array('prefix' => 'newAppointment'), function(){
         'uses' => 'NewAppointmentController@getTimes'
     ) );
 
+    Route::get('/getVisitTypes',
+        array(
+            'as' => 'newAppointment.visitType',
+            'uses' => 'NewAppointmentController@getVisitTypes'
+        ));
+
     Route::get('/{facility?}{visitType?}',
         array(
             'as' => 'newAppointment.index',
             'uses' => 'NewAppointmentController@getIndex'
         ));
+
+
 
 });
 

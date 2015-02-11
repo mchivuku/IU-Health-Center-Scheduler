@@ -7,14 +7,15 @@
  */
 namespace Scheduler\Repository;
 
+//TODO - let Tamir know that this is a custom table
 class FacilitiesRepository{
-    protected $table = 'edi_facilities';
+    protected $table = 'iu_scheduler_facility_charttitle';
 
     public function getAllFacilities(){
 
         $facilities_list = \DB::table($this->table)
-            ->select( array('Id','Name'
-            ))->orderBy('Name', 'ASC')
+            ->select( array('FacilityId as Id','Name'
+            ))->orderBy('FacilityId', 'ASC')
             ->get();
 
         return $facilities_list;

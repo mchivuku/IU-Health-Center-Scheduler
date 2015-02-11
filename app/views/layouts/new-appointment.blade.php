@@ -13,10 +13,17 @@
             </div>
 
             <div class="row pad">
+               <div class="instructions">
+                               @include('includes.instruction')
+               </div>
+
                  @yield('new-appointment-content')
 
             </div>
         </section>
 
 @stop
+
+
+
 

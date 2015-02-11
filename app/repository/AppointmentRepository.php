@@ -75,57 +75,10 @@ class AppointmentRepository{
 
     }
 
-    public function getAllAppointmentTimes($providerId,$date){
-
-        $pdo = \DB::connection('mysql')->getPdo();
-
-        $pdo->beginTransaction();
-
-        // 1. Read all apptBlocks;
-        $appt_block_sql = 'SELECT  StartTime,
-                           EndTime from ApptBlocks block join ApptBlockDetails details on block.Id = details.Id
-                           where userId=:providerId and StartDate=:date ';
-        $statement = $pdo->prepare($appt_block_sql);
-
-        $statement->bindParam(':providerId', $providerId, \PDO::PARAM_INT);
-        $statement->bindParam(':date',$date,\PDO::PARAM_STR,256);
-
-
-        $blocks=array();
-        if ($statement->execute()):
-            while ($row = $statement->fetch(\PDO::FETCH_ASSOC)){
-                $blocks[]=$row;
-            }
-        endif;
-
-
-        //2. Read appointment made;
-        $enc_sql = "SELECT  StartTime,
-                           EndTime from enc
-                           where doctorID=".$providerId . " and date= '" .$date."'";
-
-
-        $statement_enc = $pdo->prepare($enc_sql);
-
-      // $statement_enc->bindParam(':providerId', $providerId, \PDO::PARAM_INT);
-        //$statement_enc->bindParam(':date',$date,\PDO::PARAM_STR,256);
-
-
-        $appts = array();
-        if ($statement_enc->execute()):
-            while ($row = $statement_enc->fetch(\PDO::FETCH_ASSOC)){
-
-                $appts[]=$row;
-            }
-        endif;
-
-
-
-        return array_merge($blocks,$appts);
-
+    // Get all available times for given time range - time range
+    public function getAllAppointmentTimes($providerId,$date,$startTime, $endTime){
+  
     }
-
-
 
     public function createAppointment(\Appointment $appointment){
 
@@ -135,7 +88,6 @@ class AppointmentRepository{
                'patientID'=>$appointment->patientId,
                'date'=>$appointment->date,
                'startTime'=>$appointment->startTime,
-
                'endTime'=>$appointment->startTime,
                'visitType'=>$appointment->visitType,
                'status'=>'PEN',
@@ -145,10 +97,7 @@ class AppointmentRepository{
                'POS'=>11,'ResourceId'=> $appointment->providerId,
                'visittypeid'=> $appointment->visitType
            );
-
-
-
-           $encId =  \DB::table($this->table)->insert(
+          $encId =  \DB::table($this->table)->insert(
                $insert_into_appointment);
            return $encId;
 

@@ -30,12 +30,9 @@ class HomeController extends BaseController
     |
     */
 
-    public function  __construct(UserRepository $userRepo,
-                                 ShibbolethRepository $shibb,
-                                 AppointmentRepository $apptRepo, FacilitiesRepository $facilitiesRepo,
-                                 VisitTypeRepository $visitTypeRepos,SchedulerLogRepository $schedulerLogRepo)
+    public function  __construct($app)
     {
-        parent::__construct($userRepo, $shibb, $apptRepo, $facilitiesRepo, $visitTypeRepos,$schedulerLogRepo);
+        parent::__construct($app);
     }
 
 

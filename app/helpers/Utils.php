@@ -5,9 +5,10 @@
  * Date: 2/4/15
  * Time: 1:35 PM
  */
+
 function getDayOfTheWeek($date){
 
-    $dw = date( "w", $date);
+    $dw = date('w', strtotime($date));
 
     return $dw;
 }

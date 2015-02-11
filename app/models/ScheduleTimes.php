@@ -11,7 +11,7 @@ class ScheduleTimes
 {
 
     const DAY = 1;
-    const NIGHT = 2;
+    const AFTERNOON = 2;
 
     function getStartTimeForDay($scheduleTime)
     {

@@ -12,7 +12,8 @@ namespace Scheduler\Repository;
 class VisitTypeRepository{
     protected $table = 'visitcodes';
 
-    public function getAllVisitTypes(){
+    //TODO - get visit types based on the facility ID - HOLD UNTIL TEST DATABASE IS UPDATED
+    public function getAllVisitTypes($facilityId){
 
         $visitTypes_list = \DB::table($this->table)
             ->select( array('CodeId as Id','Description as Name'
@@ -24,19 +25,6 @@ class VisitTypeRepository{
         return $visitTypes_list;
 
     }
-
-    //TODO - get Active Providers
-    public function getProvidersForVisitCodeWithSchedule($visitCode,$facilityId,
-                                                         $dayOfTheWeek,$morning){
-
-        // 1.
-
-
-
-
-    }
-
-
 
 
 }

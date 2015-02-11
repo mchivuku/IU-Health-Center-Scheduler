@@ -13,34 +13,25 @@
 
 {{ Form::open(array('method'=>'post','id'=>'scheduleSave','action'=>'NewAppointmentController@scheduleSave')) }}
 
-<div class="form-group">
+<div id="datepickerCalendar"></div>
 
+<ul class="time-of-day">
+@foreach($model->tabs as $k=>$v)
+<li  id="$k">{{$v}}</li>
+@endforeach
+</ul>
 
-{{ Form::label('name', 'Select Provider',array('class'=>'control-label')) }}
-{{ Form::select_list('provider',$model->providers,$model->selectedProvider,array('id'=>'provider','class'=>'form-control')) }}
-
-</div>
-
+    <div class="available-timeslots">
+@include('includes.timeslots',array('model'=>$model))
+    </div>
 {{Form::hidden('facility', $model->facility,array('id'=>'facility'));}}
 {{Form::hidden('visitType', $model->visitType,array('id'=>'visitType'));}}
 {{Form::hidden('selectedTimes','',array('id'=>'selectedTimes'));}}
 {{Form::hidden('date','',array('id'=>'date'));}}
 
 
-
-   <div class="container">
-   <div class="row-fluid">
-   <div class="col-md-4"><div id="datepickerCalendar"></div></div>
-        <div class="col-md-8" id="times">  @include('includes.timeslots',
-        array('model'=>$model))</div>
-
-   </div>
-   </div>
-
-
 {{ Form::submit('Next', array('class' => 'btn')) }}
 {{ Form::close() }}
-
 
 
 @stop

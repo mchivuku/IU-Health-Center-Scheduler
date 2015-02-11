@@ -23,6 +23,10 @@ abstract class BaseController extends Controller {
     protected $facilitiesRepo;
     protected $visitTypeRepo;
     protected $schedulerLogRepo;
+    protected $patientRepo;
+    protected $providerRepo;
+
+    protected $app;
 
     // view - to render
     protected $view;
@@ -40,21 +44,19 @@ abstract class BaseController extends Controller {
     //view title
     protected $title = array();
 
-    public function __construct(UserRepository $userRepo,
-                                ShibbolethRepository $shibb,
-                                AppointmentRepository $apptRepo,
-                                FacilitiesRepository $facilitiesRepo,
-                                VisitTypeRepository $visitTypeRepo,
-                                SchedulerLogRepository $schedulerLogRepo,
+    public function __construct($app,$sublayout = null){
 
-                                $sublayout = null){
+        $this->app = $app;
 
-        $this->shibboleth=$shibb;
-        $this->userRepo = $userRepo;
-        $this->apptRepo=$apptRepo;
-        $this->facilitiesRepo=$facilitiesRepo;
-        $this->visitTypeRepo=$visitTypeRepo;
-        $this->schedulerLogRepo=$schedulerLogRepo;
+
+        $this->shibboleth=$app->ShibbolethRepository;
+        $this->userRepo = $app->UserRepository;
+        $this->apptRepo=$app->AppointmentRepository;
+        $this->facilitiesRepo=$app->FacilitiesRepository;
+        $this->visitTypeRepo=$app->VisitTypeRepository;
+        $this->schedulerLogRepo=$app->SchedulerLogRepository;
+        $this->patientRepo=$app->PatientRepository;
+        $this->providerRepo = $app->ProviderRepository;
 
         $this->view = $sublayout;
 

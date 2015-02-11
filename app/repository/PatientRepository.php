@@ -10,7 +10,6 @@ namespace Scheduler\Repository;
 
 class PatientRepository{
 
-
     /***
      * Function to retrieve patient Id given university Id
      *
@@ -24,8 +23,6 @@ class PatientRepository{
             ))
             ->where('patients.ControlNo', '=' ,$universityId)
             ->first();
-
-
         return $patient->patientId;
     }
 
@@ -42,7 +39,6 @@ class PatientRepository{
             ->where('patients.ControlNo', '=' ,$universityId)
             ->first();
 
-
         return $patient->textenabled;
     }
 
@@ -53,10 +49,10 @@ class PatientRepository{
      * @param $value
      */
     public function updateTextEnabledValue($universityId,$value){
-
         \DB::table('patients')
             ->where('patients.ControlNo', '=' ,$universityId)
             ->update(array('textenabled' => $value));
+
 
     }
 

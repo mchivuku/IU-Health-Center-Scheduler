@@ -93,18 +93,14 @@ class ShibbolethRepository
         $name = $propertyInfo['name'];
         $filter = $propertyInfo['filter'];
 
-
         $univ= $this->getPersonPropertyValue($name, $filter);
 
+        //TODO - read from Shibboleth
         if(empty($univ))
             $univ='0002376816';
 
         return $univ;
 
-
     }
-
-
-
 
 }

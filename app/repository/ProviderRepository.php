@@ -8,28 +8,42 @@
 
 namespace Scheduler\Repository;
 
-class ProviderRepository{
-    protected $table = 'doctors';
+class ProviderRepository
+{
 
     /*
-     *  select doctorID, PrintName from doctors
-     *  where ActiveEndDate>=date_format(CURDate(),'%m/%d/%Y')
+     *
+     *
+     *
+     *
+ select  doctorId as Id,concat(users.ulname, ", ", users.ufname) as Name ,CodeId,minutes
+from visitcodesdetails
+inner join
+(select StartTime,EndTime,facilityId, UserId from workhours
+inner join (
+select  SetId,UserId from workinghourssets where UserId=9125
+and (EndDate is null or (deleteFlag=0 and EndDate > NOW()))
+)x  on  workhours.SetId = x.SetId
+where weekday=2)y on visitcodesdetails.doctorId=y.UserId
+inner join Users on visitcodesdetails.doctorId=Users.uid
+order by CodeId
      *
      */
-    public function getAllProviders($visitType){
 
-        $date_format =  "date_format(CURDate(),'%m/%d/%Y')";
-
-        // inactive or active;ActiveEndData is by the ecwdatabase;
-        $providers = \DB::table($this->table)
-            ->select( array('doctorID as Id','PrintName as Name'
-            ))->where('ActiveEndDate','>=',\DB::raw($date_format))
-            ->orderBy('PrintName', 'ASC')
+    //TODO - update the facilityId, workhours.
+    public function getProvidersWithWorkHours($facilityId, $visitType, $date)
+    {
+        $weekday = getDayOfTheWeek($date);
+        $providers = \DB::table('iu_scheduler_provider_schedule_info')
+            ->select(array('Id', 'Name','StartTime', 'EndTime'
+            ))
+            ->where('CodeId', '=', $visitType)
+            ->where('facilityId','=',$facilityId)
+            ->where('weekday', '=', $weekday)
+            ->orderBy('Name', 'ASC')
             ->get();
-
-
-        return $providers;
-
+         return $providers;
 
     }
 }
+
