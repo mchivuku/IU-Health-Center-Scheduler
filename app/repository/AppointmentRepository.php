@@ -8,6 +8,9 @@
 
 namespace Scheduler\Repository;
 
+ini_set('display_errors',1);
+error_reporting(-1);
+
 class AppointmentRepository{
 
 
@@ -76,9 +79,76 @@ class AppointmentRepository{
     }
 
     // Get all available times for given time range - time range
-    public function getAllAppointmentTimes($providerId,$date,$startTime, $endTime){
-  
+    public function getAllAppointmentTimes($provider,$date){
+
+        $providerId = 9125;
+
+        $startTime = $provider->StartTime;
+        $endTime = $provider->EndTime;
+
+
+        //1. construct appointment blocks query for the given provider
+        try{
+
+            $pdo = \DB::connection('mysql')->getPdo();
+
+            $pdo->beginTransaction();
+            $pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
+
+            $enc_sql =  $enc_sql =  sprintf("SELECT Available_from, Available_to
+                   FROM  (
+              SELECT @lasttime_to AS available_from, startTime AS available_to, @lasttime_to := endTime
+            FROM (SELECT startTime, endTime
+                  FROM enc
+                  WHERE  enc.date = :encDate and enc.resourceId = :providerId
+                 UNION ALL SELECT :endTime, :endTime
+                ORDER BY startTime
+                ) e
+              JOIN (SELECT @lasttime_to := NULL) init) x where exists (Select 1 from enc where enc.date= :encDate
+                and enc.resourceId= :providerId )
+              ", $endTime,$endTime);
+
+            $blocks_sql =  sprintf("SELECT Available_from, Available_to
+                   FROM  (
+              SELECT @lasttime_to AS available_from, startTime AS available_to, @lasttime_to := endTime
+            FROM (SELECT StartTime as startTime, EndTime as endTime
+                  FROM ApptBlocks block join
+                  ApptBlockDetails details on block.Id = details.Id
+                  WHERE  StartDate = :encDate and userId = :providerId
+                 UNION ALL SELECT :endTime, :endTime
+                ORDER BY startTime
+                ) e
+              JOIN (SELECT @lasttime_to := NULL) init) x where exists (Select 1 FROM ApptBlocks block join
+                  ApptBlockDetails details on block.Id = details.Id
+                  WHERE  StartDate = :encDate and userId = :providerId)
+              ", $endTime,$endTime);
+
+
+            $statement = $pdo->prepare(sprintf(" %s UNION ALL %s " ,$enc_sql, $blocks_sql));
+            $statement->bindParam(':providerId', $providerId, \PDO::PARAM_INT);
+            $statement->bindParam(":endTime",$endTime,\PDO::PARAM_STR,256 );
+            $statement->bindParam(":encDate",$date,\PDO::PARAM_STR,256 );
+
+            $available=array();
+            if ($statement->execute()):
+            while ($row = $statement->fetch(\PDO::FETCH_ASSOC)){
+                    $available[]=$row;
+                }
+            endif;
+
+
+        }catch (\Exception $ex){
+
+            echo $ex->getMessage();
+        }
+
+
+
+
+
+
     }
+
 
     public function createAppointment(\Appointment $appointment){
 

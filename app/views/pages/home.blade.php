@@ -1,29 +1,20 @@
 @extends('...layouts.master')
 
 @section('content')
-        <div class="row">
+<section class="section bg-none">
+<div class="row">
                 <div class="new-appointment">
-                    <p>New Appointment</p>
-                    <a href="{{ URL::to('newAppointment') }}" class="button">Start</a>
+                   <div><p>New Appointment</p></div>
+                    <div><a href="{{ URL::to('newAppointment') }}" class="button">Start</a></div>
                 </div>
-            </div>
+             </div>
 
-
-                <div class="row">
-                <div class="section-header existing-appointments dark-tan">
-                    <p>Your next Scheduled Appointment</p>
-                </div>
-                 @if($model->nextAppointment)
-                        {{$model->nextAppointment->visitType}} on  {{$model->nextAppointment->appointmentDate}} at
-                         {{$model->nextAppointment->facility}} for {{$model->nextAppointment->reason}}
-                    @endif
-                </div>
 
 
 
  <div class="row">
                 <div class="section-header existing-appointments light-tan">
-                    <p>Previous Appointments</p>
+                   <div> <p>Previous Appointments</p></div><div>&nbsp;</div>
                 </div>
  <div class="tablesaw-container">
 
@@ -35,7 +26,7 @@
  </div>
 
 
-
+</section>
 
 @stop
 

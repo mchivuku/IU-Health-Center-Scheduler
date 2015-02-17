@@ -48,9 +48,6 @@
             var morning             = ".morning";
             var afternoon           = ".afternoon";
 
-            $(availableTimeslots).before('<ul class="time-of-day"><li class="morning active">Morning</li><li class="afternoon">Afternoon</li></ul>');
-
-            $(availableTimeslots + " " + afternoon).hide();
 
             $(timeOfDay + " li").on("click", function() {
                 if ($(this).hasClass("morning")) {
@@ -90,14 +87,7 @@
                 $(this).toggleClass("selected");
             });
 
-            // var availableTimeslots      = ".available-timeslots";
-            // // var morningTimeslots        = ".morning div";
-            // // var afternoonTimeslots      = ".afternoon div";
 
-            // $(availableTimeslots).on("click", morningTimeslots, afternoonTimeslots, function() {
-            //     console.log("click");
-            //     $(this).toggleClass("selected");
-            // });
         }
 
         availableTimeslots();

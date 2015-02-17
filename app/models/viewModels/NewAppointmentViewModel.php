@@ -6,13 +6,14 @@
  * Time: 1:53 PM
  */
 
-class NewAppointmentViewModel{
+require_once 'NewAppointmentBaseViewModel.php';
+
+class NewAppointmentViewModel extends NewAppointmentBaseViewModel{
 
     public $facilities;
     public $visitTypes;
 
     public $selectedFacility;
     public $selectedvisitType;
-
 
 }

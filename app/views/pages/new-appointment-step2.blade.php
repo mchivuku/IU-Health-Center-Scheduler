@@ -1,37 +1,53 @@
 @extends('...layouts.new-appointment')
 @section('new-appointment-content')
 
-<p>You are scheduling an appointment for - {{$model->visitType}}</p>
-<p>
-<ul>
-<li>Choose a provider</li>
-<li>select desired appointment</li>
-<li>select desired appointment time, then click next</li>
-</ul>
-</p>
-
 
 {{ Form::open(array('method'=>'post','id'=>'scheduleSave','action'=>'NewAppointmentController@scheduleSave')) }}
 
-<div id="datepickerCalendar"></div>
-
-<ul class="time-of-day">
-@foreach($model->tabs as $k=>$v)
-<li  id="$k">{{$v}}</li>
-@endforeach
-</ul>
-
-    <div class="available-timeslots">
-@include('includes.timeslots',array('model'=>$model))
-    </div>
 {{Form::hidden('facility', $model->facility,array('id'=>'facility'));}}
 {{Form::hidden('visitType', $model->visitType,array('id'=>'visitType'));}}
 {{Form::hidden('selectedTimes','',array('id'=>'selectedTimes'));}}
 {{Form::hidden('date','',array('id'=>'date'));}}
 
+<div class="column schedule-appointments">
+<span class="step">1</span>
 
-{{ Form::submit('Next', array('class' => 'btn')) }}
-{{ Form::close() }}
+ <div class="section-dropdown">
+                    {{ Form::select_list('provider',$model->providers,$model->selectedProvider,array('id'=>'providers')) }}
+
+                    </div>
+
+ <span class="step">2</span>
+                    <div class="calendar">
+                        <div id="datepicker"></div>
+                    </div>
+
+   </div>
+
+
+<div class="column schedule-appointments">
+
+    <div class="timeslots">
+    <span class="step block">3</span>
+
+    <ul class="time-of-day">
+    @foreach($model->tabs as $k=>$v)
+
+    @if( $model->activeTab == $k)
+    <li class="{{$v}} active">{{$v}}</li>
+
+    @else
+    <li class="{{$v}}">{{$v}}</li>
+
+    @endif
+    @endforeach
+    </ul>
+
+       @include('includes.timeslots',array('model'=>$model))
+</div>
+
+</div>
+
 
 
 @stop
@@ -41,24 +57,29 @@
 {{ HTML::script('js/jquery-ui.js')}}
 
 <script type="text/javascript">
-
 $(document).ready(function(){
-$(".five").on("click", function() {
-       if ($(this).hasClass("full")) {
 
-       } else {
+$('ul.time-of-day li').on("click", function() {
+    $('ul.time-of-day li.active').removeClass('active');
+    $(this).addClass('active');
+    var providerId = $('#providers').val();
+    var visitType = $('#visitType').val();
+    var facility = $('#facility').val();
+    var date = $('#datepicker').val();
+    var tabId = $("ul.time-of-day li").index($(this))+1;
+    $.get('getAvailableTimes',
+         {'providerId':providerId,'visitType':visitType, 'facility':facility,
+          'date':date,'tabId':tabId},
+       function(data) {
+          $('.available-timeslots').empty().html(data);
+        });
 
-           $(this).toggleClass("selected");
-       }
-   });
+});
 
-
-$("#datepickerCalendar").datepicker({
-
+$("#datepicker").datepicker({
   onSelect: function(){
        var providerId = $('#provider').val();
         getTimes(providerId,this.value);
-
   }
 });
 
@@ -85,6 +106,7 @@ $(this).parent('form').submit();
 });
 
 
+
 function getTimes(providerId,date){
     $.get('getTimes',
       {'providerId':providerId,
@@ -98,4 +120,3 @@ function getTimes(providerId,date){
 </script>
 
 @stop
-

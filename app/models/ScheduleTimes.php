@@ -15,7 +15,7 @@ class ScheduleTimes
 
     function getStartTimeForDay($scheduleTime)
     {
-        if($scheduleTime==DAY){
+        if($scheduleTime==self::DAY){
             return date('H:i:s', mktime(9, 0, 0, 0, 0, 0));
         }
 
@@ -25,7 +25,7 @@ class ScheduleTimes
 
     function getEndTimeForDay($scheduleTime)
     {
-        if($scheduleTime==DAY){
+        if($scheduleTime==self::DAY){
 
             return date('H:i:s', mktime(12, 59, 0, 0, 0, 0));
         }
@@ -34,4 +34,7 @@ class ScheduleTimes
     }
 
 
+    function getTabsForScheduleTimes(){
+        return array(self::DAY=>'Morning',self::AFTERNOON=>"Afternoon");
+    }
 }

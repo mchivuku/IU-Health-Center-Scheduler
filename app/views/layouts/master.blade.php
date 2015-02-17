@@ -31,10 +31,8 @@
         </div>
     </section>
 
-
-  <section class="section bg-none">
     @yield('content')
-  </section>
+
 
 
 </div>

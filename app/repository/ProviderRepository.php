@@ -30,20 +30,46 @@ order by CodeId
      *
      */
 
-    //TODO - update the facilityId, workhours.
-    public function getProvidersWithWorkHours($facilityId, $visitType, $date)
+    //TODO - update the facilityId, workhours, weekday - if the providers are not available on a weekday
+    public function getAllProvidersWithWorkHours($facilityId, $visitType, $date)
     {
         $weekday = getDayOfTheWeek($date);
+
         $providers = \DB::table('iu_scheduler_provider_schedule_info')
             ->select(array('Id', 'Name','StartTime', 'EndTime'
             ))
             ->where('CodeId', '=', $visitType)
-            ->where('facilityId','=',$facilityId)
+            //->where('facilityId','=',$facilityId)
             ->where('weekday', '=', $weekday)
-            ->orderBy('Name', 'ASC')
-            ->get();
-         return $providers;
+            ->orderBy('Name', 'ASC')->get();
+
+
+        return $providers;
 
     }
+
+    /***
+     *
+     * Get work hours for the provider -
+     *
+     * @param $providerId
+     * @param $facilityId
+     * @param $visitType
+     * @param $date
+     * @return mixed
+     */
+    public function getProviderWorkHours($providerId,$facilityId,$visitType,$date){
+        $weekday = getDayOfTheWeek($date);
+        $times = \DB::table('iu_scheduler_provider_schedule_info')
+            ->select(array('StartTime', 'EndTime'
+            ))
+            ->where('CodeId', '=', $visitType)
+          //  ->where('facilityId','=',$facilityId)
+            ->where('weekday', '=', $weekday)
+            ->where('Id', '=',$providerId)
+            ->first();
+        return $times;
+    }
+
 }
 

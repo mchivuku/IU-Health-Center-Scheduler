@@ -1,10 +1,8 @@
 @extends('...layouts.new-appointment')
 
-@section
 @section('new-appointment-content')
 
 {{ Form::open(array('method'=>'get','action'=>'NewAppointmentController@schedule')) }}
-
 
 <div class="section-dropdown">
   {{ Form::label('name', 'Facilities') }}

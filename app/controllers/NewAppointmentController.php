@@ -7,8 +7,6 @@
  */
 namespace Scheduler\Controllers;
 
-ini_set('display_errors',1);
-error_reporting(-1);
 
 require_once app_path() . "/models/viewModels/SchedulerTabViewModel.php";
 require_once app_path() . "/models/viewModels/NewAppointmentViewModel.php";
@@ -21,37 +19,32 @@ class NewAppointmentController extends BaseController
     {
         parent::__construct($app);
         $this->layout=  'layouts.new-appointment';
-
     }
 
     /**
-     * Function to create new appointment.
+     * Function to return index view for the new appointment
      */
     public function getIndex()
     {
-
         $model = new \NewAppointmentViewModel();
-
-        $model->selectedFacility = \Filter::filterInput(INPUT_GET, 'facility',
-            FILTER_SANITIZE_SPECIAL_CHARS | FILTER_SANITIZE_ENCODED);
-        $model->selectedvisitType = \Filter::filterInput(INPUT_GET, 'visitType',
-            FILTER_SANITIZE_SPECIAL_CHARS | FILTER_SANITIZE_ENCODED);
-
-
+        $model->selectedFacility  = \Input::get('facility');
+        $model->selectedvisitType = \Input::get('visitType');
         $model->facilities = $this->facilitiesRepo->getAllFacilities();
-
-
         $facility = current($model->facilities);
         $model->visitTypes = $this->visitTypeRepo->getAllVisitTypes($facility->Id);
 
-        return $this->view('pages.new-appointment-step1')->viewdata(array('model' => $model))->title('New
-         Appointment');
-
+        return $this->view('pages.new-appointment-step1')
+            ->viewdata(array('model' => $model))
+            ->title('New Appointment');
     }
 
-    //Return json response for visit type dropdowns;
+    /***
+     * Function to return json response for visitTypes for a given facilityId
+     * @return mixed
+     */
     public function getVisitTypes(){
         $facilityId  = \Input::get('facilityId');
+
         return \Response::json((array_map(function($item){
             return  (array("id"=>$item->Id,"name"=>$item->Name));
         },$this->visitTypeRepo->getAllVisitTypes($facilityId))));
@@ -64,25 +57,41 @@ class NewAppointmentController extends BaseController
      *
      */
     public function schedule(){
+
         $facilityId  = \Input::get('facility');
         $visitType = \Input::get('visitType');
         $tabId = \Input::get('tabId');
+        $date = \Input::get('date');
+
+        $schedule_times = new \ScheduleTimes();
 
         $model = new \SchedulerTabViewModel();
-        $model->tabs = array(\ScheduleTimes::DAY=>'Morning',\ScheduleTimes::AFTERNOON=>"Afternoon");
-        $model->providers = $this->providerRepo->getProvidersWithWorkHours($facilityId,$visitType,date("Y-m-d"));
-        $model->activeTab = $tabId;
-        $model->selectedProvider = $model->providers[0]->Id;
-        $model->visitType= $visitType;
+        $model->tabs =$schedule_times->getTabsForScheduleTimes();
+        $model->providers = $this->providerRepo->getAllProvidersWithWorkHours($facilityId,$visitType,date("Y-m-d"));
 
+
+        if(!isset($tabId))
+            $tabId = key($model->tabs);
+
+        if(!isset($date))
+            $date = date('Y-m-d');
+
+        //TODO - replace with first available provider
         $default_provider = current($model->providers);
 
+        $model->activeTab = $tabId;
+        $model->selectedProvider = $default_provider->Id;
+        $model->visitType= $visitType;
+
         $startTime = $default_provider->StartTime;
-        $endTime =
-         $default_provider->EndTime;
+        $endTime   = $default_provider->EndTime;
+
+
+        $this->apptRepo->getAllAppointmentTimes($default_provider,$date);
+
+        exit;
 
         $all_days_slots = array();
-        $this->get_split_into_slots($startTime, $endTime, $all_days_slots);
 
         $appts_slots = array();
         foreach ($all_days_slots as $slot) {
@@ -95,22 +104,50 @@ class NewAppointmentController extends BaseController
         }
         $model->scheduler_slots =$appts_slots;
 
-        return $this->view('pages.new-appointment-step2')->viewdata(array('model' => $model))->title('New Appointment');
+
+        return $this->view('pages.new-appointment-step2')->viewdata(array('model' => $model))->title('Schedule
+        Appointments');
 
     }
 
-    function get_split_into_slots($starttime, $endtime, &$slots)
-    {
-        $start_time = strtotime($starttime);
-        $end_time = strtotime($endtime);
-        while ($start_time <= $end_time) {
-            //add date as a key in first level array
-            if (!array_key_exists(date("H:i", $start_time), $slots)) {
-                $slots[] = date("H:i", $start_time);
-            }
-             $start_time += 300;
-        }
+    public function getAvailableTimes(){
 
+        $schedule_times = new \ScheduleTimes();
+
+        $facilityId  = \Input::get('facility');
+        $visitType = \Input::get('visitType');
+        $tabId = \Input::get('tabId');
+        $providerId = \Input::get('providerId');
+        $date = \Input::get('date');
+
+        $provider_work_hours = $this->providerRepo->getProviderWorkHours($providerId,$facilityId,$visitType,$date);
+
+        $schedule_start_time = $schedule_times->getStartTimeForDay($tabId);
+        $schedule_end_time = $schedule_times->getEndTimeForDay($tabId);
+
+        $overlapping_times = get_overlapping_hr($schedule_start_time,$schedule_end_time,
+            $provider_work_hours->StartTime,$provider_work_hours->EndTime);
+
+        if(!isset($overlapping_times))return 'no overlapping times found';
+
+        $all_days_slots = array();
+        $this->get_split_into_slots($overlapping_times['startTime'], $overlapping_times['startTime'], $all_days_slots);
+
+        $appts_slots = array();
+        foreach ($all_days_slots as $slot) {
+            $slot_model = new \AppointmentSlotViewModel();
+            $slot_model->time = $slot;
+            $slot_model->time_text = $slot;
+            $slot_model->flag = true;
+            $appts_slots[] = $slot_model;
+
+        }
+        $model = new \SchedulerTabViewModel();
+        $model->scheduler_slots = $appts_slots;
+        $model->tabs = array(\ScheduleTimes::DAY=>'Morning',\ScheduleTimes::AFTERNOON=>"Afternoon");
+        $model->activeTab = $tabId;
+
+        return \View::make('includes.timeslots', array('model' => $model));
     }
 
 }

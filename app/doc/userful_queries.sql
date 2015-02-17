@@ -108,9 +108,7 @@ FROM (
   SELECT @lasttime_to AS available_from,
          startTime AS available_to,
          @lasttime_to := endTime
-
     FROM
-
 (SELECT  StartTime as startTime,
          EndTime as endTime from
          ApptBlocks block join
@@ -119,11 +117,10 @@ FROM (
          UNION ALL SELECT '17:00:00', '17:00:00'
          ORDER BY StartTime
 ) e
-    JOIN (SELECT @lasttime_to := NULL) init)x
+JOIN (SELECT @lasttime_to := NULL) init)x
 Where Exists(
 SELECT  * from
          ApptBlocks block join
          ApptBlockDetails details on block.Id = details.Id
          where userId=9125 and StartDate=Date_Add(Current_date(), Interval 1 day)
 )
-

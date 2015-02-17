@@ -18,7 +18,6 @@ class SettingsController extends BaseController{
 
     }
 
-
     public function getIndex(){
 
         $text_enabled = $this->patientRepo->getTextEnabledValue($this->getUniversityId());
@@ -36,6 +35,5 @@ class SettingsController extends BaseController{
        return \Redirect::action('SettingsController@getIndex');
 
     }
-
 
 }

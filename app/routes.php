@@ -57,6 +57,13 @@ Route::group(array('prefix' => 'newAppointment'), function(){
             'uses' => 'NewAppointmentController@getVisitTypes'
         ));
 
+    Route::get('/getAvailableTimes',
+        array(
+            'as' => 'newAppointment.availableTimes',
+            'uses' => 'NewAppointmentController@getAvailableTimes'
+        ));
+
+
     Route::get('/{facility?}{visitType?}',
         array(
             'as' => 'newAppointment.index',

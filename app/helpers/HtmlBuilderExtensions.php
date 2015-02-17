@@ -84,59 +84,28 @@
     });
 
 
-\HTML::macro('display_times', function ($data, $attributes = null) {
+\HTML::macro('display_times', function ($data) {
+         $html = '';
+        array_walk($data, function ($item) use (&$html) {
 
-    $num_elements_in_row = 6;
+            $build_row = function ($slot) {
+                if (is_null($slot)) return false;
 
-    $html = '<div ' . \HTML::attributes($attributes) . ' >';
+                $row = sprintf("<div>");
+                $link = function ($x) {
+                     return sprintf("<a href='#times'>%s</a>", $x);
+                };
 
+                $row .= $link($slot->time);
+                $row .= "</div>";
+                return $row;
 
-    $build_min_row = function ($data) {
-        if (is_null($data)) return false;
-
-        $row = sprintf("<div class='minute-row'>");
-        array_walk($data, function ($item) use (&$row) {
-            $link = function ($x) {
-                return sprintf("<a href='#times'>%s</a>", $x);
             };
 
-            if ($item->flag) {
-                $row .= "<div class='five'>";
-                $row .= "<p>";
-                $row .= $link($item->time);
-                $row .= "</p></div>";
-
-            } else {
-                $row .= "<div class='five full'>";
-                $row .= "<p>";
-                $row .= $link($item->time);
-                $row .= "</p></div>";
-
-            }
-
-
+            $html.=$build_row($item);
         });
 
-        $row .= '</div>';
-        return $row;
-    };
-
-
-    foreach ($data as $hr => $minutes) {
-        $html .= "<div class='hour'>";
-        $html .= sprintf("<p>%s</p>", $hr) . "</div>";
-
-
-        $half_one = array_slice($minutes, 0, 6);
-        $half_second = array_slice($minutes, 6);
-        $html .= "<div class='minutes'>";
-        $html .= $build_min_row($half_one);
-        $html .= $build_min_row($half_second);
-        $html .= "</div>";
-
-    }
-    $html .= "</div>";
     return $html;
 
-
 });
+
