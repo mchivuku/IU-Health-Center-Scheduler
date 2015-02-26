@@ -6,8 +6,6 @@
  * Date: 1/19/15
  * Time: 10:48 AM
  */
-ini_set('display_errors',1);
-error_reporting(-1);
 class ClientSideDataTableFunctionModel
 {
 
@@ -40,7 +38,8 @@ class  SortClass
     private static $sortClassDataTableMappings
         = array(SortClass::NoSort => "null", SortClass::Numeric => "numeric",
 SortClass::NumericStripHtml => "numeric-html",
-            SortClass::Date => "date", SortClass::Currency => "currency", SortClass::CurrencyStripHtml => "currency-html",
+            SortClass::Date => "date-euro", SortClass::Currency => "currency", SortClass::CurrencyStripHtml =>
+                "currency-html",
             SortClass::String => "string", SortClass::StringStripHtml => "html");
 
     static function  getDataTableSortClass( $sc)

@@ -26,5 +26,26 @@ class VisitTypeRepository{
 
     }
 
+    /*
+     *
+     * Function to return visit name given visit code
+     *
+     */
+    //TODO - tell Tamir Visit Code description is empty
+    public function getVisitTypeName($visitCode){
+
+
+        $visitType = \DB::table($this->table)
+            ->select( array('Name as Name'
+            ))
+            ->where('Name','!=',"' '")
+            ->where('CodeId','=',$visitCode)
+            ->orderBy('Name', 'ASC')
+            ->first();
+
+
+
+        return $visitType->Name;
+    }
 
 }

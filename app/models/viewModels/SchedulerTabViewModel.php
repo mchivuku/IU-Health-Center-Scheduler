@@ -12,9 +12,11 @@ class SchedulerTabViewModel extends NewAppointmentBaseViewModel{
     public $appointments;
     public $visitType;
     public $facility;
+    public $visitDuration;
 
     public $scheduler_slots;
 
+    public $selected_startTime;
     public $tabs;
 }
 

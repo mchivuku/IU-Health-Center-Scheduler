@@ -16,6 +16,8 @@ require_once app_path() . "/models/ClientSideDataTableFunctionModel.php";
 
 class HomeController extends BaseController
 {
+    protected $header_title = array('label'=>'IU Health Center Appointments','text'=>'Schedule an appointment or get information about appointments you have already scheduled.');
+
 
     /*
     |--------------------------------------------------------------------------
@@ -38,24 +40,42 @@ class HomeController extends BaseController
 
     public function getIndex()
     {
-        try {
+
             $univId = $this->getUniversityId();
             $model = new \IndexViewModel();
             $model->nextAppointment = $this->apptRepo->getNextAppointment($univId);
 
             $x = new \TableListViewModel();
-            $x->header = array('Date', 'Visit Type', 'Facility', 'Provider', '&nbsp;');
-            $x->sortColumnsClasses = array(\SortClass::Date, \SortClass::String, \SortClass::String,
+            $x->header = array('Date','Time','Visit Type', 'Facility', 'Provider', '&nbsp;');
+            $x->sortColumnsClasses = array(\SortClass::Date, \SortClass::String,\SortClass::String, \SortClass::String,
                 \SortClass::String,\SortClass::NoSort);
 
             $appts = $this->apptRepo->getAllPreviousAppointments($univId);
             array_walk($appts, function ($item) use (&$x) {
 
-                //TODO - fix this
-                $last_column = "<span class='tablesaw-cell-content'><a href='#'>More Information</a><a ".
-                               "href='#'>Schedule Again</a></span>";
+                $today = strtotime(date('Y-m-d H:i:s'));
+                $combined_date_and_time = $item->date . ' ' . $item->startTime;
+                $appt_date_time = strtotime($combined_date_and_time);
 
-                $x->data[] = array($item->getAppointmentDate(), $item->visitType,
+                $last_column="";
+                // Cancellation - appointments - only future
+                if($appt_date_time > $today){
+
+                    $link = link_to_action('HomeController@cancelAppointment', 'Cancel Appointment',
+                        array(
+                        'encId' => $item->encId));
+
+                    $last_column = "<span class='tablesaw-cell-content'><a href='#'>More Information</a>".$link
+                        ."</span>";
+
+                }
+                else{
+                    $last_column = "<span class='tablesaw-cell-content'><a href='#'>More Information</a><a ".
+                        "href='#'>Schedule Again</a></span>";
+                }
+                $x->data[] = array(date('Y-m-d',strtotime($item->date)),
+                    '<span title="'. date('H:i',strtotime($item->startTime)).'"></span>'.$item->getStart(),
+                    $item->visitType,
                     $item->facility, $item->getProviderName(),
                     $last_column
 
@@ -65,10 +85,22 @@ class HomeController extends BaseController
             $model->pastAppointmentListViewModel = $x;
 
             return $this->view('pages.home')->viewdata(array('model' => $model))->title('Home');
-        } catch (Exception $e) {
-            var_dump($e->getMessage());
-        }
 
+
+    }
+
+    /***
+     * Function to cancel Appointment
+     */
+
+    public function cancelAppointment(){
+
+          $encId   = \Input::get('encId');
+
+          //Cancel Appointment
+          $this->apptRepo->cancelAppointment($encId);
+           $this->success('Appointment has been cancelled successfully');
+          return \Redirect::action('HomeController@getIndex');
     }
 
 

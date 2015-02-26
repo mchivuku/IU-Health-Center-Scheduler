@@ -4,14 +4,24 @@
 
 
 <section class="section bg-none">
+
+
 <!-- CSRF Token -->
     <input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
 <!-- ./ csrf token -->
 
 <div class="row">
-{{ Form::label('name', 'Settings: Messages')}}
-  {{ Form::checkbox('textenabled',$textenabled,$checked,array("id"=>'textEnabledOptionUpdate')) }}
-   I agree to receive text messages confirming my appointments
+<div class="settings">
+<div class="column">
+<h2>Messages</h2>
+</div>
+<div class="column">
+ {{ Form::checkbox('textenabled',$textenabled,$checked,array("id"=>'textEnabledOptionUpdate')) }}
+ <p> I agree to receive text messages confirming my appointments
+</p>
+</div>
+</div>
+
 
 </div>
 

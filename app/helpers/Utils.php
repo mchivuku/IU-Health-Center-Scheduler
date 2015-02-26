@@ -8,7 +8,8 @@
 
 function getDayOfTheWeek($date){
 
-    $dw = date('w', strtotime($date));
+    // Day of the week starts with 0 - 6
+    $dw = date('w', strtotime($date))+1;
 
     return $dw;
 }
@@ -18,12 +19,16 @@ function split_range_into_slots_by_duration($starttime, $endtime, $duration,&$sl
 {
     $start_time = strtotime($starttime);
     $end_time = strtotime($endtime);
-    while ($start_time <= $end_time) {
+
+    $time = $start_time;
+    while ($time < $end_time) {
+
         //add date as a key in first level array
-        if (!array_key_exists(date("H:i", $start_time), $slots)) {
-            $slots[] = date("H:i", $start_time);
+        if (!array_key_exists(date("H:i", $time), $slots)) {
+            $slots[] = date("H:i", $time);
         }
-        $start_time += $duration ;
+        $time +=$duration;
+
     }
 }
 
@@ -65,6 +70,33 @@ function get_overlapping_hr($starttime1,$endtime1,$starttime2,$endtime2){
         return array('startTime'=>$overlapping_array);
 
      return  array('startTime'=>current($overlapping_array),'endTime'=>last($overlapping_array));
+
+
+}
+
+function parseDateString($dateString){
+    $time =   strtotime($dateString);
+    return $date= date('Y-m-d',$time);
+
+}
+
+function getEndTime($startTime, $duration){
+
+    return  date('H:i',strtotime($startTime) + $duration);
+
+}
+
+function convertMinToSec($duration){
+    return $duration * 60;
+}
+
+function IsTimeInRange($time,$startTime,$endTime){
+
+    $input = strtotime($time);
+    $s = strtotime($startTime);
+    $e = strtotime($endTime);
+
+    return ($input>=$s && $input <=$e);
 
 
 }

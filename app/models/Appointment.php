@@ -9,7 +9,7 @@ require_once 'Base.php';
 
 class Appointment extends Base{
 
-    protected $id;
+    protected $encId;
     protected $patientId;
 
     protected $providerLastName;

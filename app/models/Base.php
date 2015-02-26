@@ -31,12 +31,14 @@ abstract class Base
     public function formatDate($input)
     {
         $date = date_create($input);
-        return date_format($date,'m-d-Y');
+        //TODO - check the format to display -jS F Y
+        return date_format($date,'d-m-Y');
 
     }
 
     public function formatDisplayTime($input){
-        return date("g:i A.", $input);
+        $time = strtotime($input);
+        return date("g:i a", $time);
 
     }
 

@@ -16,10 +16,10 @@ class ScheduleTimes
     function getStartTimeForDay($scheduleTime)
     {
         if($scheduleTime==self::DAY){
-            return date('H:i:s', mktime(9, 0, 0, 0, 0, 0));
+            return date('H:i', mktime(9, 0, 0, 0, 0, 0));
         }
 
-        return date('H:i:s', mktime(1, 0, 0, 0, 0, 0));
+        return date('H:i', mktime(13, 0, 0, 0, 0, 0));
 
     }
 
@@ -27,14 +27,24 @@ class ScheduleTimes
     {
         if($scheduleTime==self::DAY){
 
-            return date('H:i:s', mktime(12, 59, 0, 0, 0, 0));
+            return date('H:i', mktime(12, 59, 0, 0, 0, 0));
         }
 
-        return date('H:i:s', mktime(16, 59, 0, 0, 0, 0));
+        return date('H:i', mktime(16, 59, 0, 0, 0, 0));
     }
 
 
     function getTabsForScheduleTimes(){
         return array(self::DAY=>'Morning',self::AFTERNOON=>"Afternoon");
     }
+
+    function getEndOfTheDay(){
+        return $this->getEndTimeForDay(self::AFTERNOON);
+    }
+
+    function getBeginOfTheDay(){
+        return $this->getStartTimeForDay(self::DAY);
+    }
+
+
 }

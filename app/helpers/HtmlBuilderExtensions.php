@@ -91,9 +91,14 @@
             $build_row = function ($slot) {
                 if (is_null($slot)) return false;
 
-                $row = sprintf("<div>");
+                if($slot->flag){
+                    $row = sprintf("<div class='selected'>");
+                }else{
+                    $row = sprintf("<div>");
+                }
+
                 $link = function ($x) {
-                     return sprintf("<a href='#times'>%s</a>", $x);
+                     return sprintf("<a href='#'>%s</a>", $x);
                 };
 
                 $row .= $link($slot->time);

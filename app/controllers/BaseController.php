@@ -44,8 +44,12 @@ abstract class BaseController extends Controller {
     //view title
     protected $title = array();
 
+    protected $header_title;
+    protected $lang;
+
     public function __construct($app,$sublayout = null){
 
+        global $LANG;
         $this->app = $app;
 
 
@@ -60,8 +64,10 @@ abstract class BaseController extends Controller {
 
         $this->view = $sublayout;
 
+        $this->lang = $LANG;
         // Layout - pass data for the partial views in the layout
         View::share(array('profile'=>$this->getUserProfile()));
+        View::share(array('header_title'=>$this->header_title));
 
     }
 
@@ -109,6 +115,8 @@ abstract class BaseController extends Controller {
     }
 
 
+
+
     private function render()
     {
        // render subview if subview is passed
@@ -144,15 +152,21 @@ abstract class BaseController extends Controller {
 
     protected function getUserSessionId()
     {
-
         if (isset($_SERVER['Shib-Session-ID'])) {
             return $_SERVER['Shib-Session-ID'];
         }
-
         //reading laravel session cookie - TEMP will remove;
         $val= explode('=',$_SERVER['HTTP_COOKIE']);
         return $val[1];
     }
+
+
+    public function success($message)
+    {
+        View::share(array('message'=>$message));
+
+    }
+
 
 
 }

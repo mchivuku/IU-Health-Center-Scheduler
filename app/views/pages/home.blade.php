@@ -37,10 +37,28 @@
 {{ HTML::script('js/tablesaw.stackonly.js')}}
 
 
+
+{{    $jsSortDef = "";
+
+    if (isset($model->pastAppointmentListViewModel->sortColumnsClasses) && count($model->pastAppointmentListViewModel->sortColumnsClasses)>0)
+    {
+
+           $sortConfig=array();
+            array_walk($model->pastAppointmentListViewModel->sortColumnsClasses,function($item)use(&$sortConfig){
+            ($sortConfig[]=$item==\SortClass::NoSort?"{'bSortable' : false}" :
+             '{"sType" : "'.SortClass::getDataTableSortClass($item).'"@}');
+            });
+
+
+        $jsSortDef = sprintf(', "aoColumns" : [ %s ]', join(",\n", str_replace("@","",$sortConfig)));
+
+    }
+}}
+
 <script type="text/javascript">
     $(document).ready(function() {
         $('table#pastAppts').dataTable({
-            responsive: true,
+             responsive: true,
             'bJQueryUI': false,
             'bProcessing': true,
             'bSortClasses': false,
@@ -49,8 +67,7 @@
             'sLength': 'inline-help',
             'sInfo': 'inline-help',
             "paging":   false
-
-
+            {{$jsSortDef}}
         });
 
     });

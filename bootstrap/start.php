@@ -74,6 +74,8 @@ require $framework.'/Illuminate/Foundation/start.php';
 */
 require app_path().'/providers/RepositoryServiceProvider.php';
 require app_path().'/providers/ControllerServiceProvider.php';
+require app_path().'/config/constants.php';
+require app_path().'/config/lang.php';
 
 $app->register('RepositoryServiceProvider');
 $app->register('ControllerServiceProvider');

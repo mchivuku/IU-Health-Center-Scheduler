@@ -14,9 +14,7 @@ class ProviderRepository
     /*
      *
      *
-     *
-     *
- select  doctorId as Id,concat(users.ulname, ", ", users.ufname) as Name ,CodeId,minutes
+     *select  doctorId as Id,concat(users.ulname, ", ", users.ufname) as Name ,CodeId,minutes
 from visitcodesdetails
 inner join
 (select StartTime,EndTime,facilityId, UserId from workhours
@@ -33,14 +31,15 @@ order by CodeId
     //TODO - update the facilityId, workhours, weekday - if the providers are not available on a weekday
     public function getAllProvidersWithWorkHours($facilityId, $visitType, $date)
     {
-        $weekday = getDayOfTheWeek($date);
 
-        $providers = \DB::table('iu_scheduler_provider_schedule_info')
-            ->select(array('Id', 'Name','StartTime', 'EndTime'
+         $raw_sql = $this->build_sql_week_day_clause($date);
+
+         $providers = \DB::table('iu_scheduler_provider_schedule_info')
+            ->select(array('Id', 'Name','StartTime', 'EndTime','minutes'
             ))
             ->where('CodeId', '=', $visitType)
-            //->where('facilityId','=',$facilityId)
-            ->where('weekday', '=', $weekday)
+            ->where('facilityId','=',$facilityId)
+            ->where('weekday', '=',$raw_sql )
             ->orderBy('Name', 'ASC')->get();
 
 
@@ -57,18 +56,48 @@ order by CodeId
      * @param $visitType
      * @param $date
      * @return mixed
+     *
      */
     public function getProviderWorkHours($providerId,$facilityId,$visitType,$date){
         $weekday = getDayOfTheWeek($date);
+
         $times = \DB::table('iu_scheduler_provider_schedule_info')
-            ->select(array('StartTime', 'EndTime'
+            ->select(array('StartTime', 'EndTime','minutes'
             ))
             ->where('CodeId', '=', $visitType)
           //  ->where('facilityId','=',$facilityId)
-            ->where('weekday', '=', $weekday)
+            ->where('weekday', '=', $this->build_sql_week_day_clause($date))
             ->where('Id', '=',$providerId)
             ->first();
+
+
         return $times;
+    }
+
+
+
+    function build_sql_week_day_clause($date){
+
+        return \DB::raw('DAYOFWEEK("'.$date .'")');
+
+    }
+
+
+    public function getProviderName($providerId){
+        $name = \DB::table('iu_scheduler_provider_schedule_info')
+            ->select(array('Name'
+            ))
+            ->where('Id', '=', $providerId)
+             ->first();
+
+        return $name->Name;
+    }
+
+
+    public function  getFirstAvailableProviderWorkHours($facilityId,
+                $visitType,$date){
+
+
     }
 
 }

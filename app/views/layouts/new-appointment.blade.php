@@ -1,7 +1,7 @@
 @extends('...layouts.master')
 @section('content')
 
-<section class="section bg-none">
+     <section class="section bg-none" id="content">
             <div class="row">
                 <div class="section-header steps">
 
@@ -22,7 +22,11 @@
             </div>
         </section>
 
+        @yield('next_back_button')
+
 @stop
+
+
 
 
 

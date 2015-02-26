@@ -19,6 +19,13 @@ Route::get('/', array(
 ));
 
 
+Route::get('/cancelAppointment', array(
+    'as' => 'cancelAppointment',
+    'uses' => 'HomeController@cancelAppointment'
+));
+
+
+
 Route::group(array('prefix' => 'settings'), function() {
 
     Route::get('/', array(
@@ -63,6 +70,23 @@ Route::group(array('prefix' => 'newAppointment'), function(){
             'uses' => 'NewAppointmentController@getAvailableTimes'
         ));
 
+    Route::get('/saveSelectedTime',
+        array(
+            'as' => 'newAppointment.saveSelectedTime',
+            'uses' => 'NewAppointmentController@saveSelectedTime'
+        ));
+
+    Route::post('/scheduleConfirm',
+        array(
+            'as' => 'newAppointment.scheduleConfirm',
+            'uses' => 'NewAppointmentController@scheduleConfirm'
+        ));
+
+    Route::post('/scheduleSave',
+        array(
+            'as' => 'newAppointment.scheduleSave',
+            'uses' => 'NewAppointmentController@scheduleSave'
+        ));
 
     Route::get('/{facility?}{visitType?}',
         array(
@@ -73,8 +97,6 @@ Route::group(array('prefix' => 'newAppointment'), function(){
 
 
 });
-
-
 
 
 

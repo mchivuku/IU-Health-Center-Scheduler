@@ -11,6 +11,8 @@ namespace Scheduler\Controllers;
 class SettingsController extends BaseController{
 
     protected $patientRepo;
+    protected $header_title = array('label'=>'Settings','text'=>'Schedule an appointment or get information about appointments you have already scheduled.');
+
 
     public function  __construct($app)
     {

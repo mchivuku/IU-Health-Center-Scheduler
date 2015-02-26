@@ -1,7 +1,8 @@
-<div id="toggles">
-        <div class="row pad">
-            <a class="button right-off-canvas-toggle hide-for-large-up" href="#">Menu</a>
-            <a class="button search-toggle" href="/search.html" title="Search">Search</a>
-        </div>
-    </div>
+            <div class="nav-secondary hide-for-medium-down show-for-large-up" id="scheduler-nav">
 
+            <div class="row pad">
+                <ul class="inline separators">
+                    @include('...includes.navigation-items')
+                </ul>
+            </div>
+        </div>

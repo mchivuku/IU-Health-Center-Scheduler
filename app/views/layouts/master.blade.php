@@ -3,30 +3,29 @@
 
 
 <body class="home">
-
+<div class="off-canvas-wrap" data-offcanvas>
 <!-- Branding bar -->
 @include('...includes.branding-bar')
-
-<!-- Menu bar search -->
-@include('...includes.navigation')
-
 
 <!-- Body -->
 <div class="inner-wrap">
 
-<!-- Application Logo -->
-    <header>
+      <!-- Application Logo -->
+        <header>
             <div class="row pad">
-                <h1><span>IU Health Center Appointments</span></h1>
-                <p>Schedule an appointment or get information about appointments you have already scheduled.</p>
+                <h1><span>{{$header_title['label']}}</span></h1>
+                <p>{{$header_title['text']}}</p>
             </div>
         </header>
 
+    <!-- Navigation -->
+   @include('...includes.navigation')
 
+    @include('...includes.alerts')
 
     <section class="section bg-none persistent-info">
         <div class="row">
-            @include('...includes.emergencyinfo')
+             @include('...includes.emergencyinfo')
              @include('...includes.userprofile')
         </div>
     </section>
@@ -34,11 +33,20 @@
     @yield('content')
 
 
+ <!-- Footer -->
+@include('...includes.footer')
 
 </div>
 
- <!-- Footer -->
-@include('...includes.footer')
+ <div class="right-off-canvas-menu show-for-medium-down">
+            <nav class="mobile off-canvas-list">
+                <ul>
+                   @include('...includes.navigation-items')
+                </ul>
+            </nav>
+        </div>
+
+
 
            <!-- javascript files -->
            <!-- Include jQuery -->
@@ -53,6 +61,9 @@
 {{ HTML::script('js/site.js')}}
 
 @yield('javascript')
+
+</div>
+
 
 </body>
 </html>
