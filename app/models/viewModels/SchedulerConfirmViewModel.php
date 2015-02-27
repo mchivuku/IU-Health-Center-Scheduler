@@ -22,7 +22,10 @@ class SchedulerConfirmViewModel{
     public $startTime;
     public $endTime;
 
+    public $facility;
     public $backUrl;
+
+    public $errorMsg;
 
 
 }

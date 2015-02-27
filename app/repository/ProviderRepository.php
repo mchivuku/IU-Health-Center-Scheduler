@@ -8,6 +8,8 @@
 
 namespace Scheduler\Repository;
 
+require_once 'AppointmentRepository.php';
+
 class ProviderRepository
 {
 
@@ -65,12 +67,10 @@ order by CodeId
             ->select(array('StartTime', 'EndTime','minutes'
             ))
             ->where('CodeId', '=', $visitType)
-          //  ->where('facilityId','=',$facilityId)
+           //->where('facilityId','=',$facilityId)
             ->where('weekday', '=', $this->build_sql_week_day_clause($date))
             ->where('Id', '=',$providerId)
             ->first();
-
-
         return $times;
     }
 
@@ -85,17 +85,60 @@ order by CodeId
 
     public function getProviderName($providerId){
         $name = \DB::table('iu_scheduler_provider_schedule_info')
-            ->select(array('Name'
-            ))
+            ->select(array('Name'))
             ->where('Id', '=', $providerId)
              ->first();
 
         return $name->Name;
     }
 
-
     public function  getFirstAvailableProviderWorkHours($facilityId,
-                $visitType,$date){
+                $visitType,$date,$startTime,$endTime){
+
+        $providers = $this->getAllProvidersWithWorkHours($facilityId,$visitType,$date);
+        $pdo = \DB::connection('mysql')->getPdo();
+        $pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
+        $apptRep = new AppointmentRepository();
+
+        $providerArray=array();
+
+        foreach($providers as $provider){
+            $overlapping_hours = get_overlapping_hr($startTime,$endTime,$provider->StartTime,$provider->EndTime);
+            $available_times =$apptRep->getAllAppointmentTimes($visitType,$provider->Id,
+                $overlapping_hours['startTime'],$overlapping_hours['endTime'],$date);
+            $providerArray[$provider->Id]=array('Id'=>$provider->Id,'Name'=>$provider->Name,
+                'minutes'=>$provider->minutes,
+                'times'=>$available_times,'startTime'=>$overlapping_hours['startTime'],
+                'endTime'=>$overlapping_hours['endTime']);
+
+
+
+        }
+
+
+
+        usort($providerArray,function($a1,$a2){
+            $name1 = $a1['Name'];
+            $name2 = $a2['Name'];
+
+            if ($name1 == $name2) {
+                return 0;
+            }
+            return ($name1 > $name2) ? 1 : -1;
+        });
+
+        usort($providerArray,function($item1,$item2){
+               $first_slot_1 = ($item1['times'][0]);
+               $first_slot_2 = ($item2['times'][0]);
+
+            if ($first_slot_1 == $first_slot_2) {
+                return 0;
+                }
+            return ($first_slot_1 > $first_slot_2) ? 1 : -1;
+
+        });
+
+        return (current($providerArray));
 
 
     }

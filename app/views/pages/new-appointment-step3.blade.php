@@ -1,7 +1,12 @@
 @extends('...layouts.new-appointment')
 @section('new-appointment-content')
+     <div class="section-confirm">
 
-                   <div class="section-confirm">
+
+@if(isset($model->errorMsg))
+<h4>{{($model->errorMsg)}}</h4>
+@endif
+
 
                    {{ Form::open(array('method'=>'post','action'=>'NewAppointmentController@scheduleSave','id'=>'scheduleSave')) }}
 
@@ -13,6 +18,8 @@
                     {{Form::hidden('date',$model->encDate,array('id'=>'date','name'=>'date'));}}
                     {{Form::hidden('startTime',$model->startTime,array('id'=>'startTime','name'=>'startTime'));}}
 
+ {{Form::hidden('facility',
+                                      $model->facility,array('id'=>'facility','name'=>'facility'));}}
          {{Form::hidden('provider', $model->providerId,array('id'=>'provider','name'=>'provider'));}}
 
                     <ul>

@@ -10,8 +10,6 @@
              </div>
 
 
-
-
  <div class="row">
                 <div class="section-header existing-appointments light-tan">
                    <div> <p>Previous Appointments</p></div><div>&nbsp;</div>
@@ -55,6 +53,8 @@
     }
 }}
 
+<div id="more-info" class="reveal-modal" data-reveal></div>
+
 <script type="text/javascript">
     $(document).ready(function() {
         $('table#pastAppts').dataTable({
@@ -69,8 +69,21 @@
             "paging":   false
             {{$jsSortDef}}
         });
+$('a#more-info-link').on('click',function(event){
+
+  event.preventDefault();
+  var link = $(this).attr('href');
+
+  $.get(link,null,function(data){
+
+    $('#more-info').html(data);
+
+  });
+
+});
 
     });
+
 
 </script>
 @stop

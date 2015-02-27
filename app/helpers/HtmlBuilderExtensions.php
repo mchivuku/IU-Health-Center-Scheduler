@@ -63,13 +63,15 @@
 
         foreach ($items as $liItem) {
 
-            if (\Route::currentRouteName() == $liItem['route_name']) {
+                if (\Route::currentRouteName() == $liItem['route_name'] || (is_array($liItem['route_name']) && in_array
+                (\Route::currentRouteName(),
+                        $liItem['route_name']))){
 
-                $html .= "<li class='" . $default_selected . "'>";
+                    $html .= "<li class='" . $default_selected . "'>";
 
-            } else {
-                $html .= "<li>";
-            }
+                } else {
+                    $html .= "<li>";
+                }
 
             $html .= $liItem['text'];
 

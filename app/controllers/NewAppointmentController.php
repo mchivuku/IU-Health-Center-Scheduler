@@ -148,36 +148,34 @@ class NewAppointmentController extends BaseController
         $providerId = \Input::get('providerId');
         $input_date = \Input::get('date');
 
-
+        $model = new \SchedulerTabViewModel();
         $date = parseDateString($input_date);
         $schedule_start_time = $schedule_times->getStartTimeForDay($tabId);
         $schedule_end_time = $schedule_times->getEndTimeForDay($tabId);
+
+        $selected_start_time = $this->schedulerLogRepo->getSelectedTime($this->getUserSessionId(),
+            $facilityId,$visitType,$providerId,$date);
+
 
         if($providerId==self::FIRST_AVAILABLE_PROVIDER){
 
             $provider_work_hours =  $this->providerRepo->getFirstAvailableProviderWorkHours($facilityId,
                 $visitType,$date,$schedule_start_time,$schedule_end_time);
+            $appts_slots=$this->build_time_slots($provider_work_hours['times'],$provider_work_hours['minutes']*60,
+                $provider_work_hours['startTime'],$provider_work_hours['endTime']);
 
-            exit;
+            $model->firstAvailableProvider=$provider_work_hours['Id'];
         }
-
         else{
             $provider_work_hours = $this->providerRepo->getProviderWorkHours($providerId,$facilityId,$visitType,$date);
 
             $overlapping_times = get_overlapping_hr($schedule_start_time,$schedule_end_time,
                 $provider_work_hours->StartTime,$provider_work_hours->EndTime);
 
-            $selected_start_time = $this->schedulerLogRepo->getSelectedTime($this->getUserSessionId(),
-                $facilityId,$visitType,$providerId,$date);
-
-
             $appts_slots=$this->getTimes($providerId,$facilityId,$visitType,$provider_work_hours->minutes,
                 $overlapping_times['startTime'],$overlapping_times['endTime'],$date,$selected_start_time);
 
-
-
         }
-
 
         if(empty($provider_work_hours)){
 
@@ -188,8 +186,6 @@ class NewAppointmentController extends BaseController
         }
 
 
-
-               $model = new \SchedulerTabViewModel();
         $model->scheduler_slots = $appts_slots;
         $model->tabs = array(\ScheduleTimes::DAY=>'Morning',\ScheduleTimes::AFTERNOON=>"Afternoon");
         $model->activeTab = $tabId;
@@ -205,14 +201,17 @@ class NewAppointmentController extends BaseController
         $facilityId  = \Input::get('facility');
         $visitType = \Input::get('visitType');
         $providerId = \Input::get('providerId');
+        $firstAvailableProvider = \Input::get('firstAvailableProvider');
         $input_date = \Input::get('date');
         $startTime = \Input::get('startTime');
         $duration = \Input::get('visitDuration');
         $endTime = getEndTime($startTime , convertMinToSec($duration));
         $date = parseDateString($input_date);
 
+        $pId = $providerId==self::FIRST_AVAILABLE_PROVIDER?$firstAvailableProvider:$providerId;
+
         $this->schedulerLogRepo->saveSelectedTime($session_id,$this->getUniversityId(),
-            $facilityId,$visitType,$providerId,$date,$startTime,
+            $facilityId,$visitType,$pId,$date,$startTime,
             $endTime);
 
         $response = Response::json(array());
@@ -231,34 +230,37 @@ class NewAppointmentController extends BaseController
         $inputs = \Input::all();
 
         //read all post variables
-        $facilityId  =$inputs['facility'];
+        $facility  =$inputs['facility'];
         $visitType = $inputs['visitType'];
         $providerId = $inputs['provider'];
         $input_date = $inputs['date'];
         $startTime =  $inputs['startTime'];
         $duration =  $inputs['visitDuration'];
+        $firstAvailableProvider = $inputs['firstAvailableProvider'];
 
         $endTime = getEndTime($startTime , convertMinToSec($duration));
 
         $date = parseDateString($input_date);
 
+        $pId = $providerId==self::FIRST_AVAILABLE_PROVIDER?$firstAvailableProvider:$providerId;
+
         $model = new \SchedulerConfirmViewModel();
-        $model->providerId=$providerId;
-        $model->providerName=$this->providerRepo->getProviderName($providerId);
+        $model->providerId=$pId;
+        $model->providerName=$this->providerRepo->getProviderName($pId);
         $model->visitType=$visitType;
         $model->visitTypeText=$this->visitTypeRepo->getVisitTypeName($visitType);
         $model->encDate= $date;
+        $model->facility=$facility;
 
-        //TODO: check if the display is ok.
         $model->displayDate = $date;
         $model->startTime = $startTime;
         $model->visitDuration = $duration;
         $model->endTime=$endTime;
 
-
         $model->backUrl=
-            link_to_action('NewAppointmentController@schedule', 'Back',array('facility'=>$facilityId,
+            link_to_action('NewAppointmentController@schedule', 'Back',array('facility'=>$facility,
                 'visitType'=>$visitType),array('class'=>'button invert back'));
+
 
 
 
@@ -280,10 +282,13 @@ class NewAppointmentController extends BaseController
         $providerId = $inputs['provider'];
         $input_date = $inputs['date'];
         $startTime =  $inputs['startTime'];
+        $facility =$inputs['facility'];
 
+        $duration = $inputs['visitDuration'];
         $endTime = $inputs['endTime'];
 
         $date = parseDateString($input_date);
+
 
 
         $model = new \Appointment();
@@ -296,7 +301,33 @@ class NewAppointmentController extends BaseController
         $return = $this->apptRepo->createAppointment($this->getUniversityId(),$this->getUserSessionId(),
             $model);
 
-        //TODO - if the appointment was not made
+
+        if($return==false){
+
+            $model = new \SchedulerConfirmViewModel();
+            $model->providerId=$providerId;
+            $model->providerName=$this->providerRepo->getProviderName($providerId);
+            $model->visitType=$visitType;
+            $model->visitTypeText=$this->visitTypeRepo->getVisitTypeName($visitType);
+            $model->encDate= $date;
+
+            $model->displayDate = $date;
+            $model->startTime = $startTime;
+            $model->visitDuration = $duration;
+            $model->endTime=$endTime;
+            $model->facility=$facility;
+
+            $model->errorMsg="Appointment could not be made";
+
+            $model->backUrl=
+                link_to_action('NewAppointmentController@schedule', 'Back',array('facility'=>$facility,
+                    'visitType'=>$visitType),array('class'=>'button invert back'));
+
+
+            return $this->view('pages.new-appointment-step3')->viewdata(array('model' => $model))
+                ->title('Schedule Confirm');
+
+        }
 
         return \Redirect::action('HomeController@getIndex');
 
@@ -320,6 +351,13 @@ class NewAppointmentController extends BaseController
             $startTime,
             $endTime,$encDate);
 
+        return $this->build_time_slots($available_times,$duration,$startTime,$endTime,$selected_startTime);
+
+
+
+    }
+
+    function build_time_slots($available_times,$duration,$startTime,$endTime){
         $time_slots=array();
         foreach($available_times as $available){
             split_range_into_slots_by_duration($available['Available_from'],$available['Available_to'],
@@ -327,8 +365,8 @@ class NewAppointmentController extends BaseController
                 $time_slots);
         }
 
-         if(isset($selected_startTime)&& IsTimeInRange($selected_startTime,$startTime,$endTime))
-           $time_slots[]=$selected_startTime;
+        if(isset($selected_startTime)&& IsTimeInRange($selected_startTime,$startTime,$endTime))
+            $time_slots[]=$selected_startTime;
 
         usort($time_slots,function($startTime1,$startTime2){
             $s1 = strtotime($startTime1);
@@ -343,17 +381,14 @@ class NewAppointmentController extends BaseController
             $slot_model->time = $slot;
             $slot_model->time_text = $slot;
             if((isset($selected_startTime) &&  IsTimeInRange($selected_startTime,$startTime,
-                    $endTime)) && $selected_startTime==$slot)
-               $slot_model->flag=true;
+                        $endTime)) && $selected_startTime==$slot)
+                $slot_model->flag=true;
 
             $appts_slots[] = $slot_model;
 
         }
 
         return $appts_slots;
-
-
     }
-
 
 }

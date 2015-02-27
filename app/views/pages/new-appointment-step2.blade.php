@@ -107,6 +107,7 @@ $("#datepicker").datepicker({
   }
 
 
+
 });
 
 update_time_links();
@@ -149,12 +150,17 @@ $('.morning, .afternoon').children().on('click',function(){
  function getFacility(){
  return $('#facility').val();
  }
+ function getFirstAvailableProvider(){
+ return $('#firstAvailableProvider').val();
+ }
  function getAvailableTimes(providerId,date,tabId){
      var visitType =  getVisitType();
      var facility = getFacility();
+     var firstAvailableProvider = getFirstAvailableProvider();
 
      $.get('getAvailableTimes',
          {'providerId':providerId,'visitType':visitType, 'facility':facility,
+
           'date':date,'tabId':tabId},
        function(data) {
        if(data.message){
@@ -171,8 +177,9 @@ $('.morning, .afternoon').children().on('click',function(){
 function saveSelectedTime(startTime){
 
      var visitDuration = $('#visitDuration').val();
+     var firstAvailableProvider = getFirstAvailableProvider();
     $.get('saveSelectedTime',
-         {'providerId':getProviderId(),'visitType':getVisitType(), 'facility':getFacility(),
+         {'providerId':getProviderId(),'visitType':getVisitType(), 'facility':getFacility(),'firstAvailableProvider':firstAvailableProvider,
           'date':getDate(),'startTime':startTime,'visitDuration':visitDuration}
      );
 

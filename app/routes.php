@@ -26,6 +26,13 @@ Route::get('/cancelAppointment', array(
 
 
 
+Route::get('/getMoreInformation', array(
+    'as' => 'getMoreInformation',
+    'uses' => 'HomeController@getMoreInformation'
+));
+
+
+
 Route::group(array('prefix' => 'settings'), function() {
 
     Route::get('/', array(
@@ -78,7 +85,7 @@ Route::group(array('prefix' => 'newAppointment'), function(){
 
     Route::post('/scheduleConfirm',
         array(
-            'as' => 'newAppointment.scheduleConfirm',
+            'as' => 'newAppointment.finish',
             'uses' => 'NewAppointmentController@scheduleConfirm'
         ));
 

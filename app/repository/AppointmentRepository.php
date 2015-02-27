@@ -101,8 +101,10 @@ class AppointmentRepository
         try {
 
             $pdo = \DB::connection('mysql')->getPdo();
-            $pdo->beginTransaction();
+
             $pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
+
+
 
             $available_sql = sprintf('SELECT Available_from, Available_to
                                 from
@@ -166,7 +168,7 @@ class AppointmentRepository
             endif;
 
 
-            $pdo->commit();
+
 
             return $available;
 
@@ -183,6 +185,8 @@ class AppointmentRepository
     {
         $scheduler = new \ScheduleTimes();
 
+
+
         try {
 
            // 1. check if the appointment slot still exists.
@@ -193,50 +197,55 @@ class AppointmentRepository
             $endTime =$scheduler->getEndOfTheDay();
             $startTime = $scheduler->getBeginOfTheDay();
 
+
             $available_sql =  "
-                SELECT count(*) as total
-                from
-                (
-                  SELECT
-                IF(Available_from is null,:startTime, Available_from) Available_from,
+               SELECT  count(*)     as total
+                            from
+                                (
+                                SELECT
+                                IF(Available_from is null,:startTime, IF(TIMEDIFF(Available_from,:startTime)<=0,
+                                :startTime, Available_from)
+                                ) Available_from,
+                                IF( Available_to is null ,:endTime,IF(TIMEDIFF(Available_to,:endTime)<=0,
+                                 Available_to,:endTime) )Available_to
+                                from
+                                (SELECT @lasttime_to AS available_from, startTime AS available_to, @lasttime_to := endTime
+                                                          FROM
 
-                IF( Available_to is null ,:endTime,Available_to )Available_to
-                from
-                (SELECT @lasttime_to AS available_from, startTime AS available_to, @lasttime_to := endTime
-                                          FROM
+                                                        (select startTime, endTime
 
-                                        (select startTime, endTime
+                                                        from (select startTime, endTime
+                                                        from enc
+                                                        where enc.date = :encDate and
+                                                        enc.resourceId=:providerId
 
-                                        from (select startTime, endTime
-                                        from enc
-                                        where enc.date = :encDate and enc.resourceId=:providerId and enc.STATUS
-                                        IN ('ARR','PEN','CHK')
-                                        UNION all
-                                        select StartTime as startTime,
-                                        EndTime as endTime
-                                        from ApptBlocks block join ApptBlockDetails details on block.Id = details.Id
-                                        where userId=:providerId and StartDate=:encDate
-                            UNION all
-                                        select startTime,
-                                          endTime
-                                        from iu_scheduler_log where  encDate = :encDate and
-                                        visitType=:visitType    and
-                                        sessionId!=:sessionId )temp
-                                        UNION ALL SELECT :endTime, :endTime
-                                        order by startTime) e
-                                        JOIN (SELECT @lasttime_to := NULL) init) x
-                ) available
-                where
+                                                        UNION all
+                                                        select StartTime as startTime,
+                                                        EndTime as endTime
+                                                        from ApptBlocks block join ApptBlockDetails details on block.Id = details.Id
+                                                        where userId=:providerId and StartDate=:encDate
+                                                        UNION ALL
+                                                        select  startTime,
+                                                         endTime
+                                                        from iu_scheduler_log
+                                                        where providerId=:providerId and encDate=:encDate AND
+                                                        visitType =:visitType  and
+                                        sessionId!=:sessionId
+                                                        )temp
+                                                        UNION ALL SELECT  :endTime, :endTime
+                                                        order by startTime) e
+                                                        JOIN (SELECT @lasttime_to := NULL) init) x
+                                ) available
+                                where
+                                exists
 
-                exists
-                (select 1 from visitcodesdetails
-                where CodeId = :visitType and
-                 TIMEDIFF(Available_to,Available_from) > MAKETIME(0,Minutes,0)
-                ) and
+                                (select 1 from visitcodesdetails
+                                where CodeId = :visitType and
+                                 TIMEDIFF(Available_to,Available_from) >= MAKETIME(0,Minutes,0)
 
-                ( TIMEDIFF(Available_from,:apptStartTime)<=0 and TIMEDIFF(Available_to,:apptEndTime)>=0 )";
-
-
+                                )
+and TIMEDIFF(:apptStartTime,Available_from)>=0 and TIMEDIFF(Available_to,:apptEndTime)
+                order by Available_from";
 
             $statement = $pdo->prepare($available_sql);
             $providerId = $appointment->providerId;
@@ -260,7 +269,6 @@ class AppointmentRepository
                     $nRow = $row['total'];
                 }
             endif;
-
 
            if($nRow>=1){
                $insert_variables = array('patientID','date','startTime','endTime','VisitType','STATUS',
@@ -293,7 +301,6 @@ class AppointmentRepository
                $encId = $pdo->lastInsertId();
 
                // 3. set the session Id - slots as InActive or delete - as the appointment has been made
-
                $delete_query = "delete from iu_scheduler_log  where sessionId=:sessionId";
 
                $update_query_statement = $pdo->prepare($delete_query);
@@ -302,16 +309,18 @@ class AppointmentRepository
                $update_query_statement->execute();
 
                $pdo->commit();
-               return $encId;
+
+               return true;;
 
            }
+
+            return false;
 
 
 
         } catch (\Exception $ex) {
-            echo $ex->getMessage();
-            throw $ex;
-            exit;
+             echo $ex->getMessage();
+             throw $ex;
         }
      }
 

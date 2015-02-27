@@ -57,6 +57,11 @@ class HomeController extends BaseController
                 $combined_date_and_time = $item->date . ' ' . $item->startTime;
                 $appt_date_time = strtotime($combined_date_and_time);
 
+
+                $more_link = link_to_action('HomeController@getMoreInformation', 'More Information',
+                    array(
+                        'encId' => $item->encId),array('data-reveal-id'=>"more-info",'id'=>'more-info-link'));
+
                 $last_column="";
                 // Cancellation - appointments - only future
                 if($appt_date_time > $today){
@@ -65,12 +70,13 @@ class HomeController extends BaseController
                         array(
                         'encId' => $item->encId));
 
-                    $last_column = "<span class='tablesaw-cell-content'><a href='#'>More Information</a>".$link
+
+                    $last_column = "<span class='tablesaw-cell-content'>".$more_link.$link
                         ."</span>";
 
                 }
                 else{
-                    $last_column = "<span class='tablesaw-cell-content'><a href='#'>More Information</a><a ".
+                    $last_column = "<span class='tablesaw-cell-content'>".$more_link."<a ".
                         "href='#'>Schedule Again</a></span>";
                 }
                 $x->data[] = array(date('Y-m-d',strtotime($item->date)),
@@ -101,6 +107,18 @@ class HomeController extends BaseController
           $this->apptRepo->cancelAppointment($encId);
            $this->success('Appointment has been cancelled successfully');
           return \Redirect::action('HomeController@getIndex');
+    }
+
+    /***
+     * Function to cancel Appointment
+     */
+
+    public function getMoreInformation(){
+
+        $encId   = \Input::get('encId');
+
+       // More Information from database;
+        return  \View::make('includes.more-information');
     }
 
 
