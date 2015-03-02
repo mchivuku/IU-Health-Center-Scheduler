@@ -76,8 +76,14 @@ class HomeController extends BaseController
 
                 }
                 else{
-                    $last_column = "<span class='tablesaw-cell-content'>".$more_link."<a ".
-                        "href='#'>Schedule Again</a></span>";
+
+                    $params = array('facility' => $item->facilityId, 'visitType' => $item->visitTypeId);
+                    $queryString = http_build_query($params);
+                    $schedule_again_link  = \URL::to(action('NewAppointmentController@getIndex') . '?' . $queryString);
+
+
+                    $last_column = "<span class='tablesaw-cell-content'>".$more_link."<a
+                                href='$schedule_again_link'>Schedule Again</span>";
                 }
                 $x->data[] = array(date('Y-m-d',strtotime($item->date)),
                     '<span title="'. date('H:i',strtotime($item->startTime)).'"></span>'.$item->getStart(),
@@ -98,13 +104,12 @@ class HomeController extends BaseController
     /***
      * Function to cancel Appointment
      */
-
     public function cancelAppointment(){
 
           $encId   = \Input::get('encId');
 
           //Cancel Appointment
-          $this->apptRepo->cancelAppointment($encId);
+           $this->apptRepo->cancelAppointment($encId);
            $this->success('Appointment has been cancelled successfully');
           return \Redirect::action('HomeController@getIndex');
     }
@@ -112,7 +117,6 @@ class HomeController extends BaseController
     /***
      * Function to cancel Appointment
      */
-
     public function getMoreInformation(){
 
         $encId   = \Input::get('encId');
@@ -121,5 +125,22 @@ class HomeController extends BaseController
         return  \View::make('includes.more-information');
     }
 
+    // CAS LOGOUT
+    public function logout(){
+
+        // Clear all cookies
+        if (isset($_SERVER['HTTP_COOKIE'])) {
+            $cookies = explode(';', $_SERVER['HTTP_COOKIE']);
+            foreach($cookies as $cookie) {
+                $parts = explode('=', $cookie);
+                $name = trim($parts[0]);
+                setcookie($name, '', time()-1000);
+                setcookie($name, '', time()-1000, '/');
+            }
+        }
+
+        session_destroy();
+        return  \Redirect::to("https://cas.iu.edu/cas/logout");
+    }
 
 }

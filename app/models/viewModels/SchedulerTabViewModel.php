@@ -19,6 +19,7 @@ class SchedulerTabViewModel extends NewAppointmentBaseViewModel{
     public $selected_startTime;
     public $tabs;
     public $firstAvailableProvider;
+    public $available_dates;
 }
 
 

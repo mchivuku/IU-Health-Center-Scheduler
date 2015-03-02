@@ -28,6 +28,8 @@ class Appointment extends Base{
     protected $visitType;
     protected $reason;
 
+    protected $facilityId;
+    protected $visitTypeId;
 
 
     public function getProviderName(){

@@ -26,9 +26,9 @@
                         <li><strong>Visit Type: </strong>{{$model->visitTypeText}}</li>
                         <li><strong>Provider Name: </strong>{{$model->providerName}}</li>
                          <li><strong>Appointment Date: </strong>{{$model->displayDate}}</li>
-                          <li><strong>Appointment Start Time: </strong>{{$model->startTime}}</li>
+                          <li><strong>Appointment Start Time: </strong>{{date('g:i A',strtotime($model->startTime))}}</li>
 
-                         <li><strong>Appointment End Time: </strong>{{$model->endTime}}</li>
+                         <li><strong>Appointment End Time: </strong>{{date('g:i A',strtotime($model->endTime))}}</li>
 
                     </ul>
                 </div>

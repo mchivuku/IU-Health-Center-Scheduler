@@ -106,16 +106,16 @@ order by CodeId
             $overlapping_hours = get_overlapping_hr($startTime,$endTime,$provider->StartTime,$provider->EndTime);
             $available_times =$apptRep->getAllAppointmentTimes($visitType,$provider->Id,
                 $overlapping_hours['startTime'],$overlapping_hours['endTime'],$date);
-            $providerArray[$provider->Id]=array('Id'=>$provider->Id,'Name'=>$provider->Name,
-                'minutes'=>$provider->minutes,
-                'times'=>$available_times,'startTime'=>$overlapping_hours['startTime'],
-                'endTime'=>$overlapping_hours['endTime']);
 
+            if(!empty($available_times)){
+                $providerArray[$provider->Id]=array('Id'=>$provider->Id,'Name'=>$provider->Name,
+                    'minutes'=>$provider->minutes,
+                    'times'=>$available_times,'startTime'=>$overlapping_hours['startTime'],
+                    'endTime'=>$overlapping_hours['endTime']);
 
+            }
 
         }
-
-
 
         usort($providerArray,function($a1,$a2){
             $name1 = $a1['Name'];
@@ -128,8 +128,8 @@ order by CodeId
         });
 
         usort($providerArray,function($item1,$item2){
-               $first_slot_1 = ($item1['times'][0]);
-               $first_slot_2 = ($item2['times'][0]);
+               $first_slot_1 = current($item1['times']);
+               $first_slot_2 = current($item2['times']);
 
             if ($first_slot_1 == $first_slot_2) {
                 return 0;

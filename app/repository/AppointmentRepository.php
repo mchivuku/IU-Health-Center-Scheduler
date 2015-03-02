@@ -26,12 +26,13 @@ class AppointmentRepository
             ->join('patients', 'enc.patientID', '=', 'patients.pid')
             ->leftJoin('users as resource', 'enc.resourceID', '=', 'resource.uid')
             ->leftJoin('edi_facilities', 'enc.facilityId', '=', 'edi_facilities.id')
+            ->leftJoin('visitcodes', 'enc.visitType', '=', 'visitcodes.Name')
             ->where('patients.controlNo', '=', $universityId)
             ->whereIn('enc.STATUS', $status)
-            ->select(array('encounterID as encId', 'patientId', 'visitType', 'reason', 'startTime',
-                'endTime', 'enc.date as date', 'edi_facilities.name as facility',
+            ->select(array('encounterID as encId', 'patientId', 'enc.visitType', 'reason', 'startTime',
+                'endTime', 'enc.date as date', 'edi_facilities.name as facility','edi_facilities.Id as facilityId',
                 'resource.ufname as providerFirstName',
-                'resource.ulname as providerLastName'
+                'resource.ulname as providerLastName', 'visitcodes.CodeId as visitTypeId'
             ))
             ->orderBy('date','desc')
             ->orderBy('startTime','desc')
@@ -124,7 +125,7 @@ class AppointmentRepository
                                                         from (select startTime, endTime
                                                         from enc
                                                         where enc.date = :encDate and
-                                                        enc.resourceId=:providerId
+                                                        enc.resourceId=:providerId and STATUS IN ("PEN","ARR","CHK")
 
                                                         UNION all
                                                         select StartTime as startTime,
@@ -147,11 +148,11 @@ class AppointmentRepository
                                 (select 1 from visitcodesdetails
                                 where CodeId = :visitType and
                                  TIMEDIFF(Available_to,Available_from) >= MAKETIME(0,Minutes,0)
-                                ) and TIMEDIFF(Available_from,:startTime)>=0
-                                and TIMEDIFF(Available_to,:endTime)<=0');
-
+                                ) and TIMEDIFF(Available_from,:startTime)<=0
+                                and TIMEDIFF(Available_to,:endTime)>=0');
 
             $statement = $pdo->prepare($available_sql);
+
             $statement->bindParam(':providerId', $providerId, \PDO::PARAM_INT);
             $statement->bindParam(":startTime",$startTime,\PDO::PARAM_STR,256);
             $statement->bindParam(":endTime", $endTime, \PDO::PARAM_STR, 256);
@@ -184,8 +185,6 @@ class AppointmentRepository
     public function createAppointment($controlNo,$sessionId,\Appointment $appointment)
     {
         $scheduler = new \ScheduleTimes();
-
-
 
         try {
 
@@ -230,7 +229,7 @@ class AppointmentRepository
                                                         from iu_scheduler_log
                                                         where providerId=:providerId and encDate=:encDate AND
                                                         visitType =:visitType  and
-                                        sessionId!=:sessionId
+                                                        sessionId!=:sessionId
                                                         )temp
                                                         UNION ALL SELECT  :endTime, :endTime
                                                         order by startTime) e
@@ -243,8 +242,8 @@ class AppointmentRepository
                                 where CodeId = :visitType and
                                  TIMEDIFF(Available_to,Available_from) >= MAKETIME(0,Minutes,0)
 
-                                )
-and TIMEDIFF(:apptStartTime,Available_from)>=0 and TIMEDIFF(Available_to,:apptEndTime)
+                                ) and TIMEDIFF(:apptStartTime,Available_from)>=0
+                                and TIMEDIFF(Available_to,:apptEndTime)>=0
                 order by Available_from";
 
             $statement = $pdo->prepare($available_sql);
@@ -280,7 +279,7 @@ and TIMEDIFF(:apptStartTime,Available_from)>=0 and TIMEDIFF(Available_to,:apptEn
                 :encDate as date,:startTime as startTime, :endTime as endTime,
                 (select Name from visitcodes  where CodeId=:visitType) as VisitType, :status as STATUS, :vmid,
                 :resourceId as ResourceId,
-                        DefApptProvForResource as facilityId, primaryservicelocation as doctorID from
+                     primaryservicelocation   as facilityId, DefApptProvForResource as doctorID from
                     Users where uid=:resourceId
                  ";
 
@@ -339,4 +338,89 @@ and TIMEDIFF(:apptStartTime,Available_from)>=0 and TIMEDIFF(Available_to,:apptEn
             ->update(array('STATUS' => APPT_CANCELLED_STATUS));
         return;
     }
+
+
+    /**
+     * Function to get available dates for the appointment
+     *
+     *
+     * */
+    function getAvailableDates($month,$year, $providerId,$visitType,$sessionId){
+        $pdo = \DB::connection('mysql')->getPdo();
+        $pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
+
+        $query = " SELECT distinct date(available_from) apptDate
+                    from
+                    (SELECT @lasttime_to AS available_from, startTime AS available_to,
+                    @lasttime_to := endTime FROM (select startTime, endTime from
+                    (select TIMESTAMP(date,startTime) as startTime,
+                    Timestamp(date,endTime) as endTime from enc where month(enc.date) = :encDateMonth and year(enc.date)=:encDateYear
+                    and enc.resourceId=:providerId UNION all select Timestamp(StartDate,StartTime) as startTime, timestamp(StartDate,
+                    EndTime) as
+                    endTime from ApptBlocks block join ApptBlockDetails details on block.Id = details.Id where userId=:providerId and
+                    month(StartDate)=:encDateMonth and year(StartDate)=:encDateYear UNION ALL select Timestamp(encDate,
+                    startTime),
+                    Timestamp(encDate,endTime) from iu_scheduler_log where providerId=:providerId and month(encDate)=:encDateMonth AND
+                    year
+                    (encDate)=
+                    :encDateYear and visitType =:visitType
+
+                    )temp
+                    UNION ALL
+
+                    select
+                    STR_TO_DATE(CONCAT(date_add(date(opendate2), interval -1 day ),
+                    ' ', '16:00'),'%Y-%m-%d %H:%i') ,opendate2 from(
+                    SELECT
+                    @r:= STR_TO_DATE(CONCAT(date_add(@r, interval 1 day ),
+                    ' ', '08:00'),'%Y-%m-%d %H:%i')
+                    opendate2
+                    FROM
+                    (select @r :=:startdate) vars,
+                    items limit 30 )monthdates2
+
+                    order by startTime) e
+                    JOIN (SELECT @lasttime_to := NULL) init)x
+                    where exists (select 1 from visitcodesdetails where CodeId = :visitType
+                    and TIMEDIFF(Available_to,Available_from) >= MAKETIME(0,Minutes,0))
+
+                    and
+
+                    Available_from between STR_TO_DATE(CONCAT(date(Available_from), ' ', '08:00'),
+
+                    '%Y-%m-%d %H:%i')and Available_to <=STR_TO_DATE(CONCAT(date(Available_from), ' ', '16:00'), '%Y-%m-%d %H:%i')
+                    order by Available_from asc
+
+";
+
+
+        $encDateYear = $year;
+        $encDateMonth  = $month;
+
+        $statement = $pdo->prepare($query);
+        $statement->bindParam(':providerId', $providerId,  \PDO::PARAM_STR,256);
+        $statement->bindParam(":encDateMonth", $encDateMonth, \PDO::PARAM_STR, 256);
+        $statement->bindParam(":encDateYear", $encDateYear, \PDO::PARAM_STR, 256);
+
+        $statement->bindParam(":visitType", $visitType, \PDO::PARAM_STR, 256);
+        $statement->bindParam(":sessionId", $sessionId, \PDO::PARAM_STR, 256);
+
+        $date = date('Y-m-d',strtotime("01-".$encDateMonth."-".$encDateYear));
+        $statement->bindParam(':startdate',$date,\PDO::PARAM_STR, 256);
+
+        $available_dates = array();
+        if($statement->execute()){
+                while ($row = $statement->fetch(\PDO::FETCH_ASSOC)) {
+
+                    $available_dates[] = $row['apptDate'];
+                }
+
+        }
+
+        return $available_dates;
+    }
+
+
+
+
 }

@@ -24,6 +24,10 @@ Route::get('/cancelAppointment', array(
     'uses' => 'HomeController@cancelAppointment'
 ));
 
+Route::get('/logout', array(
+    'as' => 'logout',
+    'uses' => 'HomeController@logout'
+));
 
 
 Route::get('/getMoreInformation', array(
@@ -76,6 +80,13 @@ Route::group(array('prefix' => 'newAppointment'), function(){
             'as' => 'newAppointment.availableTimes',
             'uses' => 'NewAppointmentController@getAvailableTimes'
         ));
+
+    Route::get('/getAvailableDates',
+        array(
+            'as' => 'newAppointment.availableDate',
+            'uses' => 'NewAppointmentController@getAvailableDates'
+        ));
+
 
     Route::get('/saveSelectedTime',
         array(

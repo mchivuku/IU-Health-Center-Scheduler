@@ -23555,7 +23555,7 @@ if( !Tablesaw.config ) {
 
         scheduler();
 
-        function datepickerOverrides() {
+        /*function datepickerOverrides() {
             $( "#datepicker" ).datepicker();
 
             $(".ui-datepicker-calendar td > a").on("click", function() {
@@ -23563,7 +23563,7 @@ if( !Tablesaw.config ) {
             });
         }
 
-        datepickerOverrides();
+        datepickerOverrides();*/
 
 
         /* Available Timeslots Selector */

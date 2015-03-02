@@ -72,27 +72,30 @@ class NewAppointmentController extends BaseController
      *
      */
     public function schedule(){
-
-
-        $facilityId  = \Input::get('facility');
+        $facilityId = \Input::get('facility');
         $visitType = \Input::get('visitType');
         $tabId = \Input::get('tabId');
         $date = \Input::get('date');
 
         $schedule_times = new \ScheduleTimes();
 
+        if(!isset($date))
+            $date = date('Y-m-d');
+
+        // Get available dates- provider hours
         $providers = $this->providerRepo
-            ->getAllProvidersWithWorkHours($facilityId,$visitType,date("Y-m-d"));
+            ->getAllProvidersWithWorkHours($facilityId,$visitType,$date);
 
         if(empty($providers)){
 
             $model = array('message'=>$this->lang['noProviders']);
             return $this->view('pages.new-appointment-step2')->viewdata(array('model' => $model))->title('Schedule
-                    Appointments');;
+                        Appointments');;
         }
 
         $model = new \SchedulerTabViewModel();
         $model->tabs =$schedule_times->getTabsForScheduleTimes();
+
 
         $model->providers[] = array("label" => $this->label, 'items'=>$this->appendFirstAvailableProviderItem());
         $model->providers[] =
@@ -102,9 +105,6 @@ class NewAppointmentController extends BaseController
         if(!isset($tabId))
             $tabId = key($model->tabs);
 
-        if(!isset($date))
-            $date = date('Y-m-d');
-
         $default_provider = current($providers);
 
         $model->activeTab = $tabId;
@@ -113,8 +113,14 @@ class NewAppointmentController extends BaseController
         $model->facility=$facilityId;
         $model->visitDuration= $default_provider->minutes;
 
+
+        $model->available_dates=$this->apptRepo->getAvailableDates(date('m',strtotime($date)),date('Y',
+                strtotime($date)),
+            $default_provider->Id,$visitType,$this->getUserSessionId());
+
+
         $startTime = $default_provider->StartTime;
-        $endTime   = $default_provider->EndTime;
+        $endTime = $default_provider->EndTime;
 
         $schedule_start_time = $schedule_times->getStartTimeForDay($tabId);
         $schedule_end_time = $schedule_times->getEndTimeForDay($tabId);
@@ -134,9 +140,11 @@ class NewAppointmentController extends BaseController
         $model->scheduler_slots =$appts_slots;
 
         return $this->view('pages.new-appointment-step2')->viewdata(array('model' => $model))->title('Schedule
-        Appointments');
+            Appointments');
 
     }
+
+
 
     public function getAvailableTimes(){
 
@@ -156,9 +164,7 @@ class NewAppointmentController extends BaseController
         $selected_start_time = $this->schedulerLogRepo->getSelectedTime($this->getUserSessionId(),
             $facilityId,$visitType,$providerId,$date);
 
-
         if($providerId==self::FIRST_AVAILABLE_PROVIDER){
-
             $provider_work_hours =  $this->providerRepo->getFirstAvailableProviderWorkHours($facilityId,
                 $visitType,$date,$schedule_start_time,$schedule_end_time);
             $appts_slots=$this->build_time_slots($provider_work_hours['times'],$provider_work_hours['minutes']*60,
@@ -178,7 +184,6 @@ class NewAppointmentController extends BaseController
         }
 
         if(empty($provider_work_hours)){
-
             $model = array('message'=>$this->lang['noProviders']);
             $response = Response::json($model);
             $response->header('Content-Type', 'application/json');
@@ -191,7 +196,9 @@ class NewAppointmentController extends BaseController
         $model->activeTab = $tabId;
         $model->selected_startTime=$selected_start_time;
 
-        return \View::make('includes.timeslots', array('model' => $model));
+        return  \View::make('includes.timeslots',
+        array('model' => $model));
+
     }
 
 
@@ -220,6 +227,21 @@ class NewAppointmentController extends BaseController
 
     }
 
+    /** GetAvailable dates for the month */
+    public function getAvailableDates(){
+
+        $month  = \Input::get('month');
+        $year = \Input::get('year');
+        $providerId = \Input::get('providerId');
+        $visitType = \Input::get('visitType');
+        $firstAvailableProvider = \Input::get('firstAvailableProvider');
+
+        $pId = $providerId==self::FIRST_AVAILABLE_PROVIDER?$firstAvailableProvider:$providerId;
+
+        return $this->apptRepo->getAvailableDates($month,$year,
+            $pId,$visitType,$this->getUserSessionId());
+
+    }
     /***
      *
      * Schedule Confirm
@@ -260,8 +282,6 @@ class NewAppointmentController extends BaseController
         $model->backUrl=
             link_to_action('NewAppointmentController@schedule', 'Back',array('facility'=>$facility,
                 'visitType'=>$visitType),array('class'=>'button invert back'));
-
-
 
 
         return $this->view('pages.new-appointment-step3')->viewdata(array('model' => $model))
@@ -338,12 +358,9 @@ class NewAppointmentController extends BaseController
 
 
 
-
-
     /*** HELPER **/
     function getTimes($providerId,$facilityId,$visitType,$visitTypeMinutes,$startTime,$endTime,$encDate,
                       $selected_startTime=null){
-
 
         $duration = $visitTypeMinutes * 60;
         $available_times = $this->apptRepo->getAllAppointmentTimes($visitType,
@@ -353,12 +370,11 @@ class NewAppointmentController extends BaseController
 
         return $this->build_time_slots($available_times,$duration,$startTime,$endTime,$selected_startTime);
 
-
-
     }
 
     function build_time_slots($available_times,$duration,$startTime,$endTime){
         $time_slots=array();
+
         foreach($available_times as $available){
             split_range_into_slots_by_duration($available['Available_from'],$available['Available_to'],
                 $duration,
@@ -390,5 +406,8 @@ class NewAppointmentController extends BaseController
 
         return $appts_slots;
     }
+
+
+
 
 }
