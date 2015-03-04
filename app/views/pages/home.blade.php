@@ -55,6 +55,7 @@
 
 <div id="more-info" class="reveal-modal" data-reveal></div>
 
+
 <script type="text/javascript">
     $(document).ready(function() {
         $('table#pastAppts').dataTable({
@@ -76,6 +77,18 @@ $('a#more-info-link').on('click',function(event){
 
   $.get(link,null,function(data){
 
+    $('#more-info').html(data);
+
+  });
+
+});
+
+$('a#cancel-appt-link').on('click',function(event){
+
+  event.preventDefault();
+  var link = $(this).attr('href');
+
+  $.get(link,null,function(data){
     $('#more-info').html(data);
 
   });

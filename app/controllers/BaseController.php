@@ -25,6 +25,7 @@ abstract class BaseController extends Controller {
     protected $schedulerLogRepo;
     protected $patientRepo;
     protected $providerRepo;
+    protected $user_profile;
 
     protected $app;
 
@@ -65,8 +66,10 @@ abstract class BaseController extends Controller {
         $this->view = $sublayout;
 
         $this->lang = $LANG;
+        $this->user_profile=$this->getUserProfile();
+
         // Layout - pass data for the partial views in the layout
-        View::share(array('profile'=>$this->getUserProfile()));
+        View::share(array('profile'=> $this->user_profile));
         View::share(array('header_title'=>$this->header_title));
 
     }
@@ -166,7 +169,6 @@ abstract class BaseController extends Controller {
         View::share(array('message'=>$message));
 
     }
-
 
 
 }

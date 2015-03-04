@@ -23610,4 +23610,6 @@ if( !Tablesaw.config ) {
         IUComm.init( {debug:true} );
 
     });
-})(jQuery);
+})(jQuer
+
+y);

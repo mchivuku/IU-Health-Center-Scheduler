@@ -47,18 +47,28 @@ class SchedulerLogRepository
     public function  getSelectedTime($session_id,
                                       $facilityId,$visitType,$providerId,$input_date){
 
+
         $time = \DB::table($this->table)
             ->where('sessionId', '=', $session_id)
             ->where('facility','=', $facilityId)
             ->where('visitType','=',$visitType)
             ->where('providerId','=',$providerId)
-            ->where('encDate','=',$input_date)
-            ->select(
-            array('startTime'))->first();
+            ->where('encDate','=',$input_date)->get();
 
-        return isset($time->startTime)?date("H:i",strtotime($time->startTime)):null;
+        if(!empty($time)){
+            return date('H:i',strtotime($time[0]->startTime));
+
+        }
+
+         return null;
+
     }
 
+    // Function call to clear session Information
+    public function clearSessionData($session_id){
+
+        \DB::table($this->table)->where('sessionId', $session_id)->delete();
+    }
 
 
 }

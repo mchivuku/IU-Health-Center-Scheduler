@@ -51,7 +51,7 @@ Log::useDailyFiles(storage_path().'/logs/'.$logFile);
 |
 */
 
-/*App::error(function(Exception $exception, $code)
+App::error(function(Exception $exception, $code)
 {
 
 
@@ -60,7 +60,7 @@ Log::useDailyFiles(storage_path().'/logs/'.$logFile);
         $header_title = array('label'=>'IU Health Center Appointments',
             'text'=>'Schedule an appointment or get information about appointments you have already scheduled.');
 
-    if(Config::get('app.debug')==true){
+    if(Config::get('app.debug')==false){
         switch ($code)
         {
             case 403:
@@ -83,11 +83,7 @@ Log::useDailyFiles(storage_path().'/logs/'.$logFile);
     }
 
 
-
-
-
-
-});*/
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -117,7 +113,22 @@ App::down(function()
 | a nice separate location to store our route and application filter
 | definitions instead of putting them all in the main routes file.
 |
+
+App::Before(function($request){
+
+    if( isset($_SESSION['LAST_REQUEST']) &&
+        (time() - $_SESSION['LAST_REQUEST'] > SESSION_ACTIVITY_TIME) ) {
+
+        header('/newAppointment/clearsession');
+        exit();
+    }
+
+    $_SESSION['LAST_REQUEST'] = time();
+});
 */
+
+
+
 
 
 

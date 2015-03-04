@@ -14,7 +14,6 @@
                             <li><strong>City</strong>: <?php echo $profile->city;?></li>
                             <li><strong>State</strong>: <?php echo $profile->state;?></li>
                             <li><strong>Zip Code</strong>: <?php echo $profile->zipCode;?></li>
-                            <li><strong>Country</strong>: <?php echo $profile->zipCode;?></li>
                             <li><strong>Phone</strong>: <?php echo $profile->getPhone();?></li>
                         </ul>
                     </div>

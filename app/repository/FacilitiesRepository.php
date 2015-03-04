@@ -14,11 +14,26 @@ class FacilitiesRepository{
     public function getAllFacilities(){
 
         $facilities_list = \DB::table($this->table)
-            ->select( array('FacilityId as Id','Name'
+            ->select( array('FacilityId as Id','Name','ChartTitle'
             ))->orderBy('FacilityId', 'ASC')
             ->get();
 
         return $facilities_list;
 
     }
+
+    public function getFacilityChartTitle($facilityId){
+
+        $facility = \DB::table($this->table)
+
+            ->where('FacilityId',"=",$facilityId)
+            ->orderBy('FacilityId', 'ASC')
+            ->first();
+
+
+        return $facility;
+
+    }
+
+
 }

@@ -33,7 +33,8 @@ class SettingsController extends BaseController{
     public function save(){
        $textEnabled = \Input::get('textEnabled');
 
-       $this->patientRepo->updateTextEnabledValue($this->getUniversityId(),($textEnabled=="true")?1:0);
+       $this->patientRepo->updateTextEnabledValue($this->getUniversityId(),
+           ($textEnabled=="true")?1:0);
        return \Redirect::action('SettingsController@getIndex');
 
     }

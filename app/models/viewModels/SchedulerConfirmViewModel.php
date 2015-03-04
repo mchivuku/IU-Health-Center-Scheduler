@@ -27,5 +27,6 @@ class SchedulerConfirmViewModel{
 
     public $errorMsg;
 
+    public $email;
 
 }

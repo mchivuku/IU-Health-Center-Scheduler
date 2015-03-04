@@ -19,7 +19,6 @@ class UserRepository
     public function getUserProfile($universityId)
     {
 
-
         $dbUser = \DB::table('users')->join('patients', 'users.uid', '=', 'patients.pid')->where('patients.controlNo', '=', $universityId)->select(array(
             'uid',
             'users.ufname as firstName',

@@ -31,6 +31,12 @@
                          <li><strong>Appointment End Time: </strong>{{date('g:i A',strtotime($model->endTime))}}</li>
 
                     </ul>
+                        @if(!empty($model->email))
+                                <p>
+                                    <input type="checkbox" name="sendemail"> <label>Send Email</label>
+                               </p>
+                        @endif
+
                 </div>
 
 

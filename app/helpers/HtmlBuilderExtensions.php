@@ -44,8 +44,10 @@
 
     $table .= '<tbody>';
 
-    foreach ($data as $value) {
-        $table .= $build_tr($value);
+    if(isset($data)){
+        foreach ($data as $value) {
+            $table .= $build_tr($value);
+        }
     }
 
     $table .= '</tbody>';
@@ -100,7 +102,11 @@
                 }
 
                 $link = function ($x) {
-                     return sprintf("<a href='#'>%s</a>", $x);
+
+                      $hours = date('H',strtotime($x));
+                      $ext = ($hours <= 12) ? 'a.m.' : 'p.m.';
+
+                     return sprintf("<a href='#' title='%s'>%s</a>",$x, date('g:i',strtotime($x))." ".$ext);
                 };
 
                 $row .= $link($slot->time);
@@ -112,7 +118,7 @@
             $html.=$build_row($item);
         });
 
-    return $html;
+    return empty($html)?"No times available":$html;
 
 });
 

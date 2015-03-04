@@ -93,8 +93,6 @@ class ShibbolethRepository
         $filter = $propertyInfo['filter'];
 
         $univ= $this->getPersonPropertyValue($name, $filter);
-
-
         return $univ;
 
     }

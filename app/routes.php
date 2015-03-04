@@ -19,7 +19,14 @@ Route::get('/', array(
 ));
 
 
-Route::get('/cancelAppointment', array(
+Route::get('/confirmCancellation', array(
+    'as' => 'confirmCancellation',
+    'uses' => 'HomeController@confirmCancellation'
+));
+
+
+
+Route::post('/cancelAppointment', array(
     'as' => 'cancelAppointment',
     'uses' => 'HomeController@cancelAppointment'
 ));
@@ -86,6 +93,7 @@ Route::group(array('prefix' => 'newAppointment'), function(){
             'as' => 'newAppointment.availableDate',
             'uses' => 'NewAppointmentController@getAvailableDates'
         ));
+
 
 
     Route::get('/saveSelectedTime',
