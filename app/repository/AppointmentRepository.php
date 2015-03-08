@@ -219,6 +219,34 @@ class AppointmentRepository
             return $return;
     }
 
+    private function construct_available_times($startTime,$endTime,$unavailable_times){
+
+        $available=array();
+        for($i=0;$i<count($unavailable_times);$i++){
+            if($i==0){
+                $start = $startTime;
+            }else{
+                $start= date('H:i',strtotime($unavailable_times[$i-1]['endTime']));
+            }
+
+            $end = date('H:i',strtotime($unavailable_times[$i]['startTime']));
+            if($start<=$end)
+                $available=array('Available_From'=>$start,'available_to'=>$end);
+            else{
+                //empty array to say date is unavailable
+                $available=array();
+            }
+
+        }
+
+        //last element
+        $last=end($item);
+        if(date('H:i',strtotime($last['endTime']))<$endTime)
+            $available=array('available_from'=>date('H:i',strtotime($last['endTime'])),
+                'available_to'=>$endTime);
+
+        return $available;
+    }
 
     public function createAppointment($controlNo, $sessionId, \Appointment $appointment)
     {
@@ -421,67 +449,37 @@ class AppointmentRepository
      *
      *
      * */
-    function getAvailableDates($month, $year, $providerId, $visitType, $sessionId)
+    function getAvailableDates($month, $year, $providerId, $visitType, $sessionId,$startTime,$endTime)
     {
        $enc_query = \DB::table('enc')
             ->where("resourceId","=",$providerId)
-            ->where('month(enc.date)','=',$month)
-            ->where('year(enc.date)','=',$year)
-            ->whereRaw(\DB::RAW($this->valid_appt_status_query()))->select(array('TIMESTAMP(date,
-            startTime) as startTime',
-                'Timestamp(date,endTime) as endTime'));
+            ->whereRaw("month(date) = $month")
+            ->whereRaw("year(enc.date)= $year")
+            ->where(\DB::RAW($this->valid_appt_status_query()))
+           ->select(\DB::raw('timestamp(date,startTime) as startTime, timestamp(date,endTime) as endTime'));
 
         // 2. Blocks query
         $blocks_query = \DB::table('ApptBlocks')
             ->join('ApptBlockDetails','ApptBlocks.Id','=','ApptBlockDetails.Id')
-            ->where('userId','=',$providerId)->where('StartDate','=',$date)
-            ->select(array('StartTime as startTime',
-                'EndTime as endTime'));
+            ->where('userId','=',$providerId)
+            ->whereRaw('month(StartDate)='.$month)
+            ->whereRaw('year(StartDate)= ' .$year)
+            ->select(\DB::raw('timestamp(StartDate,StartTime) as startTime, timestamp(StartDate,EndTime) as endTime'));
 
         //3. Log query
         $scheduler_log_query = \DB::table('iu_scheduler_log')
-            ->where('providerId','=',$providerId)->where('encDate','=',$date)
+            ->where('providerId','=',$providerId)
+             ->whereRaw('month(encDate) ='.$month)
+            ->whereRaw('year(encDate)='.$year)
             ->where('visitType','=',$visitType)
-            ->select(array('startTime',
-                'endTime'));
+            ->select(\DB::raw('timestamp(encDate,startTime) as startTime, timestamp(encDate,endTime) as endTime'));
 
+        $unavailable = $enc_query->unionAll($blocks_query)->unionAll($scheduler_log_query)->get();
 
+        $merged_unavailable = $this->merge_unavailable($unavailable);
 
-        $query = "select startTime, endTime from
-                    ((select TIMESTAMP(date,startTime) as startTime,
-                    Timestamp(date,endTime) as endTime from enc
-                    where month(enc.date) ='03' and year(enc.date)='2015'
-                    and enc.resourceId=9125)
-                     UNION all (select Timestamp(StartDate,StartTime) as startTime, timestamp(StartDate,
-                    EndTime) as
-                    endTime from ApptBlocks block join ApptBlockDetails details on block.Id = details.Id
-                    where userId=9125 and
-                    month(StartDate)='03' and year(StartDate)='2015')) x
-                 ";
-
-        $encDateYear = $year;
-        $encDateMonth = $month;
-
-        $statement = $pdo->prepare($query);
-      //  $statement->bindParam(':providerId', $providerId, \PDO::PARAM_STR, 256);
-       // $statement->bindParam(":encDateMonth", $encDateMonth, \PDO::PARAM_STR, 256);
-        //$statement->bindParam(":encDateYear", $encDateYear, \PDO::PARAM_STR, 256);
-
-     //   $statement->bindParam(":visitType", $visitType, \PDO::PARAM_STR, 256);
-    //   $statement->bindParam(":sessionId", $sessionId, \PDO::PARAM_STR, 256);
-
-    //    $date = date('Y-m-d', strtotime("01-" . $encDateMonth . "-" . $encDateYear));
-      //  $statement->bindParam(':startdate', $date, \PDO::PARAM_STR, 256);
-
-        $unavailable_merge = array();
-        if ($statement->execute()) {
-            while ($row = $statement->fetch(\PDO::FETCH_ASSOC)) {
-                $unavailable_merge[] = $row;
-            }
-        }
-
-        $merged_unavailable = $this->merge_unavailable($unavailable_merge);
         $group_times_by_days = function($merged_unavailable){
+            if(count($merged_unavailable)==0)return array() ;
             $temp = array();
             foreach($merged_unavailable as $value){
                 $date = strtotime($value['startTime']);
@@ -495,11 +493,13 @@ class AppointmentRepository
 
             return $temp;
         };
+
         $available=array();
-        foreach($group_times_by_days($merged_unavailable) as $k=>$item){
+        $x = $group_times_by_days($merged_unavailable);
+        foreach( $x as $k=>$item){
             for($i=0;$i<count($item);$i++){
                     if($i==0){
-                        $start = '08:00:00';
+                        $start = $startTime;
                     }else{
                         $start= date('H:i',strtotime($item[$i-1]['endTime']));
 
@@ -516,17 +516,14 @@ class AppointmentRepository
             }
              //last element
              $last=end($item);
-             if(date('H:i',strtotime($last['endTime']))<'16:00')
+             if(date('H:i',strtotime($last['endTime']))<$endTime)
                $available[$k][]=array('available_from'=>date('H:i',strtotime($last['endTime'])),
-                 'available_to'=>'16:00:00');
-
+                 'available_to'=>$endTime);
 
         }
 
 
         $available_dates = array();
-        $month = "03";
-        $year = "2015";
 
         $start_date = "01-".$month."-".$year;
         $start_time = strtotime($start_date);
@@ -557,7 +554,7 @@ class AppointmentRepository
 
         }
 
-        return $available_dates;
+        return($available_dates);
 
     }
 

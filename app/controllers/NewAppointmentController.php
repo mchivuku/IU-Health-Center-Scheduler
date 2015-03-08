@@ -165,7 +165,7 @@ class NewAppointmentController extends BaseController
 
         $model->available_dates=$this->apptRepo->getAvailableDates(date('m',strtotime($date)),date('Y',
                 strtotime($date)),
-            $id,$visitType,$this->getUserSessionId());
+            $id,$visitType,$this->getUserSessionId(),$schedule_start_time,$schedule_end_time);
 
         return $this->view('pages.new-appointment-step2')->viewdata(array('model' => $model,
             'back_link'=>'test'))->title('Schedule

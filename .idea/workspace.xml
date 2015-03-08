@@ -39,30 +39,27 @@
       <file leaf-file-name="AppointmentRepository.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/repository/AppointmentRepository.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7737105" vertical-offset="7389" max-vertical-offset="10676">
-              <caret line="462" column="27" selection-start-line="462" selection-start-column="27" selection-end-line="462" selection-end-column="27" />
+            <state vertical-scroll-proportion="0.9151414" vertical-offset="2323" max-vertical-offset="10625">
+              <caret line="169" column="9" selection-start-line="147" selection-start-column="9" selection-end-line="169" selection-end-column="9" />
               <folding>
                 <element signature="e#6#90#0#PHP" expanded="true" />
-                <marker date="1425842167000" expanded="true" signature="7398:7496" placeholder="..." />
-                <marker date="1425842167000" expanded="true" signature="7992:11085" placeholder="SELECT count..IF..." />
-                <marker date="1425842167000" expanded="true" signature="8121:10543" placeholder="SELECT IF(Av..@lasttime_to..." />
-                <marker date="1425842167000" expanded="true" signature="8597:10540" placeholder="SELECT @last..startTime..." />
-                <marker date="1425842167000" expanded="true" signature="8808:10273" placeholder="select start..startTime..." />
-                <marker date="1425842167000" expanded="true" signature="8897:9190" placeholder="select start..enc..." />
-                <marker date="1425842167000" expanded="true" signature="9314:9656" placeholder="select Start..ApptBlocks..." />
-                <marker date="1425842167000" expanded="true" signature="9779:10211" placeholder="select start..iu_scheduler_log..." />
-                <marker date="1425842167000" expanded="true" signature="10340:10366" placeholder="SELECT :endT..." />
-                <marker date="1425842167000" expanded="true" signature="10507:10534" placeholder="SELECT @last..." />
-                <marker date="1425842167000" expanded="true" signature="10699:10888" placeholder="select 1 fro..visitcodesdetails..." />
-                <marker date="1425842167000" expanded="true" signature="12635:13375" placeholder="INSERT INTO ..." />
-                <marker date="1425842167000" expanded="true" signature="12709:12804" placeholder="select (sele..." />
-                <marker date="1425842167000" expanded="true" signature="12717:12768" placeholder="select pid f..patients..." />
-                <marker date="1425842167000" expanded="true" signature="14809:14864" placeholder="INSERT INTO ..." />
-                <marker date="1425842167000" expanded="true" signature="15423:15524" placeholder="INSERT INTO ..." />
-                <marker date="1425842167000" expanded="true" signature="15889:15945" placeholder="delete from ..." />
-                <marker date="1425842167000" expanded="true" signature="17989:18628" placeholder="select start..x..." />
-                <marker date="1425842167000" expanded="true" signature="18042:18270" placeholder="select TIMES..." />
-                <marker date="1425842167000" expanded="true" signature="18304:18624" placeholder="select Times..." />
+                <marker date="1425843569000" expanded="true" signature="7398:8445" placeholder="..." />
+                <marker date="1425843569000" expanded="true" signature="8941:12034" placeholder="SELECT count..IF..." />
+                <marker date="1425843569000" expanded="true" signature="9070:11492" placeholder="SELECT IF(Av..@lasttime_to..." />
+                <marker date="1425843569000" expanded="true" signature="9546:11489" placeholder="SELECT @last..startTime..." />
+                <marker date="1425843569000" expanded="true" signature="9757:11222" placeholder="select start..startTime..." />
+                <marker date="1425843569000" expanded="true" signature="9846:10139" placeholder="select start..enc..." />
+                <marker date="1425843569000" expanded="true" signature="10263:10605" placeholder="select Start..ApptBlocks..." />
+                <marker date="1425843569000" expanded="true" signature="10728:11160" placeholder="select start..iu_scheduler_log..." />
+                <marker date="1425843569000" expanded="true" signature="11289:11315" placeholder="SELECT :endT..." />
+                <marker date="1425843569000" expanded="true" signature="11456:11483" placeholder="SELECT @last..." />
+                <marker date="1425843569000" expanded="true" signature="11648:11837" placeholder="select 1 fro..visitcodesdetails..." />
+                <marker date="1425843569000" expanded="true" signature="13584:14324" placeholder="INSERT INTO ..." />
+                <marker date="1425843569000" expanded="true" signature="13658:13753" placeholder="select (sele..." />
+                <marker date="1425843569000" expanded="true" signature="13666:13717" placeholder="select pid f..patients..." />
+                <marker date="1425843569000" expanded="true" signature="15758:15813" placeholder="INSERT INTO ..." />
+                <marker date="1425843569000" expanded="true" signature="16372:16473" placeholder="INSERT INTO ..." />
+                <marker date="1425843569000" expanded="true" signature="16838:16894" placeholder="delete from ..." />
               </folding>
             </state>
           </provider>
@@ -116,8 +113,8 @@
       <file leaf-file-name="NewAppointmentController.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/controllers/NewAppointmentController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-2.5" vertical-offset="2245" max-vertical-offset="7425">
-              <caret line="158" column="42" selection-start-line="158" selection-start-column="42" selection-end-line="158" selection-end-column="42" />
+            <state vertical-scroll-proportion="-6.0" vertical-offset="2040" max-vertical-offset="7425">
+              <caret line="156" column="0" selection-start-line="156" selection-start-column="0" selection-end-line="156" selection-end-column="0" />
               <folding>
                 <element signature="e#6#89#0#PHP" expanded="true" />
               </folding>
@@ -267,9 +264,9 @@
     </include_path>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="225" />
+    <option name="x" value="77" />
     <option name="y" value="23" />
-    <option name="width" value="1208" />
+    <option name="width" value="1261" />
     <option name="height" value="833" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
@@ -541,7 +538,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="225" y="23" width="1208" height="833" extended-state="0" />
+    <frame x="77" y="23" width="1261" height="833" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.13876653" sideWeight="0.4964132" order="7" side_tool="false" content_ui="tabs" />
@@ -549,7 +546,7 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3428165" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32716927" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32996845" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16809605" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16078754" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24006489" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2161235" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -1000,8 +997,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/controllers/NewAppointmentController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.5" vertical-offset="2245" max-vertical-offset="7425">
-          <caret line="158" column="42" selection-start-line="158" selection-start-column="42" selection-end-line="158" selection-end-column="42" />
+        <state vertical-scroll-proportion="-6.0" vertical-offset="2040" max-vertical-offset="7425">
+          <caret line="156" column="0" selection-start-line="156" selection-start-column="0" selection-end-line="156" selection-end-column="0" />
           <folding>
             <element signature="e#6#89#0#PHP" expanded="true" />
           </folding>
@@ -1010,30 +1007,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/repository/AppointmentRepository.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7737105" vertical-offset="7389" max-vertical-offset="10676">
-          <caret line="462" column="27" selection-start-line="462" selection-start-column="27" selection-end-line="462" selection-end-column="27" />
+        <state vertical-scroll-proportion="0.9151414" vertical-offset="2323" max-vertical-offset="10625">
+          <caret line="169" column="9" selection-start-line="147" selection-start-column="9" selection-end-line="169" selection-end-column="9" />
           <folding>
             <element signature="e#6#90#0#PHP" expanded="true" />
-            <marker date="1425842167000" expanded="true" signature="7398:7496" placeholder="..." />
-            <marker date="1425842167000" expanded="true" signature="7992:11085" placeholder="SELECT count..IF..." />
-            <marker date="1425842167000" expanded="true" signature="8121:10543" placeholder="SELECT IF(Av..@lasttime_to..." />
-            <marker date="1425842167000" expanded="true" signature="8597:10540" placeholder="SELECT @last..startTime..." />
-            <marker date="1425842167000" expanded="true" signature="8808:10273" placeholder="select start..startTime..." />
-            <marker date="1425842167000" expanded="true" signature="8897:9190" placeholder="select start..enc..." />
-            <marker date="1425842167000" expanded="true" signature="9314:9656" placeholder="select Start..ApptBlocks..." />
-            <marker date="1425842167000" expanded="true" signature="9779:10211" placeholder="select start..iu_scheduler_log..." />
-            <marker date="1425842167000" expanded="true" signature="10340:10366" placeholder="SELECT :endT..." />
-            <marker date="1425842167000" expanded="true" signature="10507:10534" placeholder="SELECT @last..." />
-            <marker date="1425842167000" expanded="true" signature="10699:10888" placeholder="select 1 fro..visitcodesdetails..." />
-            <marker date="1425842167000" expanded="true" signature="12635:13375" placeholder="INSERT INTO ..." />
-            <marker date="1425842167000" expanded="true" signature="12709:12804" placeholder="select (sele..." />
-            <marker date="1425842167000" expanded="true" signature="12717:12768" placeholder="select pid f..patients..." />
-            <marker date="1425842167000" expanded="true" signature="14809:14864" placeholder="INSERT INTO ..." />
-            <marker date="1425842167000" expanded="true" signature="15423:15524" placeholder="INSERT INTO ..." />
-            <marker date="1425842167000" expanded="true" signature="15889:15945" placeholder="delete from ..." />
-            <marker date="1425842167000" expanded="true" signature="17989:18628" placeholder="select start..x..." />
-            <marker date="1425842167000" expanded="true" signature="18042:18270" placeholder="select TIMES..." />
-            <marker date="1425842167000" expanded="true" signature="18304:18624" placeholder="select Times..." />
+            <marker date="1425843569000" expanded="true" signature="7398:8445" placeholder="..." />
+            <marker date="1425843569000" expanded="true" signature="8941:12034" placeholder="SELECT count..IF..." />
+            <marker date="1425843569000" expanded="true" signature="9070:11492" placeholder="SELECT IF(Av..@lasttime_to..." />
+            <marker date="1425843569000" expanded="true" signature="9546:11489" placeholder="SELECT @last..startTime..." />
+            <marker date="1425843569000" expanded="true" signature="9757:11222" placeholder="select start..startTime..." />
+            <marker date="1425843569000" expanded="true" signature="9846:10139" placeholder="select start..enc..." />
+            <marker date="1425843569000" expanded="true" signature="10263:10605" placeholder="select Start..ApptBlocks..." />
+            <marker date="1425843569000" expanded="true" signature="10728:11160" placeholder="select start..iu_scheduler_log..." />
+            <marker date="1425843569000" expanded="true" signature="11289:11315" placeholder="SELECT :endT..." />
+            <marker date="1425843569000" expanded="true" signature="11456:11483" placeholder="SELECT @last..." />
+            <marker date="1425843569000" expanded="true" signature="11648:11837" placeholder="select 1 fro..visitcodesdetails..." />
+            <marker date="1425843569000" expanded="true" signature="13584:14324" placeholder="INSERT INTO ..." />
+            <marker date="1425843569000" expanded="true" signature="13658:13753" placeholder="select (sele..." />
+            <marker date="1425843569000" expanded="true" signature="13666:13717" placeholder="select pid f..patients..." />
+            <marker date="1425843569000" expanded="true" signature="15758:15813" placeholder="INSERT INTO ..." />
+            <marker date="1425843569000" expanded="true" signature="16372:16473" placeholder="INSERT INTO ..." />
+            <marker date="1425843569000" expanded="true" signature="16838:16894" placeholder="delete from ..." />
           </folding>
         </state>
       </provider>
