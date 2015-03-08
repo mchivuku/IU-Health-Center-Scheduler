@@ -61,13 +61,12 @@ order by CodeId
      *
      */
     public function getProviderWorkHours($providerId,$facilityId,$visitType,$date){
-        $weekday = getDayOfTheWeek($date);
 
         $times = \DB::table('iu_scheduler_provider_schedule_info')
             ->select(array('StartTime', 'EndTime','minutes'
             ))
             ->where('CodeId', '=', $visitType)
-           //->where('facilityId','=',$facilityId)
+            ->where('facilityId','=',$facilityId)
             ->where('weekday', '=', $this->build_sql_week_day_clause($date))
             ->where('Id', '=',$providerId)
             ->first();
@@ -107,7 +106,7 @@ order by CodeId
             $available_times =$apptRep->getAllAppointmentTimes($visitType,$provider->Id,
                 $overlapping_hours['startTime'],$overlapping_hours['endTime'],$date);
 
-            if(!empty($available_times)){
+            if(count($available_times)>0){
                 $providerArray[$provider->Id]=array('Id'=>$provider->Id,'Name'=>$provider->Name,
                     'minutes'=>$provider->minutes,
                     'times'=>$available_times,'startTime'=>$overlapping_hours['startTime'],
@@ -116,6 +115,8 @@ order by CodeId
             }
 
         }
+
+
 
         usort($providerArray,function($a1,$a2){
             $name1 = $a1['Name'];

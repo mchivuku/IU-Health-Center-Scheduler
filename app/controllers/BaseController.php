@@ -13,6 +13,7 @@ use Scheduler\Repository\FacilitiesRepository;
 use Scheduler\Repository\VisitTypeRepository;
 
 require_once app_path().'/models/Filter.php';
+require_once app_path()."/helpers/EmailService.php";
 
 
 abstract class BaseController extends Controller {
@@ -26,7 +27,7 @@ abstract class BaseController extends Controller {
     protected $patientRepo;
     protected $providerRepo;
     protected $user_profile;
-
+    protected $emailService;
     protected $app;
 
     // view - to render
@@ -62,6 +63,8 @@ abstract class BaseController extends Controller {
         $this->schedulerLogRepo=$app->SchedulerLogRepository;
         $this->patientRepo=$app->PatientRepository;
         $this->providerRepo = $app->ProviderRepository;
+
+        $this->emailService = new \EmailService();
 
         $this->view = $sublayout;
 

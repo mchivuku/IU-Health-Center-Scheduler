@@ -2,6 +2,8 @@
  * Created by mchivuku on 3/3/15.
  */
 
+
+
     $(document).ready(function(){
 
 
@@ -109,8 +111,7 @@
         $('#available-times').children().on('click',function(){
             $('div.selected').removeClass('selected');
             $(this).addClass('selected');
-            var startTime = $(this).children('a').attr('href');
-
+            var startTime = $(this).children('div.selected a').attr('title');
             saveSelectedTime(startTime)
 
         });

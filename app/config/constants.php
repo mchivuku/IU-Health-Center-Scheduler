@@ -21,3 +21,9 @@ define('SESSION_ACTIVITY_TIME',300);
 define('EMAIL','iuhctech@indiana.edu');
 
 
+define('DEFAULT_EMAIL_TEMPLATE','generic');
+define('DEFAULT_POS_VALUE',11);
+
+//Minutes
+define('ALLOW_CANCELLATION_UNTIL_TIME',60);
+define('CANCELLATION_EMAIL_TXT_PATH','/config/cancellationEmail.txt');

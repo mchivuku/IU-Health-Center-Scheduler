@@ -90,8 +90,7 @@
 
 \HTML::macro('display_times', function ($data) {
          $html = '';
-        array_walk($data, function ($item) use (&$html) {
-
+         array_walk($data, function ($item) use (&$html) {
             $build_row = function ($slot) {
                 if (is_null($slot)) return false;
 
@@ -102,11 +101,20 @@
                 }
 
                 $link = function ($x) {
-
                       $hours = date('H',strtotime($x));
                       $ext = ($hours <= 12) ? 'a.m.' : 'p.m.';
+                      $time_now = strtotime(date('H:i:s'));
+                      $time_x = strtotime($x);
 
-                     return sprintf("<a href='#' title='%s'>%s</a>",$x, date('g:i',strtotime($x))." ".$ext);
+                      $time_display=date('g:i',
+                            strtotime($x))." ".$ext;
+
+                    //TODO - ZACH
+                    // return ($time_x<=$time_now)?$time_display:sprintf("<a href='#' title='%s'>%s</a>",$x,
+                      //  $time_display);
+
+                    return  sprintf("<a href='#' title='%s'>%s</a>",$x,
+                       $time_display);
                 };
 
                 $row .= $link($slot->time);

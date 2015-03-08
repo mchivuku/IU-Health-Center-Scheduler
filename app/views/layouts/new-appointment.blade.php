@@ -12,13 +12,17 @@
                 </div>
             </div>
 
-            <div class="row pad">
-               <div class="instructions">
+             <div class="row pad">
+                  <div class="instructions">
                                @include('includes.instruction')
                </div>
 
 
+                <!-- Session Flash Message -->
 
+              @if (Session::has('session-expiration-message'))
+                  <div class="alert alert-info">{{ Session::get('session-expiration-message') }}</div>
+             @endif
 
 
                  @yield('new-appointment-content')

@@ -1,14 +1,8 @@
 @extends('...layouts.new-appointment')
+
+
 @section('new-appointment-content')
 
-{{
-    $show_next_button= !empty($model->selected_startTime) && !empty($model->facility) && !empty($model->visitType)
-                        && (!empty($model->selectedProvider));
-
-
-
-
-}}
 
  @if(isset($model->providers))
 {{ Form::open(array('method'=>'post','action'=>'NewAppointmentController@scheduleConfirm','id'=>'scheduleSave')) }}
@@ -75,7 +69,8 @@ $model->visitDuration,array('id'=>'visitDuration','name'=>'visitDuration'));}}
 <section class="section bg-none">
                 <div class="row pad extra-padding">
 
-   <a   class="button back invert" href="{{ URL::to('newAppointment') }}">Back</a>
+
+ <a href="{{$back_link}}" class="button back invert">Back</a>
    {{ Form::submit('Next', array('class' => 'button next','id'=>'scheduleSubmit')) }}
 
 
@@ -83,12 +78,12 @@ $model->visitDuration,array('id'=>'visitDuration','name'=>'visitDuration'));}}
             </section>
 @else
 <section class="section bg-none">  <div class="row pad extra-padding">
-  <a   class="button back invert" href="{{ URL::to('newAppointment') }}">Back</a>
+
+ <a href="{{$back_link}}" class="button back invert">Back</a>
    </div>
               </section>
 @endif
 @stop
-
 
 @section('javascript')
 
@@ -103,4 +98,27 @@ var availableDates =
 
 {{ HTML::script('js/schedule.js')}}
 
+
+<script type="text/javascript">
+function _schedulerSessionTimeoutClock(expire) {
+        expire.setSeconds(expire.getSeconds() - 1);
+        if (expire.getFullYear() < 2014) {
+
+            window.location.href = "https://seville.iuhc.iub" +
+             ".edu/comm/hcScheduler/public/newAppointment/clearsession?visitType="+getVisitType()
+             +"&facility="+getFacility();
+        }
+    }
+
+    window.onload = function() {
+        var expire = new Date(2014, 0, 1);
+        expire.setSeconds(<?echo SESSION_ACTIVITY_TIME;?>*60);
+        window.setInterval(
+            function() {
+                _schedulerSessionTimeoutClock(expire);
+            },
+            1000
+        );
+    }
+</script>
 @stop

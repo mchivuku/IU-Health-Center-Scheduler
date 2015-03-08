@@ -95,7 +95,6 @@ Route::group(array('prefix' => 'newAppointment'), function(){
         ));
 
 
-
     Route::get('/saveSelectedTime',
         array(
             'as' => 'newAppointment.saveSelectedTime',
@@ -106,6 +105,12 @@ Route::group(array('prefix' => 'newAppointment'), function(){
         array(
             'as' => 'newAppointment.finish',
             'uses' => 'NewAppointmentController@scheduleConfirm'
+        ));
+
+    Route::get('/clearsession',
+        array(
+            'as' => 'newAppointment.clearsession',
+            'uses' => 'NewAppointmentController@clearsession'
         ));
 
     Route::post('/scheduleSave',

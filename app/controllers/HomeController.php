@@ -14,6 +14,7 @@ require_once app_path() . "/models/viewModels/TableListViewModel.php";
 require_once app_path() . "/models/ClientSideDataTableFunctionModel.php";
 
 
+
 class HomeController extends BaseController
 {
     protected $header_title = array('label' => 'IU Health Center Appointments', 'text' => 'Schedule an appointment or get information about appointments you have already scheduled.');
@@ -41,6 +42,8 @@ class HomeController extends BaseController
     public function getIndex()
     {
 
+        $path = app_path(). "/config/cancellationEmail.txt";
+
 
         $univId = $this->getUniversityId();
         $model = new \IndexViewModel();
@@ -58,14 +61,22 @@ class HomeController extends BaseController
             $combined_date_and_time = $item->date . ' ' . $item->startTime;
             $appt_date_time = strtotime($combined_date_and_time);
 
+            // Showing Cancel Appointment - Link
+            $date_a = new \DateTime(date('Y-m-d H:i:s'));
+            $date_b = new \DateTime($item->date . ' ' . $item->startTime);
+
+            $interval = date_diff($date_b, $date_a);
+            $minutes = $interval->days * 24 * 60;
+            $minutes += $interval->h * 60;
+            $minutes += $interval->i;
 
             $more_link = link_to_action('HomeController@getMoreInformation', 'More Information',
                 array(
                     'encId' => $item->encId), array('data-reveal-id' => "more-info", 'id' => 'more-info-link'));
 
             $last_column = "";
-            // Cancellation - appointments - only future
-            if ($appt_date_time > $today) {
+            // Cancellation - appointments - only future that have atleast 60mins
+            if ($date_b >= $date_a && $minutes >= ALLOW_CANCELLATION_UNTIL_TIME) {
 
                 $link = link_to_action('HomeController@confirmCancellation', 'Cancel Appointment',
                     array(
@@ -106,7 +117,7 @@ class HomeController extends BaseController
     public function confirmCancellation()
     {
         $encId = \Input::get('encId');
-        return \View::make('includes.cancel-appointment', array('encId' => $encId));;
+        return \View::make('includes.cancel-appointment', array('encId' => $encId));
     }
 
 
@@ -118,8 +129,30 @@ class HomeController extends BaseController
 
         $inputs = \Input::all();
         $encId = $inputs['encId'];
+
         //Cancel Appointment
         $this->apptRepo->cancelAppointment($encId);
+
+        $appt_date_time = $this->apptRepo->getAppointment($encId);
+
+        $path = app_path(). "/config/cancellationEmail.txt";
+
+          if(file_exists($path) && ($this->user_profile->email)!=""){
+            $message = file_get_contents($path,FILE_USE_INCLUDE_PATH);
+
+            $app_date_time= date_format(new \Datetime($appt_date_time->date." " .
+              $appt_date_time->startTime),
+             'd/m/y  g:i a');
+
+             $x = str_replace('%date%',$app_date_time, $message);
+
+            //send cancellation email
+            $this->emailService->send(array('name'=>$this->user_profile->getName(),
+                'email'=>$this->user_profile->email,'message'=>$x,
+                'subject'=>$this->lang['Cancellation_Email_Subject']));
+
+        }
+
         return \Redirect::action('HomeController@getIndex');
     }
 

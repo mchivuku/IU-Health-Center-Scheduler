@@ -10,7 +10,6 @@ class EmailService
 {
 
     protected $headers;
-    protected $subject = 'Your Appointment Confirmation';
 
     /**
      * Date: Wed, 15 Dec 2014 12:45:55 -0700
@@ -56,7 +55,7 @@ class EmailService
         $this->createHeaders();
 
         mail($parameters['email'],
-            $this->subject,$parameters['message'],$this->headers);
+            $parameters['subject'],$parameters['message'],$this->headers);
 
         return;
     }

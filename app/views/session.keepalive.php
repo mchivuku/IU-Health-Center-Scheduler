@@ -10,7 +10,8 @@
 
     window.onload = function() {
         var expire = new Date(2014, 0, 1);
-        expire.setSeconds(<?php echo SESSION_ACTIVITY_TIME; ?> * 60);
+        expire.setSeconds(<?php echo 1; ?> * 60);
+        console.log('expiring');
         window.setInterval(
             function() {
                 _schedulerSessionTimeoutClock(expire);

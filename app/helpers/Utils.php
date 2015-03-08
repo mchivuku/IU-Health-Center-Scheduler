@@ -100,3 +100,9 @@ function IsTimeInRange($time,$startTime,$endTime){
 
 
 }
+
+function getTimeDifferenceInMinutes($datetime1,$datetime2){
+    $interval = $datetime1->diff($datetime2);
+    echo $interval->format("%H:%I:%S");
+    exit;
+}
