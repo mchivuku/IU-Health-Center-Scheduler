@@ -22,7 +22,7 @@ class SchedulerLogRepository
         $resultObj = \DB::selectOne($exists_query);
         $insert_update_values = array('facility' => $facilityId, 'visitType' => $visitType,
             'providerId' => $providerId, 'encDate' => $input_date, 'startTime' => $startTime,
-            'endTime' => $endTime,  'controlNo'=>$controlNo
+            'endTime' => $endTime,  'controlNo'=>$controlNo,'updateTimestamp'=>date('Y-m-d H:i:s')
         );
         // Update
         if ($resultObj->exists == 1) {
@@ -64,10 +64,20 @@ class SchedulerLogRepository
 
     }
 
-    // Function call to clear session Information
+    // Function call to clear session Information for a given session
     public function clearSessionData($session_id){
 
         \DB::table($this->table)->where('sessionId', $session_id)->delete();
+    }
+
+
+    // Function clear all sessions -
+    public function clearAllPreviousSessions(){
+
+        \DB::table($this->table)->whereRaw(\DB::Raw(" time_to_sec(timediff(updateTimestamp,now()
+        )) <=-300"))->delete();
+
+
     }
 
 

@@ -42,6 +42,11 @@ Route::get('/getMoreInformation', array(
     'uses' => 'HomeController@getMoreInformation'
 ));
 
+Route::get('/serverdump',function(){
+    echo "<pre>";
+    print_r($_SERVER);
+});
+
 
 
 Route::group(array('prefix' => 'settings'), function() {

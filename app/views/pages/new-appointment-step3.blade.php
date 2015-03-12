@@ -33,7 +33,7 @@
                     </ul>
                         @if(!empty($model->email))
                                 <p>
-                                    <input type="checkbox" name="sendemail"> <label>Send Email</label>
+                                    <input type="checkbox" name="sendemail"> <label>Send me an email confirmation of this appointment</label>
                                </p>
                         @endif
 

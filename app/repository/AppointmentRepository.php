@@ -42,13 +42,14 @@ class AppointmentRepository
         $appointment_list = \DB::table($this->table)
             ->join('patients', 'enc.patientID', '=', 'patients.pid')
             ->leftJoin('users as resource', 'enc.resourceID', '=', 'resource.uid')
-            ->leftJoin('edi_facilities', 'enc.facilityId', '=', 'edi_facilities.id')
+            ->leftJoin('iu_scheduler_facility_charttitle', 'enc.facilityId', '=', 'iu_scheduler_facility_charttitle.FacilityId')
             ->leftJoin('visitcodes', 'enc.visitType', '=', 'visitcodes.Name')
             ->where('patients.controlNo', '=', $universityId)
             ->whereRaw(\DB::RAW($string))
-            ->select(array('encounterID as encId', 'patientId', 'enc.visitType', 'reason', 'startTime',
-                'endTime', 'enc.date as date', 'edi_facilities.name as facility',
-                'edi_facilities.Id as facilityId',
+            ->select(array('encounterID as encId', 'patientId', 'visitcodes.Description as visitType', 'reason',
+                'startTime',
+                'endTime', 'enc.date as date', 'iu_scheduler_facility_charttitle.Description as facility',
+                'iu_scheduler_facility_charttitle.FacilityId as facilityId',
                 'resource.ufname as providerFirstName',
                 'resource.ulname as providerLastName', 'visitcodes.CodeId as visitTypeId'
             ))
@@ -117,11 +118,11 @@ class AppointmentRepository
     public function getAllAppointmentTimes($visitType, $providerId, $startTime, $endTime, $date)
     {
 
-
           // 1. Appointment query
            $all_appt_times_query = \DB::table('enc')
                                    ->where("resourceId","=",$providerId)
                                    ->where('date','=',$date)
+                                   ->where('deleteFlag','=',0)
                                    ->whereRaw(\DB::RAW($this->valid_appt_status_query()))->select(array('startTime',
                                      'endTime'));
 
@@ -143,35 +144,9 @@ class AppointmentRepository
 
          $merged_unavailable=$this->merge_unavailable($unavailable);
 
-         $available=array();
+         $available=$this->construct_available_times($startTime,$endTime,$merged_unavailable);
 
-          for($i=0;$i<count($merged_unavailable);$i++){
-                if($i==0){
-                    $start = $startTime;
-                }else{
-                    $start= $merged_unavailable[$i-1]['endTime'];
-                }
-
-                $end = $merged_unavailable[$i]['startTime'];
-
-                $available[]=array('Available_from'=>$start,'Available_to'=>$end);
-            }
-
-
-        if(count($merged_unavailable)==0){
-            $available[]=array('Available_from'=>$startTime,'Available_to'=>$endTime);
-
-        }
-        else{
-            //last element
-            $last=end($merged_unavailable);
-            $available[]=array('Available_from'=>$last['endTime'],'Available_to'=>$endTime);
-
-        }
-
-        return (array_filter($available,function($item){return $item['Available_from']<$item['Available_to'];
-        }));
-
+         return $available;
 
 
     }
@@ -196,7 +171,6 @@ class AppointmentRepository
 
          });
 
-
             $i=1;
 
             $first = $times[0];
@@ -219,31 +193,38 @@ class AppointmentRepository
             return $return;
     }
 
+    //function to get the entire schedule
     private function construct_available_times($startTime,$endTime,$unavailable_times){
 
         $available=array();
+
         for($i=0;$i<count($unavailable_times);$i++){
+
             if($i==0){
                 $start = $startTime;
+                $end = $unavailable_times[$i]['startTime'];
+
             }else{
-                $start= date('H:i',strtotime($unavailable_times[$i-1]['endTime']));
+
+                $start = $unavailable_times[$i-1]['endTime'];
+                $end = $unavailable_times[$i]['startTime'];
+
             }
 
-            $end = date('H:i',strtotime($unavailable_times[$i]['startTime']));
-            if($start<=$end)
-                $available=array('Available_From'=>$start,'available_to'=>$end);
-            else{
-                //empty array to say date is unavailable
-                $available=array();
-            }
+            $available[]=array('Available_from'=>$start,'Available_to'=>$end);
 
         }
 
-        //last element
-        $last=end($item);
-        if(date('H:i',strtotime($last['endTime']))<$endTime)
-            $available=array('available_from'=>date('H:i',strtotime($last['endTime'])),
-                'available_to'=>$endTime);
+        if(count($unavailable_times)>0){
+            //insert the last element
+            $last=end($unavailable_times);
+            $available[]=array('Available_from'=>$last['endTime'],'Available_to'=>$endTime);
+
+        }else{
+            $available[]= array('Available_from'=>$startTime,'Available_to'=>$endTime);
+        }
+
+
 
         return $available;
     }
@@ -264,31 +245,20 @@ class AppointmentRepository
             $startTime = $scheduler->getBeginOfTheDay();
 
 
-            $available_sql = "
-               SELECT  count(*)     as total
+            $available_sql =
+
+            sprintf("SELECT  count(*)     as total
                             from
-                                (
-                                SELECT
-                                IF(Available_from is null,:startTime, IF(TIMEDIFF(Available_from,:startTime)<=0,
-                                :startTime, Available_from)
-                                ) Available_from,
-                                IF( Available_to is null ,:endTime,IF(TIMEDIFF(Available_to,:endTime)<=0,
-                                 Available_to,:endTime) )Available_to
-                                from
-                                (SELECT @lasttime_to AS available_from, startTime AS available_to, @lasttime_to := endTime
-                                                          FROM
-
-                                                        (select startTime, endTime
-
-                                                        from (select startTime, endTime
+                                 (select startTime, endTime
                                                         from enc
-                                                        where enc.date = :encDate and
-                                                        enc.resourceId=:providerId and status IN ('PEN','ARR','CHK')
+                                                        where enc.date = :encDate and deleteFlag=0 and
+                                                        enc.resourceId= :providerId and  %s
 
                                                         UNION all
                                                         select StartTime as startTime,
                                                         EndTime as endTime
-                                                        from ApptBlocks block join ApptBlockDetails details on block.Id = details.Id
+                                                        from ApptBlocks block join ApptBlockDetails details
+                                                        on block.Id = details.Id
                                                         where userId=:providerId and StartDate=:encDate
                                                         UNION ALL
                                                         select  startTime,
@@ -296,22 +266,9 @@ class AppointmentRepository
                                                         from iu_scheduler_log
                                                         where providerId=:providerId and encDate=:encDate AND
                                                         visitType =:visitType  and
-                                                        sessionId!=:sessionId
-                                                        )temp
-                                                        UNION ALL SELECT  :endTime, :endTime
-                                                        order by startTime) e
-                                                        JOIN (SELECT @lasttime_to := NULL) init) x
-                                ) available
-                                where
-                                exists
-
-                                (select 1 from visitcodesdetails
-                                where CodeId = :visitType and
-                                 TIMEDIFF(Available_to,Available_from) >= MAKETIME(0,Minutes,0)
-
-                                ) and TIMEDIFF(:apptStartTime,Available_from)>=0
-                                and TIMEDIFF(Available_to,:apptEndTime)>=0
-                order by Available_from";
+                                                        sessionId!=:sessionId)x
+                            where TIMediff(startTime,:apptStartTime)<=0 and timediff(:apptEndTime,endTime)<=0
+                                           ",$this->valid_appt_status_query());
 
             $statement = $pdo->prepare($available_sql);
             $providerId = $appointment->providerId;
@@ -329,7 +286,6 @@ class AppointmentRepository
             $statement->bindParam(":apptEndTime", $apptEndTime, \PDO::PARAM_STR, 256);
             $statement->bindParam(":sessionId", $sessionId, \PDO::PARAM_STR, 256);
 
-
             $nRow = 0;
             if ($statement->execute()):
                 while ($row = $statement->fetch(\PDO::FETCH_ASSOC)) {
@@ -337,37 +293,41 @@ class AppointmentRepository
                 }
             endif;
 
-            if ($nRow >= 1) {
-                $insert_variables = array('patientID', 'date', 'startTime', 'endTime', 'VisitType',
+            if ($nRow ==0) {
+                $insert_variables = array('patientID', 'date', 'startTime', 'endTime', 'VisitType','visittypeid',
                     'STATUS',
-                    'vmid', 'ResourceId', 'facilityId', 'doctorID','generalNotes','POS','visitstscodeId');
+                    'vmid', 'ResourceId', 'facilityId', 'doctorID','generalNotes','POS','visitstscodeId',
+                    'VisitCopay','ClaimReq','CopayChanged');
 
                 // 2. create appointment otherwise return;
                 $insert_sql = "INSERT INTO enc(" . implode(", ", $insert_variables) . ")
                 select (select pid from patients where controlNo=:controlNo)patientID,
                 :encDate as date,:startTime as startTime, :endTime as endTime,
-                (select Name   from visitcodes  where CodeId=:visitType)as VisitType,
+                (select Name from visitcodes  where CodeId=:visitType) as VisitType  ,
+                (select CodeId from visitcodes  where CodeId=:visitType) as visittypeid,
                 :status as STATUS, :vmid,
                 :resourceId as ResourceId,
                      primaryservicelocation   as facilityId, (case when userType=1 then uid else
                      DefApptProvForResource end) as doctorID, :generalNotes , :pos,
-                     (select CodeId from visitstscodes where code=:status) as visitstscodeId
+                     (select CodeId from visitstscodes where code=:status) as visitstscodeId,0.0,1,0
                    from
                     Users where uid=:resourceId
                  ";
 
-
-                $vmid = $this->uniqueId();
+                 $vmid = $this->uniqueId();
                 $status = APPT_PENDING;
                 $generalNotes = $LANG['generalNotes'];
                 $pos = DEFAULT_POS_VALUE;
 
+                $apptstartTime = date('H:i:s',strtotime($apptBeginTime));
+                $apptendTime = date('H:i:s',strtotime($apptEndTime));
 
+//insert into log set encounterId=632912, userId=317150, date='2015-03-12', time='13:53:50', actionFlag=1
                 $insert_statement = $pdo->prepare($insert_sql);
                 $insert_statement->bindParam(':controlNo', $controlNo, \PDO::PARAM_STR, 256);
                 $insert_statement->bindParam(":encDate", $date, \PDO::PARAM_STR, 256);
-                $insert_statement->bindParam(":startTime", $apptBeginTime, \PDO::PARAM_STR, 256);
-                $insert_statement->bindParam(":endTime", $apptEndTime, \PDO::PARAM_STR, 256);
+                $insert_statement->bindParam(":startTime", $apptstartTime, \PDO::PARAM_STR, 256);
+                $insert_statement->bindParam(":endTime", $apptendTime, \PDO::PARAM_STR, 256);
                 $insert_statement->bindParam(":visitType", $visitType, \PDO::PARAM_STR, 256);
                 $insert_statement->bindParam(":status", $status, \PDO::PARAM_STR, 256);
                 $insert_statement->bindParam(":vmid", $vmid, \PDO::PARAM_STR, 256);
@@ -391,7 +351,6 @@ class AppointmentRepository
 
 
                 // step2 -  INSERT INTO annualnotes SET encounterID=632843, notes='', type='Billing'·
-                //INSERT INTO appntconfemaillogs(uid,encounterId,visitStatus,date,startTime,endTime,facilityId)
 
                 $annual_notes_sql = "INSERT INTO annualnotes (encounterID, notes, type) values(:encounterId,'',
                 'Billing')";
@@ -399,6 +358,7 @@ class AppointmentRepository
                 $annual_notes_statement->bindParam(':encounterId', $encId, \PDO::PARAM_INT);
                 $annual_notes_statement->execute();
 
+                //step3 - insert into log set encounterId=632912, userId=317150, date='2015-03-12', time='13:53:50', actionFlag=1
 
                 // 3. set the session Id - slots as InActive or delete - as the appointment has been made
                 $delete_query = "delete from iu_scheduler_log  where sessionId=:sessionId";
@@ -418,9 +378,8 @@ class AppointmentRepository
 
 
         } catch (\Exception $ex) {
-            echo $ex->getMessage();
-            print_r($ex->getTraceAsString());
-            exit;
+            throw $ex;
+
            //rollback
         }
     }
@@ -449,14 +408,18 @@ class AppointmentRepository
      *
      *
      * */
-    function getAvailableDates($month, $year, $providerId, $visitType, $sessionId,$startTime,$endTime)
+    function getAvailableDates($month, $year, $providerId, $visitType, $sessionId,$startTime,$endTime,$duration)
     {
-       $enc_query = \DB::table('enc')
+
+
+        $enc_query = \DB::table('enc')
             ->where("resourceId","=",$providerId)
             ->whereRaw("month(date) = $month")
-            ->whereRaw("year(enc.date)= $year")
-            ->where(\DB::RAW($this->valid_appt_status_query()))
+            ->whereRaw(\DB::RAW($this->valid_appt_status_query()))
+            ->whereRaw("year(enc.date)= $year")->where('deleteFlag','=',0)
            ->select(\DB::raw('timestamp(date,startTime) as startTime, timestamp(date,endTime) as endTime'));
+
+
 
         // 2. Blocks query
         $blocks_query = \DB::table('ApptBlocks')
@@ -472,11 +435,16 @@ class AppointmentRepository
              ->whereRaw('month(encDate) ='.$month)
             ->whereRaw('year(encDate)='.$year)
             ->where('visitType','=',$visitType)
+            ->where('sessionId','!=',$sessionId)
             ->select(\DB::raw('timestamp(encDate,startTime) as startTime, timestamp(encDate,endTime) as endTime'));
+
+
 
         $unavailable = $enc_query->unionAll($blocks_query)->unionAll($scheduler_log_query)->get();
 
         $merged_unavailable = $this->merge_unavailable($unavailable);
+
+
 
         $group_times_by_days = function($merged_unavailable){
             if(count($merged_unavailable)==0)return array() ;
@@ -494,33 +462,25 @@ class AppointmentRepository
             return $temp;
         };
 
+
+
         $available=array();
         $x = $group_times_by_days($merged_unavailable);
+
+
+
         foreach( $x as $k=>$item){
-            for($i=0;$i<count($item);$i++){
-                    if($i==0){
-                        $start = $startTime;
-                    }else{
-                        $start= date('H:i',strtotime($item[$i-1]['endTime']));
+            $start= date('Y-m-d H:i',strtotime($k."".$startTime));
+            $end = date('Y-m-d H:i',strtotime($k."".$endTime));
 
-                    }
 
-                    $end = date('H:i',strtotime($item[$i]['startTime']));
-                if($start<=$end)
-                    $available[$k][]=array('available_from'=>$start,'available_to'=>$end);
-                else{
-                    //empty array to say date is unavailable
-                    $available[$k]=array();
-                }
+             $available[$k] = array_filter($this->construct_available_times($start,$end,$item),
+               function($times){return $times['Available_to']>= $times['Available_from'];});;
 
-            }
-             //last element
-             $last=end($item);
-             if(date('H:i',strtotime($last['endTime']))<$endTime)
-               $available[$k][]=array('available_from'=>date('H:i',strtotime($last['endTime'])),
-                 'available_to'=>$endTime);
 
         }
+
+
 
 
         $available_dates = array();
@@ -531,17 +491,18 @@ class AppointmentRepository
         $end_time = strtotime("+1 month", $start_time);
 
          for($i=$start_time; $i<$end_time; $i+=86400)
-        {
+         {
             $date = date('Y-m-d', $i);
             if(array_key_exists($date,$available)){
                 $is_available=false;
                 foreach($available[$date]as $times){
-                    $interval = date_diff(new \DateTime($times['available_to']),
-                        new \DateTime($times['available_from']));
+                    $interval = date_diff(new \DateTime($times['Available_to']),
+                        new \DateTime($times['Available_from']));
                     $minutes = $interval->days * 24 * 60;
                     $minutes += $interval->h * 60;
                     $minutes += $interval->i;
-                    if($minutes >= 15){
+
+                    if($minutes >= $duration){
                         $is_available=true;
                     }
                 }
@@ -554,7 +515,8 @@ class AppointmentRepository
 
         }
 
-        return($available_dates);
+        return ($available_dates);
+
 
     }
 
@@ -581,7 +543,9 @@ class AppointmentRepository
 
         }
 
-        $email = (strip_tags($email_template_content->content));
+       // $email = (strip_tags($email_template_content->content,'<br/><br><p><strong><DIV><div><P><STRONG><FONT>'));
+
+        $email= "<div>".strip_tags($email_template_content->content)."</div>";
 
         return $email;
 
@@ -615,6 +579,31 @@ class AppointmentRepository
 
 
 
+    // add to logs -
+    //$appntconfemaillogs_sql = "INSERT INTO appntconfemaillogs(uid,encounterId,visitStatus,date,startTime,endTime,facilityId)
+    //values (:uid,:encounterId, :visitstatus,:date,:startTime,:endTime,
+    //:facilityId)";//
+
+    public function insertIntoApptCnfLog($encId){
+
+        $pdo = \DB::connection('mysql')->getPdo();
+        $pdo->beginTransaction();
+        $pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
+
+        $insert_log_query = "INSERT INTO appntconfemaillogs(uid,encounterId,visitStatus,date,startTime,endTime,facilityId)
+          select patientID as uid,encounterId , status as visitStatus,date,startTime,endTime,facilityId
+      from enc where encounterId=:encounterId
+      ";
+
+        $statement = $pdo->prepare($insert_log_query);
+        $statement->bindParam(':encounterId', $encId, \PDO::PARAM_STR, 256);
+
+
+        $statement->execute();
+
+        return;
+
+    }
 
 
 }

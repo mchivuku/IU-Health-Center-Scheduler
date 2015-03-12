@@ -93,8 +93,19 @@ class ShibbolethRepository
         $filter = $propertyInfo['filter'];
 
         $univ= $this->getPersonPropertyValue($name, $filter);
+
         return $univ;
 
     }
 
+    /**
+     *
+     * Get EduPersonAffiliation
+     */
+    public function getEduPersonAffiliation(){
+
+        echo "<pre>";
+        print_r($_SERVER);exit;
+
+    }
 }

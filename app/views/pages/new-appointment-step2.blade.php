@@ -13,6 +13,7 @@
 $model->visitDuration,array('id'=>'visitDuration','name'=>'visitDuration'));}}
  {{Form::hidden('date','',array('id'=>'date','name'=>'date'));}}
  {{Form::hidden('startTime',$model->selected_startTime,array('id'=>'startTime','name'=>'startTime'));}}
+ {{Form::hidden('tabId','',array('id'=>'tabId','name'=>'tabId'));}}
 
  <div class="column schedule-appointments">
 <span class="step">1</span>
@@ -57,7 +58,7 @@ $model->visitDuration,array('id'=>'visitDuration','name'=>'visitDuration'));}}
 @else
 
  <div class="column schedule-appointments">
-     <p> {{$model['message']}} </p>
+     <p> {{isset($model) && is_array($model)?$model['message']:""}} </p>
 </div>
 @endif
 
@@ -100,6 +101,21 @@ var availableDates =
 
 
 <script type="text/javascript">
+@if(isset($model->selectedDate))
+
+ $(document).ready(function() {
+    $('#datepicker').datepicker("setDate", <?echo "'".$model->selectedDate."'";?>);
+
+ });
+
+@endif
+
+</script>
+
+
+<script type="text/javascript">
+
+
 function _schedulerSessionTimeoutClock(expire) {
         expire.setSeconds(expire.getSeconds() - 1);
         if (expire.getFullYear() < 2014) {
@@ -112,7 +128,7 @@ function _schedulerSessionTimeoutClock(expire) {
 
     window.onload = function() {
         var expire = new Date(2014, 0, 1);
-        expire.setSeconds(<?echo SESSION_ACTIVITY_TIME;?>*60);
+        expire.setSeconds(<?echo SESSION_ACTIVITY_TIME;?>);
         window.setInterval(
             function() {
                 _schedulerSessionTimeoutClock(expire);

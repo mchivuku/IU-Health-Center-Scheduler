@@ -23,7 +23,7 @@ abstract class BaseController extends Controller {
     protected $apptRepo;
     protected $facilitiesRepo;
     protected $visitTypeRepo;
-    protected $schedulerLogRepo;
+    public $schedulerLogRepo;
     protected $patientRepo;
     protected $providerRepo;
     protected $user_profile;
@@ -55,6 +55,7 @@ abstract class BaseController extends Controller {
         $this->app = $app;
 
 
+
         $this->shibboleth=$app->ShibbolethRepository;
         $this->userRepo = $app->UserRepository;
         $this->apptRepo=$app->AppointmentRepository;
@@ -69,11 +70,26 @@ abstract class BaseController extends Controller {
         $this->view = $sublayout;
 
         $this->lang = $LANG;
+
+        $sessionId=$this->getUserSessionId();
+
+
+        $CI=$this;
+        //Before every request - check the scheduler log and clear it.
+       $this->beforeFilter(function()use($CI){
+            $CI->schedulerLogRepo->clearAllPreviousSessions();
+        });
+
+
         $this->user_profile=$this->getUserProfile();
+
 
         // Layout - pass data for the partial views in the layout
         View::share(array('profile'=> $this->user_profile));
         View::share(array('header_title'=>$this->header_title));
+
+
+
 
     }
 

@@ -1,5 +1,5 @@
 <h2>Cancel Appointment</h2>
-Are you sure you want to cancel appointment?
+Are you sure you want to cancel your appointment?
 
 {{ Form::open(array('method'=>'post','action'=>'HomeController@cancelAppointment')) }}
 {{Form::hidden('encId', $encId,array('name'=>'encId'));}}

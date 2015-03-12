@@ -191,4 +191,6 @@ class HomeController extends BaseController
         return \Redirect::to("https://cas.iu.edu/cas/logout");
     }
 
+
+
 }

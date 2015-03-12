@@ -21,6 +21,10 @@
     <!-- Navigation -->
    @include('...includes.navigation')
 
+   <NOSCRIPT>
+         You must enable JavaScript to use the appointment scheduler.
+   </NOSCRIPT>
+
     @include('...includes.alerts')
 
     <section class="section bg-none persistent-info">

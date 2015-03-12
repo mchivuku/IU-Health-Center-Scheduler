@@ -51,26 +51,25 @@ function group_slots_by_hr($array){
 }
 
 
-
 function get_overlapping_hr($starttime1,$endtime1,$starttime2,$endtime2){
 
-    $hr_duration = 3600;
-    $split_by_hr1 = array();
-    split_range_into_slots_by_duration($starttime1,$endtime1,$hr_duration,$split_by_hr1);
+     if(($starttime1<=$starttime2) && ($endtime1>=$endtime2)||(($starttime2<=$starttime1) && ($endtime2>=$endtime1))){
 
-    $split_by_hr2 = array();
-    split_range_into_slots_by_duration($starttime2,$endtime2,$hr_duration,$split_by_hr2);
+        if(($starttime1<=$starttime2) && ($endtime1>=$endtime2)){
 
-    $overlapping_array= array_intersect($split_by_hr1,$split_by_hr2);
+           return array('startTime'=>$starttime2,
+                'endTime'=>$endtime2);
 
-    if(count($overlapping_array)==0)
-        return null;
+        }else{
+            return array('startTime'=>$starttime1,
+                'endTime'=>$endtime1);
 
-    if(count($overlapping_array)==1)
-        return array('startTime'=>$overlapping_array);
+        }
 
-     return  array('startTime'=>current($overlapping_array),'endTime'=>last($overlapping_array));
+     }
 
+     return  array('startTime'=>($starttime1<$starttime2)?$starttime2:$starttime1,
+         'endTime'=>($endtime1<$endtime2)?$endtime1:$endtime2);
 
 }
 

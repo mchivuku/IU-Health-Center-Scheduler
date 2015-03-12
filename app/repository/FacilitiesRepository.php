@@ -15,7 +15,10 @@ class FacilitiesRepository{
 
         $facilities_list = \DB::table($this->table)
             ->select( array('FacilityId as Id','Description as Name','ChartTitle'
-            ))->orderBy('Description', 'ASC')
+
+            ))
+            ->where('IsActive','=','1')
+            ->orderBy('Description', 'ASC')
             ->get();
 
         return $facilities_list;

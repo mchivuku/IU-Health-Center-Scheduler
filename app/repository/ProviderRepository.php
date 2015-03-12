@@ -73,6 +73,18 @@ order by CodeId
         return $times;
     }
 
+    function getProviderWorkHoursForMonth($visitType,$facilityId,$providerId){
+
+        $times = \DB::table('iu_scheduler_provider_schedule_info')
+            ->select(\DB::Raw('min(StartTime) as StartTime, max(EndTime) as EndTime,  max(minutes) as minutes'
+            ))
+            ->where('CodeId', '=', $visitType)
+            ->where('facilityId','=',$facilityId)
+
+            ->where('Id', '=',$providerId)
+            ->first();
+        return $times;
+    }
 
 
     function build_sql_week_day_clause($date){
@@ -102,23 +114,47 @@ order by CodeId
         $providerArray=array();
 
         foreach($providers as $provider){
-            $overlapping_hours = get_overlapping_hr($startTime,$endTime,$provider->StartTime,$provider->EndTime);
-            $available_times =$apptRep->getAllAppointmentTimes($visitType,$provider->Id,
-                $overlapping_hours['startTime'],$overlapping_hours['endTime'],$date);
+            $overlapping_hours = get_overlapping_hr($provider->StartTime,$provider->EndTime,$startTime,$endTime);
 
-            if(count($available_times)>0){
-                $providerArray[$provider->Id]=array('Id'=>$provider->Id,'Name'=>$provider->Name,
-                    'minutes'=>$provider->minutes,
-                    'times'=>$available_times,'startTime'=>$overlapping_hours['startTime'],
-                    'endTime'=>$overlapping_hours['endTime']);
+             //get entire day for the times
+            $available_times =$apptRep->getAllAppointmentTimes($visitType,$provider->Id,
+                $provider->StartTime,$provider->EndTime,$date);
+
+
+            $time_slots=array();
+            foreach($available_times as $available){
+
+                split_range_into_slots_by_duration($available['Available_from'],$available['Available_to'],
+                    $provider->minutes*60,
+                    $time_slots);
 
             }
+
+            if(count($time_slots)>0){
+                //break the time into slots;
+                $start =$overlapping_hours['startTime'];$end=$overlapping_hours['endTime'];
+
+                 $filter_times = array_filter($time_slots,function($item)use($start,$end,$date){
+                    if($date==date('Y-m-d')){
+                        $timeNow = date('H:i');
+                        return $item>=$start && $item<=$end && $item>=$timeNow;
+                    }
+                    return $item>=$start && $item<=$end;
+                });
+
+
+                $providerArray[$provider->Id]=array('Id'=>$provider->Id,'Name'=>$provider->Name,
+                        'minutes'=>$provider->minutes,'startTime'=>$start,'endTime'=>$endTime,
+                        'times'=>$filter_times);
+
+
+            }
+
 
         }
 
 
-
-        usort($providerArray,function($a1,$a2){
+         usort($providerArray,function($a1,$a2){
             $name1 = $a1['Name'];
             $name2 = $a2['Name'];
 
@@ -126,18 +162,19 @@ order by CodeId
                 return 0;
             }
             return ($name1 > $name2) ? 1 : -1;
-        });
+         });
 
         usort($providerArray,function($item1,$item2){
-               $first_slot_1 = current($item1['times']);
-               $first_slot_2 = current($item2['times']);
 
-            if ($first_slot_1 == $first_slot_2) {
+            $t1 = current($item1['times']);
+            $t2 = current($item2['times']);
+
+            if ($t1 == $t2) {
                 return 0;
-                }
-            return ($first_slot_1 > $first_slot_2) ? 1 : -1;
-
+            }
+            return ($t1 > $t2) ? 1 : -1;
         });
+
 
         return (current($providerArray));
 
