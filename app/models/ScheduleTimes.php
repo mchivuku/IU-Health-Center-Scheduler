@@ -1,12 +1,11 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: mchivuku
  * Date: 2/4/15
  * Time: 4:28 PM
  */
-
-
 class ScheduleTimes
 {
 
@@ -15,7 +14,7 @@ class ScheduleTimes
 
     function getStartTimeForDay($scheduleTime)
     {
-        if($scheduleTime==self::DAY){
+        if ($scheduleTime == self::DAY) {
             return date('H:i', mktime(9, 0, 0, 0, 0, 0));
         }
 
@@ -25,7 +24,7 @@ class ScheduleTimes
 
     function getEndTimeForDay($scheduleTime)
     {
-        if($scheduleTime==self::DAY){
+        if ($scheduleTime == self::DAY) {
 
             return date('H:i', mktime(12, 59, 0, 0, 0, 0));
         }
@@ -34,15 +33,18 @@ class ScheduleTimes
     }
 
 
-    function getTabsForScheduleTimes(){
-        return array(self::DAY=>'Morning',self::AFTERNOON=>"Afternoon");
+    function getTabsForScheduleTimes()
+    {
+        return array(self::DAY => 'Morning', self::AFTERNOON => "Afternoon");
     }
 
-    function getEndOfTheDay(){
+    function getEndOfTheDay()
+    {
         return $this->getEndTimeForDay(self::AFTERNOON);
     }
 
-    function getBeginOfTheDay(){
+    function getBeginOfTheDay()
+    {
         return $this->getStartTimeForDay(self::DAY);
     }
 

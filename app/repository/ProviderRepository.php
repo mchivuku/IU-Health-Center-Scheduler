@@ -34,14 +34,14 @@ order by CodeId
     public function getAllProvidersWithWorkHours($facilityId, $visitType, $date)
     {
 
-         $raw_sql = $this->build_sql_week_day_clause($date);
+        $raw_sql = $this->build_sql_week_day_clause($date);
 
-         $providers = \DB::table('iu_scheduler_provider_schedule_info')
-            ->select(array('Id', 'Name','StartTime', 'EndTime','minutes'
+        $providers = \DB::table('iu_scheduler_provider_schedule_info')
+            ->select(array('Id', 'Name', 'StartTime', 'EndTime', 'minutes'
             ))
             ->where('CodeId', '=', $visitType)
-            ->where('facilityId','=',$facilityId)
-            ->where('weekday', '=',$raw_sql )
+            ->where('facilityId', '=', $facilityId)
+            ->where('weekday', '=', $raw_sql)
             ->orderBy('Name', 'ASC')->get();
 
 
@@ -60,92 +60,97 @@ order by CodeId
      * @return mixed
      *
      */
-    public function getProviderWorkHours($providerId,$facilityId,$visitType,$date){
+    public function getProviderWorkHours($providerId, $facilityId, $visitType, $date)
+    {
 
         $times = \DB::table('iu_scheduler_provider_schedule_info')
-            ->select(array('StartTime', 'EndTime','minutes'
+            ->select(array('StartTime', 'EndTime', 'minutes'
             ))
             ->where('CodeId', '=', $visitType)
-            ->where('facilityId','=',$facilityId)
+            ->where('facilityId', '=', $facilityId)
             ->where('weekday', '=', $this->build_sql_week_day_clause($date))
-            ->where('Id', '=',$providerId)
+            ->where('Id', '=', $providerId)
             ->first();
         return $times;
     }
 
-    function getProviderWorkHoursForMonth($visitType,$facilityId,$providerId){
+    function getProviderWorkHoursForMonth($visitType, $facilityId, $providerId)
+    {
 
         $times = \DB::table('iu_scheduler_provider_schedule_info')
             ->select(\DB::Raw('min(StartTime) as StartTime, max(EndTime) as EndTime,  max(minutes) as minutes'
             ))
             ->where('CodeId', '=', $visitType)
-            ->where('facilityId','=',$facilityId)
-
-            ->where('Id', '=',$providerId)
+            ->where('facilityId', '=', $facilityId)
+            ->where('Id', '=', $providerId)
             ->first();
         return $times;
     }
 
 
-    function build_sql_week_day_clause($date){
+    function build_sql_week_day_clause($date)
+    {
 
-        return \DB::raw('DAYOFWEEK("'.$date .'")');
+        return \DB::raw('DAYOFWEEK("' . $date . '")');
 
     }
 
 
-    public function getProviderName($providerId){
+    public function getProviderName($providerId)
+    {
         $name = \DB::table('iu_scheduler_provider_schedule_info')
             ->select(array('Name'))
             ->where('Id', '=', $providerId)
-             ->first();
+            ->first();
 
         return $name->Name;
     }
 
     public function  getFirstAvailableProviderWorkHours($facilityId,
-                $visitType,$date,$startTime,$endTime){
+                                                        $visitType, $date, $startTime, $endTime)
+    {
 
-        $providers = $this->getAllProvidersWithWorkHours($facilityId,$visitType,$date);
+        $providers = $this->getAllProvidersWithWorkHours($facilityId, $visitType, $date);
         $pdo = \DB::connection('mysql')->getPdo();
         $pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
         $apptRep = new AppointmentRepository();
 
-        $providerArray=array();
+        $providerArray = array();
 
-        foreach($providers as $provider){
-            $overlapping_hours = get_overlapping_hr($provider->StartTime,$provider->EndTime,$startTime,$endTime);
+        foreach ($providers as $provider) {
+            $overlapping_hours = get_overlapping_hr($provider->StartTime, $provider->EndTime, $startTime, $endTime);
 
-             //get entire day for the times
-            $available_times =$apptRep->getAllAppointmentTimes($visitType,$provider->Id,
-                $provider->StartTime,$provider->EndTime,$date);
+            //get entire day for the times
+            $available_times = $apptRep->getAllAppointmentTimes($visitType, $provider->Id,
+                $provider->StartTime, $provider->EndTime, $date);
 
 
-            $time_slots=array();
-            foreach($available_times as $available){
+            $time_slots = array();
+            foreach ($available_times as $available) {
 
-                split_range_into_slots_by_duration($available['Available_from'],$available['Available_to'],
-                    $provider->minutes*60,
+                split_range_into_slots_by_duration($available['Available_from'], $available['Available_to'],
+                    $provider->minutes * 60,
                     $time_slots);
 
             }
 
-            if(count($time_slots)>0){
+            if (count($time_slots) > 0) {
                 //break the time into slots;
-                $start =$overlapping_hours['startTime'];$end=$overlapping_hours['endTime'];
+                $start = $overlapping_hours['startTime'];
+                $end = $overlapping_hours['endTime'];
 
-                 $filter_times = array_filter($time_slots,function($item)use($start,$end,$date){
-                    if($date==date('Y-m-d')){
+                $filter_times = array_filter($time_slots, function ($item) use ($start, $end, $date) {
+                    if ($date == date('Y-m-d')) {
                         $timeNow = date('H:i');
-                        return $item>=$start && $item<=$end && $item>=$timeNow;
+                        return $item >= $start && $item <= $end && $item >= $timeNow;
                     }
-                    return $item>=$start && $item<=$end;
+                    return $item >= $start && $item <= $end;
                 });
 
 
-                $providerArray[$provider->Id]=array('Id'=>$provider->Id,'Name'=>$provider->Name,
-                        'minutes'=>$provider->minutes,'startTime'=>$start,'endTime'=>$endTime,
-                        'times'=>$filter_times);
+                $providerArray[$provider->Id] = array('Id' => $provider->Id, 'Name' => $provider->Name,
+                    'minutes' => $provider->minutes, 'startTime' => $start, 'endTime' => $endTime,
+                    'times' => $filter_times);
 
 
             }
@@ -154,7 +159,7 @@ order by CodeId
         }
 
 
-         usort($providerArray,function($a1,$a2){
+        usort($providerArray, function ($a1, $a2) {
             $name1 = $a1['Name'];
             $name2 = $a2['Name'];
 
@@ -162,9 +167,9 @@ order by CodeId
                 return 0;
             }
             return ($name1 > $name2) ? 1 : -1;
-         });
+        });
 
-        usort($providerArray,function($item1,$item2){
+        usort($providerArray, function ($item1, $item2) {
 
             $t1 = current($item1['times']);
             $t2 = current($item2['times']);

@@ -1,35 +1,34 @@
 <?php
 
-\Form::macro('select_list',function($name,$values,$selected,$attributes=array()){
+\Form::macro('select_list', function ($name, $values, $selected, $attributes = array()) {
 
 
-$selected = Form::getValueAttribute($name, $selected);
-$options['id'] = Form::getIdAttribute($name, $attributes);
-$options['name'] = $name;
+    $selected = Form::getValueAttribute($name, $selected);
+    $options['id'] = Form::getIdAttribute($name, $attributes);
+    $options['name'] = $name;
 
-$html = array();
+    $html = array();
 
-foreach ($values as $value)
-{
-    $display='';
-    if(empty($value->Name)){
-        $display = $value->Id;
-    }else{
-        $display = $value->Name;
+    foreach ($values as $value) {
+        $display = '';
+        if (empty($value->Name)) {
+            $display = $value->Id;
+        } else {
+            $display = $value->Name;
+        }
+        $html[] = Form::getSelectOption($display, $value->Id, $selected);
     }
-$html[] = Form::getSelectOption($display, $value->Id, $selected);
-}
 
-$options = HTML::attributes($options);
+    $options = HTML::attributes($options);
 
-$list = implode('', $html);
+    $list = implode('', $html);
 
-return "<select{$options}>{$list}</select>";
+    return "<select{$options}>{$list}</select>";
 
 
 });
 
-\Form::macro('opt_group',function($name,$values,$selected,$attributes=array()){
+\Form::macro('opt_group', function ($name, $values, $selected, $attributes = array()) {
 
     $selected = Form::getValueAttribute($name, $selected);
     $options['id'] = Form::getIdAttribute($name, $attributes);
@@ -37,46 +36,44 @@ return "<select{$options}>{$list}</select>";
 
 
     $result = "";
-    foreach($values as $opts){
+    foreach ($values as $opts) {
 
 
         $label = $opts['label'];
         $result .= "<optgroup
                         label='$label'>";
 
-        $html =array();
-        foreach ($opts['items'] as  $option)
-        {
-            $display="";
-            $id="";
-            if(is_object($option)){
+        $html = array();
+        foreach ($opts['items'] as $option) {
+            $display = "";
+            $id = "";
+            if (is_object($option)) {
 
-                if(empty($option->Name)){
+                if (empty($option->Name)) {
                     $display = $option->Id;
-                }else{
+                } else {
                     $display = $option->Name;
                 }
                 $id = $option->Id;
-            }
-            else{
+            } else {
 
-                if(empty($option['Name'])){
+                if (empty($option['Name'])) {
                     $display = $option['Id'];
-                }else{
+                } else {
                     $display = $option['Name'];
                 }
-                $id=$option['Id'];
+                $id = $option['Id'];
             }
 
             $html[] = Form::getSelectOption($display, $id, $selected);
         }
 
-        $result  .= implode('', $html)."</optgroup>";
+        $result .= implode('', $html) . "</optgroup>";
 
     }
 
-   $options = HTML::attributes($options);
-   return "<select{$options}>{$result}</select>";
+    $options = HTML::attributes($options);
+    return "<select{$options}>{$result}</select>";
 
 });
 ?>

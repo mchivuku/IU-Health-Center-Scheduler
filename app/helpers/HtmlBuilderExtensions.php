@@ -44,7 +44,7 @@
 
     $table .= '<tbody>';
 
-    if(isset($data)){
+    if (isset($data)) {
         foreach ($data as $value) {
             $table .= $build_tr($value);
         }
@@ -65,15 +65,16 @@
 
         foreach ($items as $liItem) {
 
-                if (\Route::currentRouteName() == $liItem['route_name'] || (is_array($liItem['route_name']) && in_array
-                (\Route::currentRouteName(),
-                        $liItem['route_name']))){
+            if (\Route::currentRouteName() == $liItem['route_name'] || (is_array($liItem['route_name']) && in_array
+                    (\Route::currentRouteName(),
+                        $liItem['route_name']))
+            ) {
 
-                    $html .= "<li class='" . $default_selected . "'>";
+                $html .= "<li class='" . $default_selected . "'>";
 
-                } else {
-                    $html .= "<li>";
-                }
+            } else {
+                $html .= "<li>";
+            }
 
             $html .= $liItem['text'];
 
@@ -89,44 +90,44 @@
 
 
 \HTML::macro('display_times', function ($data) {
-         $html = '';
-         array_walk($data, function ($item) use (&$html) {
-            $build_row = function ($slot) {
-                if (is_null($slot)) return false;
+    $html = '';
+    array_walk($data, function ($item) use (&$html) {
+        $build_row = function ($slot) {
+            if (is_null($slot)) return false;
 
-                if($slot->flag){
-                    $row = sprintf("<div class='selected'>");
-                }else{
-                    $row = sprintf("<div>");
-                }
+            if ($slot->flag) {
+                $row = sprintf("<div class='selected'>");
+            } else {
+                $row = sprintf("<div>");
+            }
 
-                $link = function ($x) {
-                      $hours = date('H',strtotime($x));
-                      $ext = ($hours <= 12) ? 'a.m.' : 'p.m.';
-                      $time_now = strtotime(date('H:i:s'));
-                      $time_x = strtotime($x);
+            $link = function ($x) {
+                $hours = date('H', strtotime($x));
+                $ext = ($hours <= 12) ? 'a.m.' : 'p.m.';
+                $time_now = strtotime(date('H:i:s'));
+                $time_x = strtotime($x);
 
-                      $time_display=date('g:i',
-                            strtotime($x))." ".$ext;
+                $time_display = date('g:i',
+                        strtotime($x)) . " " . $ext;
 
-                    //TODO - ZACH
-                    // return ($time_x<=$time_now)?$time_display:sprintf("<a href='#' title='%s'>%s</a>",$x,
-                      //  $time_display);
+                //TODO - ZACH
+                // return ($time_x<=$time_now)?$time_display:sprintf("<a href='#' title='%s'>%s</a>",$x,
+                //  $time_display);
 
-                    return  sprintf("<a href='#' title='%s'>%s</a>",$x,
-                       $time_display);
-                };
-
-                $row .= $link($slot->time);
-                $row .= "</div>";
-                return $row;
-
+                return sprintf("<a href='#' title='%s'>%s</a>", $x,
+                    $time_display);
             };
 
-            $html.=$build_row($item);
-        });
+            $row .= $link($slot->time);
+            $row .= "</div>";
+            return $row;
 
-    return empty($html)?"No times available":$html;
+        };
+
+        $html .= $build_row($item);
+    });
+
+    return empty($html) ? "No times available" : $html;
 
 });
 

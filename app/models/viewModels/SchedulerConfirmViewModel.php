@@ -1,14 +1,13 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: mchivuku
  * Date: 2/23/15
  * Time: 3:04 PM
  */
-
-
-
-class SchedulerConfirmViewModel{
+class SchedulerConfirmViewModel
+{
     public $providerName;
     public $providerId;
 

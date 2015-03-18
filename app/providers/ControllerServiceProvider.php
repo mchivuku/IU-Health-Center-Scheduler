@@ -9,37 +9,34 @@
 
 use Illuminate\Support\ServiceProvider;
 
-    class ControllerServiceProvider extends ServiceProvider
+class ControllerServiceProvider extends ServiceProvider
+{
+
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
     {
+        $app = $this->app;
 
-        /**
-         * Register the service provider.
-         *
-         * @return void
-         */
-        public function register()
-        {
-            $app=$this->app;
-
-            $app->bind('HomeController', function ($app)
-            {
-                return new \Scheduler\Controllers\HomeController($app);
-            });
+        $app->bind('HomeController', function ($app) {
+            return new \Scheduler\Controllers\HomeController($app);
+        });
 
 
-            $app->bind('NewAppointmentController', function ($app)
-            {
-                return new \Scheduler\Controllers\NewAppointmentController($app);
-            });
+        $app->bind('NewAppointmentController', function ($app) {
+            return new \Scheduler\Controllers\NewAppointmentController($app);
+        });
 
 
-            $app->bind('SettingsController', function ($app)
-            {
-                return new \Scheduler\Controllers\SettingsController($app);
-            });
-
-        }
-
+        $app->bind('SettingsController', function ($app) {
+            return new \Scheduler\Controllers\SettingsController($app);
+        });
 
     }
+
+
+}
 

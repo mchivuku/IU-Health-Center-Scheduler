@@ -111,30 +111,4 @@ var availableDates =
 @endif
 
 </script>
-
-
-<script type="text/javascript">
-
-
-function _schedulerSessionTimeoutClock(expire) {
-        expire.setSeconds(expire.getSeconds() - 1);
-        if (expire.getFullYear() < 2014) {
-
-            window.location.href = "https://seville.iuhc.iub" +
-             ".edu/comm/hcScheduler/public/newAppointment/clearsession?visitType="+getVisitType()
-             +"&facility="+getFacility();
-        }
-    }
-
-    window.onload = function() {
-        var expire = new Date(2014, 0, 1);
-        expire.setSeconds(<?echo SESSION_ACTIVITY_TIME;?>);
-        window.setInterval(
-            function() {
-                _schedulerSessionTimeoutClock(expire);
-            },
-            1000
-        );
-    }
-</script>
 @stop

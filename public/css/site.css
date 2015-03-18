@@ -33,6 +33,16 @@ a.close-reveal-modal:hover {
     color: inherit;
     text-decoration: inherit; }
 
+/* Typography */
+h1 {
+    font-size: 1.875rem; }
+
+h2 {
+    font-size: 1.5rem; }
+
+@media only screen and (min-width: 64.063em) {
+    #branding-bar img {
+        left: 0.8rem; } }
 meta.foundation-version {
     font-family: "/5.5.1/"; }
 
@@ -1444,6 +1454,8 @@ body:not(.home) .emergency-info h2 {
 .personal-info ul {
     margin-left: 0;
     list-style: none; }
+.personal-info p {
+    margin-top: 0.5rem; }
 
 .emergency-info {
     border-bottom: 1px solid #dbdbdb; }
@@ -1471,12 +1483,18 @@ body:not(.home) .emergency-info h2 {
         margin-right: 0; }
     .personal-info h2,
     .emergency-info h2 {
+        margin-bottom: 0rem;
+        padding-bottom: 0;
         font-size: 1.475rem; }
     .personal-info p,
     .personal-info ul,
     .emergency-info p,
     .emergency-info ul {
+        padding-right: 1rem;
         font-size: 0.875rem; }
+    .personal-info p,
+    .emergency-info p {
+        margin-top: 0; }
 
     header h1 {
         font-size: 1.875rem; }
@@ -1867,8 +1885,9 @@ body:not(.home) .emergency-info h2 {
     margin: 0; }
 .time-of-day li {
     display: block;
-    padding: 0.4rem 0.5rem;
+    padding: 0.3rem 0.5rem;
     float: left;
+    font-size: 1rem;
     width: 50%;
     cursor: pointer;
     background-color: #f5f5f5;
@@ -1993,7 +2012,10 @@ body:not(.home) .emergency-info h2 {
 
 .ui-datepicker-calendar {
     margin-top: 10px; }
+.ui-datepicker-calendar tr:nth-of-type(even) {
+    background: #fff; }
 .ui-datepicker-calendar td {
+    border: 1px solid #e4e4e4;
     cursor: pointer; }
 .ui-datepicker-calendar td.ui-datepicker-current-day:hover {
     background-color: #990000; }
@@ -2034,6 +2056,10 @@ body:not(.home) .emergency-info h2 {
 .unavailable-day .legend {
     background-color: #E4E4E4;
     border: 1px solid #a1a1a1; }
+
+td.ui-datepicker-unselectable:hover {
+    background-color: #e4e4e4;
+    cursor: inherit; }
 
 @media only screen and (min-width: 40.125em) {
     .calendar {
@@ -2105,5 +2131,7 @@ body:not(.home) .emergency-info h2 {
     .settings .submit .button {
         margin-top: 1rem;
         float: right; } }
+/* Error Pages */
+.error .row:first-child {
+    padding-top: 24px; }
 
-/*# sourceMappingURL=site.css.map */

@@ -8,12 +8,14 @@
         }
     }
 
-    window.onload = function() {
+    window.onload = function () {
         var expire = new Date(2014, 0, 1);
-        expire.setSeconds(<?php echo 1; ?> * 60);
+        expire.setSeconds(<?php echo 1; ?> * 60
+        )
+        ;
         console.log('expiring');
         window.setInterval(
-            function() {
+            function () {
                 _schedulerSessionTimeoutClock(expire);
             },
             1000

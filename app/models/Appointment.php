@@ -7,7 +7,8 @@
  */
 require_once 'Base.php';
 
-class Appointment extends Base{
+class Appointment extends Base
+{
 
     protected $encId;
     protected $patientId;
@@ -32,20 +33,23 @@ class Appointment extends Base{
     protected $visitTypeId;
 
 
-    public function getProviderName(){
-        return $this->formatName($this->providerLastName,$this->providerFirstName);
+    public function getProviderName()
+    {
+        return $this->formatName($this->providerLastName, $this->providerFirstName);
     }
 
-    public function getStart(){
-        if($this->displayFormat){
+    public function getStart()
+    {
+        if ($this->displayFormat) {
             return $this->formatDisplayTime($this->startTime);
         }
 
         return $this->formatSaveTime($this->startTime);
     }
 
-    public function getEndTime(){
-        if($this->displayFormat){
+    public function getEndTime()
+    {
+        if ($this->displayFormat) {
             return $this->formatDisplayTime($this->endTime);
 
         }
@@ -53,7 +57,8 @@ class Appointment extends Base{
 
     }
 
-    public function getAppointmentDate(){
+    public function getAppointmentDate()
+    {
         return $this->formatDate($this->date);
     }
 

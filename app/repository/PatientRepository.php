@@ -8,7 +8,8 @@
 
 namespace Scheduler\Repository;
 
-class PatientRepository{
+class PatientRepository
+{
 
     /***
      * Function to retrieve patient Id given university Id
@@ -16,12 +17,13 @@ class PatientRepository{
      * @param $universityId
      * @return mixed
      */
-    public function getPatientId($universityId){
+    public function getPatientId($universityId)
+    {
 
         $patient = \DB::table('patients')
             ->select(array('pid as patientId'
             ))
-            ->where('patients.ControlNo', '=' ,$universityId)
+            ->where('patients.ControlNo', '=', $universityId)
             ->first();
         return $patient->patientId;
     }
@@ -32,11 +34,12 @@ class PatientRepository{
      * @param $universityId
      * @return mixed
      */
-    public function getTextEnabledValue($universityId){
+    public function getTextEnabledValue($universityId)
+    {
         $patient = \DB::table('patients')
             ->select(array('textenabled'
             ))
-            ->where('patients.ControlNo', '=' ,$universityId)
+            ->where('patients.ControlNo', '=', $universityId)
             ->first();
 
         return $patient->textenabled;
@@ -48,9 +51,10 @@ class PatientRepository{
      * @param $universityId
      * @param $value
      */
-    public function updateTextEnabledValue($universityId,$value){
+    public function updateTextEnabledValue($universityId, $value)
+    {
         \DB::table('patients')
-            ->where('patients.ControlNo', '=' ,$universityId)
+            ->where('patients.ControlNo', '=', $universityId)
             ->update(array('textenabled' => $value));
 
 

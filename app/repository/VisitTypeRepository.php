@@ -8,22 +8,23 @@
 namespace Scheduler\Repository;
 
 
-class VisitTypeRepository{
+class VisitTypeRepository
+{
     protected $table = 'visitcodes';
 
-    public function getAllVisitTypes($facilityId){
+    public function getAllVisitTypes($facilityId)
+    {
 
         $visitTypes_list = \DB::table($this->table)
-            ->select( array('CodeId as Id','Description as Name'
+            ->select(array('CodeId as Id', 'Description as Name'
             ))
-              // facilityId - join with Chart title to retrieve visitTypes;
-              ->whereExists(function($query)use($facilityId)
-            {
+            // facilityId - join with Chart title to retrieve visitTypes;
+            ->whereExists(function ($query) use ($facilityId) {
                 $query->select(\DB::raw(1))
                     ->from('iu_scheduler_facility_charttitle')
                     ->whereRaw('lower(iu_scheduler_facility_charttitle.ChartTitle) like
                                 lower(visitcodes.ChartTitle)')
-                    ->where('FacilityId','=',$facilityId);
+                    ->where('FacilityId', '=', $facilityId);
             })
             ->orderBy('Description', 'ASC')
             ->get();
@@ -37,14 +38,15 @@ class VisitTypeRepository{
      * Function to return visit name given visit code
      *
      */
-    public function getVisitTypeName($visitCode){
+    public function getVisitTypeName($visitCode)
+    {
 
 
         $visitType = \DB::table($this->table)
-            ->select( array('Description as Name'
+            ->select(array('Description as Name'
             ))
-            ->where('Name','!=',"' '")
-            ->where('CodeId','=',$visitCode)
+            ->where('Name', '!=', "' '")
+            ->where('CodeId', '=', $visitCode)
             ->orderBy('Name', 'ASC')
             ->first();
 

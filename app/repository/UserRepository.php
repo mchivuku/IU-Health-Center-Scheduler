@@ -33,13 +33,13 @@ class UserRepository
             'dob as dateOfBirth',
             'sex',
             'patients.ControlNo as universityId',
-            'umobileno as phone'
+            'umobileno as phone','textenabled as textEnabled'
         ))->first();
+
 
         $user = new \User();
 
-        array_walk($dbUser, function($v, $k) use (&$user)
-        {
+        array_walk($dbUser, function ($v, $k) use (&$user) {
             $user->{$k} = $v;
         });
 

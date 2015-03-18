@@ -12,7 +12,7 @@ class ShibbolethRepository
 {
 
 
-    protected  $shibboleth_mapping = array(
+    protected $shibboleth_mapping = array(
         'firstName' => array('name' => 'givenName',
             'filter' =>
                 array('flags' => FILTER_SANITIZE_STRING, 'options' => FILTER_FLAG_STRIP_LOW)),
@@ -28,14 +28,16 @@ class ShibbolethRepository
         'networkId' => array('name' => 'cn', 'filter' =>
             array('flags' => FILTER_SANITIZE_STRING, 'options' => FILTER_FLAG_STRIP_LOW)),
 
-        'iuEduPersonAffiliation' => array('name' => 'iuEduPersonAffiliation', 'filter' =>
+        'affiliation' => array('name' => 'unscoped-affiliation', 'filter' =>
             array('flags' => FILTER_SANITIZE_STRING, 'options' => FILTER_FLAG_STRIP_LOW)),
 
     );
 
-    public function __construct(){
+    public function __construct()
+    {
 
     }
+
     /*
     * LDAP variables are stored inside the server
     */
@@ -86,13 +88,13 @@ class ShibbolethRepository
      */
     public function  getUserUniversityId()
     {
-        $array =$this->shibboleth_mapping;
+        $array = $this->shibboleth_mapping;
 
         $propertyInfo = $array['universityId'];
         $name = $propertyInfo['name'];
         $filter = $propertyInfo['filter'];
 
-        $univ= $this->getPersonPropertyValue($name, $filter);
+        $univ = $this->getPersonPropertyValue($name, $filter);
 
         return $univ;
 
@@ -102,10 +104,16 @@ class ShibbolethRepository
      *
      * Get EduPersonAffiliation
      */
-    public function getEduPersonAffiliation(){
+    public function getPersonAffiliation()
+    {
 
-        echo "<pre>";
-        print_r($_SERVER);exit;
+        $array = $this->shibboleth_mapping;
+
+        $propertyInfo = $array['affiliation'];
+        $name = $propertyInfo['name'];
+        $filter = $propertyInfo['filter'];
+        $affiliation = $this->getPersonPropertyValue($name, $filter);
+        return $affiliation;
 
     }
 }

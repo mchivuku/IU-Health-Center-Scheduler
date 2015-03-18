@@ -13,12 +13,12 @@
 
 
 ClassLoader::addDirectories(array(
-    app_path().'/commands',
-    app_path().'/controllers',
-    app_path().'/models',
-    app_path().'/database/seeds',
-    app_path().'/repository',
-    app_path().'/providers',
+    app_path() . '/commands',
+    app_path() . '/controllers',
+    app_path() . '/models',
+    app_path() . '/database/seeds',
+    app_path() . '/repository',
+    app_path() . '/providers',
 
 ));
 
@@ -34,8 +34,8 @@ ClassLoader::addDirectories(array(
 */
 
 
-$logFile = 'log-'.php_sapi_name().'.txt';
-Log::useDailyFiles(storage_path().'/logs/'.$logFile);
+$logFile = 'log-' . php_sapi_name() . '.txt';
+Log::useDailyFiles(storage_path() . '/logs/' . $logFile);
 
 
 /*
@@ -51,32 +51,30 @@ Log::useDailyFiles(storage_path().'/logs/'.$logFile);
 |
 */
 
-App::error(function(Exception $exception, $code)
-{
+App::error(function (Exception $exception, $code) {
 
 
-	   Log::error($exception);
+    Log::error($exception);
 
-        $header_title = array('label'=>'IU Health Center Appointments',
-            'text'=>'Schedule an appointment or get information about appointments you have already scheduled.');
+    $header_title = array('label' => 'IU Health Center Appointments',
+        'text' => 'Schedule an appointment or get information about appointments you have already scheduled.');
 
-    if(Config::get('app.debug')==false){
-        switch ($code)
-        {
+    if (Config::get('app.debug') == false) {
+        switch ($code) {
             case 403:
-                View::share(array('title'=>'Un Authorized','header_title'=>$header_title));
+                View::share(array('title' => 'Un Authorized', 'header_title' => $header_title));
                 return Response::view('errors.403', array(), 403);
 
             case 404:
-                View::share(array('title'=>'Not Found','header_title'=>$header_title));
+                View::share(array('title' => 'Not Found', 'header_title' => $header_title));
                 return Response::view('errors.404', array(), 404);
 
             case 500:
-                View::share(array('title'=>'Exception','header_title'=>$header_title));
+                View::share(array('title' => 'Exception', 'header_title' => $header_title));
                 return Response::view('errors.500', array(), 500);
 
             default:
-                View::share(array('title'=>'Error','header_title'=>$header_title));
+                View::share(array('title' => 'Error', 'header_title' => $header_title));
                 return Response::view('errors.default', array(), $code);
 
         }
@@ -96,12 +94,9 @@ App::error(function(Exception $exception, $code)
 |
 */
 
-App::down(function()
-{
-	return Response::make("Be right back!", 503);
+App::down(function () {
+    return Response::make("Be right back!", 503);
 });
-
-
 
 
 /*
@@ -128,10 +123,6 @@ App::Before(function($request){
 */
 
 
-
-
-
-
-require app_path().'/filters.php';
-include app_path().'/helpers/HtmlBuilderExtensions.php';
-include app_path().'/helpers/FormBuilderExtensions.php';
+require app_path() . '/filters.php';
+include app_path() . '/helpers/HtmlBuilderExtensions.php';
+include app_path() . '/helpers/FormBuilderExtensions.php';

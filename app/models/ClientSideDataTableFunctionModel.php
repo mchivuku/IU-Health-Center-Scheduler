@@ -15,10 +15,11 @@ class ClientSideDataTableFunctionModel
     public $tableHTMLId;
 
 
-    public function __construct($total,$sortClasses,$tableId){
-        $this->tableHTMLId=$tableId;
-        $this->totalRows=$total;
-        $this->sortableColumns=$sortClasses;
+    public function __construct($total, $sortClasses, $tableId)
+    {
+        $this->tableHTMLId = $tableId;
+        $this->totalRows = $total;
+        $this->sortableColumns = $sortClasses;
     }
 
 }
@@ -37,12 +38,12 @@ class  SortClass
 
     private static $sortClassDataTableMappings
         = array(SortClass::NoSort => "null", SortClass::Numeric => "numeric",
-SortClass::NumericStripHtml => "numeric-html",
+            SortClass::NumericStripHtml => "numeric-html",
             SortClass::Date => "date-euro", SortClass::Currency => "currency", SortClass::CurrencyStripHtml =>
                 "currency-html",
             SortClass::String => "string", SortClass::StringStripHtml => "html");
 
-    static function  getDataTableSortClass( $sc)
+    static function  getDataTableSortClass($sc)
     {
         return self::$sortClassDataTableMappings[$sc];
     }

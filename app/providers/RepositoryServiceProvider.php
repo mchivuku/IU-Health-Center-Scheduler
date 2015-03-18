@@ -6,52 +6,53 @@
  * Time: 2:08 PM
  */
 
- use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\ServiceProvider;
 
- class RepositoryServiceProvider extends ServiceProvider{
+class RepositoryServiceProvider extends ServiceProvider
+{
 
-        /**
-         * Register the service provider.
-         *
-         * @return void
-         */
-        public function register()
-        {
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
 
-            $app = $this->app;
+        $app = $this->app;
 
-            $app->bind('ShibbolethRepository',
-                function(){
-                    return new \Scheduler\Repository\ShibbolethRepository();
-                });
-
-            $app->bind('UserRepository', function() {
-                return new \Scheduler\Repository\UserRepository();
+        $app->bind('ShibbolethRepository',
+            function () {
+                return new \Scheduler\Repository\ShibbolethRepository();
             });
 
+        $app->bind('UserRepository', function () {
+            return new \Scheduler\Repository\UserRepository();
+        });
 
-            $app->bind('AppointmentRepository',function(){
-                return new \Scheduler\Repository\AppointmentRepository();
-            });
 
-            $app->bind('FacilitiesRepository',function(){
-                return new \Scheduler\Repository\FacilitiesRepository();
-            });
+        $app->bind('AppointmentRepository', function () {
+            return new \Scheduler\Repository\AppointmentRepository();
+        });
 
-            $app->bind('VisitTypeRepository',function(){
-                return new \Scheduler\Repository\VisitTypeRepository();
-            });
+        $app->bind('FacilitiesRepository', function () {
+            return new \Scheduler\Repository\FacilitiesRepository();
+        });
 
-            $app->bind('SchedulerLogRepository',function(){
-                return new \Scheduler\Repository\SchedulerLogRepository();
-            });
+        $app->bind('VisitTypeRepository', function () {
+            return new \Scheduler\Repository\VisitTypeRepository();
+        });
 
-            $app->bind('ProviderRepository',function(){
-                return new \Scheduler\Repository\ProviderRepository();
-            });
-            $app->bind('PatientRepository',function(){
-                return new \Scheduler\Repository\PatientRepository();
-            });
+        $app->bind('SchedulerLogRepository', function () {
+            return new \Scheduler\Repository\SchedulerLogRepository();
+        });
 
-        }
+        $app->bind('ProviderRepository', function () {
+            return new \Scheduler\Repository\ProviderRepository();
+        });
+        $app->bind('PatientRepository', function () {
+            return new \Scheduler\Repository\PatientRepository();
+        });
+
     }
+}

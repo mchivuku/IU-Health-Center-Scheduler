@@ -8,10 +8,11 @@
 
 require_once 'NewAppointmentBaseViewModel.php';
 
-class NewAppointmentViewModel extends NewAppointmentBaseViewModel{
+class NewAppointmentViewModel extends NewAppointmentBaseViewModel
+{
 
-    public $facilities;
-    public $visitTypes;
+    public $facilities=array();
+    public $visitTypes=array();
 
     public $selectedFacility;
     public $selectedvisitType;

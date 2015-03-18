@@ -7,7 +7,8 @@
  */
 require_once 'NewAppointmentBaseViewModel.php';
 
-class SchedulerTabViewModel extends NewAppointmentBaseViewModel{
+class SchedulerTabViewModel extends NewAppointmentBaseViewModel
+{
     public $providers;
     public $appointments;
     public $visitType;
@@ -25,7 +26,8 @@ class SchedulerTabViewModel extends NewAppointmentBaseViewModel{
 }
 
 
-class AppointmentSlotViewModel{
+class AppointmentSlotViewModel
+{
     public $time;
     public $time_text;
     public $flag;

@@ -25,7 +25,6 @@ Route::get('/confirmCancellation', array(
 ));
 
 
-
 Route::post('/cancelAppointment', array(
     'as' => 'cancelAppointment',
     'uses' => 'HomeController@cancelAppointment'
@@ -42,14 +41,13 @@ Route::get('/getMoreInformation', array(
     'uses' => 'HomeController@getMoreInformation'
 ));
 
-Route::get('/serverdump',function(){
+Route::get('/serverdump', function () {
     echo "<pre>";
     print_r($_SERVER);
 });
 
 
-
-Route::group(array('prefix' => 'settings'), function() {
+Route::group(array('prefix' => 'settings'), function () {
 
     Route::get('/', array(
         'as' => 'settings',
@@ -64,7 +62,7 @@ Route::group(array('prefix' => 'settings'), function() {
 });
 
 //TODO - route grouping
-Route::group(array('prefix' => 'newAppointment'), function(){
+Route::group(array('prefix' => 'newAppointment'), function () {
 
     Route::get('/schedule', array(
         'as' => 'newAppointment.schedule',
@@ -76,10 +74,10 @@ Route::group(array('prefix' => 'newAppointment'), function(){
         'uses' => 'NewAppointmentController@scheduleSave'
     ));
 
-    Route::get( '/getTimes', array(
+    Route::get('/getTimes', array(
         'as' => 'newAppointment.getTimes',
         'uses' => 'NewAppointmentController@getTimes'
-    ) );
+    ));
 
     Route::get('/getVisitTypes',
         array(
@@ -129,7 +127,6 @@ Route::group(array('prefix' => 'newAppointment'), function(){
             'as' => 'newAppointment.index',
             'uses' => 'NewAppointmentController@getIndex'
         ));
-
 
 
 });

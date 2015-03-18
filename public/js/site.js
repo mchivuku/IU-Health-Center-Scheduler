@@ -8693,7 +8693,7 @@
             var i, ien, j, jen, k, ken;
             var col, cell, detectedType, cache;
 
-            // For each column, spin over the 
+            // For each column, spin over the
             for ( i=0, ien=columns.length ; i<ien ; i++ ) {
                 col = columns[i];
                 cache = [];
@@ -10844,7 +10844,7 @@
                  * word order. We also want double quoted text to be preserved, so word
                  * order is important - a la google. So this is what we want to
                  * generate:
-                 * 
+                 *
                  * ^(?=.*?\bone\b)(?=.*?\btwo three\b)(?=.*?\bfour\b).*$
                  */
                 var a = $.map( search.match( /"[^"]+"|[^ ]+/g ) || '', function ( word ) {
@@ -12006,7 +12006,7 @@
                 // Table has been built, attach to the document so we can work with it
                 tmpTable.appendTo( tableContainer );
 
-                // When scrolling (X or Y) we want to set the width of the table as 
+                // When scrolling (X or Y) we want to set the width of the table as
                 // appropriate. However, when not scrolling leave the table width as it
                 // is. This results in slightly different, but I think correct behaviour
                 if ( scrollX && scrollXInner ) {
@@ -22114,7 +22114,7 @@
 
         // Filter formatting functions. See model.ext.ofnSearch for information about
         // what is required from these methods.
-        // 
+        //
         // Note that additional search methods are added for the html numbers and
         // html formatted numbers by `_addNumericSort()` when we know what the decimal
         // place is

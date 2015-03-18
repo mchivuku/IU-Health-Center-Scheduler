@@ -115,10 +115,13 @@ function refreshDatePicker(dates) {
 
 function update_time_links() {
 
-    $('#available-times').children().on('click', function () {
-        $('div.selected').removeClass('selected');
-        $(this).addClass('selected');
-        var startTime = $(this).children('div.selected a').attr('title');
+    $('#available-times div a').on('click', function (event) {
+
+        event.preventDefault();
+
+
+        var startTime = $(this).attr('title');
+        console.log(startTime);
         saveSelectedTime(startTime)
 
     });
@@ -140,7 +143,7 @@ function getFacility() {
     return $('#facility').val();
 }
 function getFirstAvailableProvider() {
-    console.log($('#firstAvailableProvider').val());
+
     return $('#firstAvailableProvider').val();
 
 }
@@ -206,7 +209,6 @@ function getData(params, url) {
 
         });
 
-
 }
 
 
@@ -214,13 +216,21 @@ function saveSelectedTime(startTime) {
 
     var visitDuration = $('#visitDuration').val();
     var firstAvailableProvider = getFirstAvailableProvider();
+    console.log(startTime);
     $.get('saveSelectedTime',
         {
             'providerId': getProviderId(),
             'visitType': getVisitType(),
-            'facility': getFacility(),
+            'facility': getFacility(),'tabId':gettabId(),
             'firstAvailableProvider': firstAvailableProvider,
-            'date': getDate(), 'startTime': startTime, 'visitDuration': visitDuration
+            'date': getDate(), 'startTime': startTime,
+            'visitDuration': visitDuration
+        },function(data){
+            if(data.message){
+
+            }
+            $('.available-timeslots').empty().html(data);
+
         }
     );
 

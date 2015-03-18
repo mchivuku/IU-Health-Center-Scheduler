@@ -1,6 +1,8 @@
 <?php
 require_once 'Base.php';
-class User extends Base{
+
+class User extends Base
+{
 
 
     protected $uid;
@@ -8,7 +10,7 @@ class User extends Base{
     protected $lastName;
     protected $middleName;
     protected $universityId;
-    protected $dataOfBirth;
+    protected $dateOfBirth;
     protected $email;
     protected $addressLine1;
     protected $addressLine2;
@@ -17,16 +19,19 @@ class User extends Base{
     protected $zipCode;
     protected $country;
     protected $phone;
+    protected $textEnabled;
 
 
-    public function getName(){
-        return $this->formatName($this->lastName,$this->firstName);
+    public function getName()
+    {
+        return $this->formatName($this->lastName, $this->firstName);
     }
 
-    public function getPhone(){
-        if(!empty($this->phone)) {
-            $phone=preg_replace("/[^0-9]/","",$this->phone);
-            $phone_fix=preg_replace("/([0-9]{3})([0-9]{3})([0-9]{4})/", "($1) $2-$3", $phone);
+    public function getPhone()
+    {
+        if (!empty($this->phone)) {
+            $phone = preg_replace("/[^0-9]/", "", $this->phone);
+            $phone_fix = preg_replace("/([0-9]{3})([0-9]{3})([0-9]{4})/", "($1) $2-$3", $phone);
             return $phone_fix;
         }
     }

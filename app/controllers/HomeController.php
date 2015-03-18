@@ -1,18 +1,10 @@
 <?php
 namespace Scheduler\Controllers;
 
-use Scheduler\Repository\AppointmentRepository;
-use Scheduler\Repository\FacilitiesRepository;
-use Scheduler\Repository\SchedulerLogRepository;
-use Scheduler\Repository\UserRepository;
-use Scheduler\Repository\ShibbolethRepository;
-use Scheduler\Repository\VisitTypeRepository;
-
 
 require_once app_path() . "/models/viewModels/IndexViewModel.php";
 require_once app_path() . "/models/viewModels/TableListViewModel.php";
 require_once app_path() . "/models/ClientSideDataTableFunctionModel.php";
-
 
 
 class HomeController extends BaseController
@@ -42,7 +34,7 @@ class HomeController extends BaseController
     public function getIndex()
     {
 
-        $path = app_path(). "/config/cancellationEmail.txt";
+        $path = app_path() . "/config/cancellationEmail.txt";
 
 
         $univId = $this->getUniversityId();
@@ -135,21 +127,21 @@ class HomeController extends BaseController
 
         $appt_date_time = $this->apptRepo->getAppointment($encId);
 
-        $path = app_path(). "/config/cancellationEmail.txt";
+        $path = app_path() . "/config/cancellationEmail.txt";
 
-          if(file_exists($path) && ($this->user_profile->email)!=""){
-            $message = file_get_contents($path,FILE_USE_INCLUDE_PATH);
+        if (file_exists($path) && ($this->user_profile->email) != "") {
+            $message = file_get_contents($path, FILE_USE_INCLUDE_PATH);
 
-            $app_date_time= date_format(new \Datetime($appt_date_time->date." " .
-              $appt_date_time->startTime),
-             'd/m/y  g:i a');
+            $app_date_time = date_format(new \Datetime($appt_date_time->date . " " .
+                    $appt_date_time->startTime),
+                'd/m/y  g:i a');
 
-             $x = str_replace('%date%',$app_date_time, $message);
+            $x = str_replace('%date%', $app_date_time, $message);
 
             //send cancellation email
-            $this->emailService->send(array('name'=>$this->user_profile->getName(),
-                'email'=>$this->user_profile->email,'message'=>$x,
-                'subject'=>$this->lang['Cancellation_Email_Subject']));
+            $this->emailService->send(array('name' => $this->user_profile->getName(),
+                'email' => $this->user_profile->email, 'message' => $x,
+                'subject' => $this->lang['Cancellation_Email_Subject']));
 
         }
 
@@ -190,7 +182,6 @@ class HomeController extends BaseController
         session_destroy();
         return \Redirect::to("https://cas.iu.edu/cas/logout");
     }
-
 
 
 }
