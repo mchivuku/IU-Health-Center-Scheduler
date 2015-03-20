@@ -19,11 +19,11 @@ require app_path() . "/helpers/Utils.php";
 class NewAppointmentController extends BaseController
 {
     const FIRST_AVAILABLE_PROVIDER = 0;
+    protected $label = 'First Available Provider';
+
     protected $header_title = array('label' => 'IU Health Center Appointments',
         'text' => 'Schedule an appointment or get information about appointments
                  you have already scheduled.');
-    protected $label = 'First Available Provider';
-
 
     public function  __construct($app)
     {
@@ -32,21 +32,9 @@ class NewAppointmentController extends BaseController
 
     }
 
-    private function checkIsFacultyOrStaff(){
-        $affiliations = explode(";",$this->getPersonAffiliation());
-        $staffFaculty=false;
-        foreach($affiliations as $a){
-            if(strtolower($a)=='staff'||strtolower($a)=='faculty')
-            {
-                $staffFaculty=true;
-                break;
-            }
-        }
-        return $staffFaculty;
-    }
-
     /**
-     * Function to return index view for the new appointment
+     * Function to return index view for the new appointment - loads the form with facilities
+     * and visitTypes
      */
     public function getIndex()
     {
@@ -58,15 +46,15 @@ class NewAppointmentController extends BaseController
 
         $facultyStaffPersonnel = $this->checkIsFacultyOrStaff();
 
-        if($facultyStaffPersonnel==1){
+        if ($facultyStaffPersonnel == 1) {
             $model->facilities = $this->facilitiesRepo->getAllFacultyStaffFacilities();
 
-        }else{
+        } else {
             $model->facilities = $this->facilitiesRepo->getAllFacilities();
 
         }
 
-        if(count($model->facilities)>0){
+        if (count($model->facilities) > 0) {
             if (isset($model->selectedFacility)) {
                 $facility = $model->selectedFacility;
             } else {
@@ -83,6 +71,22 @@ class NewAppointmentController extends BaseController
         return $this->view('pages.new-appointment-step1')
             ->viewdata(array('model' => $model))
             ->title('New Appointment');
+    }
+
+    /**
+     *  Function to check if the logged in user is staff or faculty
+     */
+    private function checkIsFacultyOrStaff()
+    {
+        $affiliations = explode(";", $this->getPersonAffiliation());
+        $staffFaculty = false;
+        foreach ($affiliations as $a) {
+            if (strtolower($a) == 'staff' || strtolower($a) == 'faculty') {
+                $staffFaculty = true;
+                break;
+            }
+        }
+        return $staffFaculty;
     }
 
     /***
@@ -105,8 +109,6 @@ class NewAppointmentController extends BaseController
      */
     public function schedule()
     {
-
-
         $facilityId = \Input::get('facility');
         $visitType = \Input::get('visitType');
         $tabId = \Input::get('tabId');
@@ -114,6 +116,7 @@ class NewAppointmentController extends BaseController
         $providerId = \Input::get('providerId');
 
 
+        /* back link */
         $params = array('visitType' => $visitType, 'facility' => $facilityId);
         $queryString = http_build_query($params);
         $back_link = \URL::to(action('NewAppointmentController@getIndex') . "?" . $queryString);
@@ -123,7 +126,7 @@ class NewAppointmentController extends BaseController
 
         if (!isset($date))
             $date = date('Y-m-d');
-        if (!isset($tabId))
+        if (!isset($tabId) || $tabId == "")
             $tabId = \ScheduleTimes::DAY;
 
 
@@ -144,6 +147,7 @@ class NewAppointmentController extends BaseController
                         Appointments');
         }
 
+
         //If there are providers - get the first available provider
         $model = new \SchedulerTabViewModel();
         $model->tabs = $schedule_times->getTabsForScheduleTimes();
@@ -154,55 +158,37 @@ class NewAppointmentController extends BaseController
         $model->visitType = $visitType;
         $model->facility = $facilityId;
 
-        // First time
+        $result=array();
+        // First time - get first available provider
         if (!isset($providerId)) {
-            $first_available_provider_info = $this->providerRepo
-                ->getFirstAvailableProviderWorkHours($facilityId,
-                    $visitType, $date, $schedule_start_time, $schedule_end_time);
+
+            $result = getAppointmentTimesForFirstAvailableProvider($facilityId, $visitType, $date, $schedule_start_time,
+                $schedule_end_time, true);
 
 
-            $id = $first_available_provider_info['Id'];
-            $selected_start_time = $this->schedulerLogRepo->getSelectedTime($this->getUserSessionId(),
-                $facilityId, $visitType, $id, $date);
-
-            $model->selected_startTime = $selected_start_time;
-            $model->scheduler_slots = $this->build_appt_slot_view_model($first_available_provider_info['times'],
-                $selected_start_time, $first_available_provider_info['startTime'], $first_available_provider_info['endTime']);
+        }else {
 
 
-            $model->selectedProvider = self::FIRST_AVAILABLE_PROVIDER;
-            $model->firstAvailableProvider = $id;
-            $model->visitDuration = $first_available_provider_info['minutes'];
 
-            //Available for month
-            $hrs = $this->providerRepo->getProviderWorkHoursForMonth($visitType, $facilityId, $id);
-            $model->available_dates = $this->apptRepo->getAvailableDates(date('m', strtotime($date)), date('Y',
-                    strtotime($date)),
-                $id, $visitType, $this->getUserSessionId(),
-                $hrs->StartTime,
-                $hrs->EndTime,
-                $first_available_provider_info['minutes']);
+        }
+
+
 
         } else {
 
-            $provider_work_hours = $this->providerRepo->getProviderWorkHours($providerId, $facilityId, $visitType, $date);
-
-            $overlapping_times = get_overlapping_hr($schedule_start_time, $schedule_end_time,
-                $provider_work_hours->StartTime, $provider_work_hours->EndTime);
+            $available_times = $this->apptRepo->getAllAppointmentTimes($facilityId, $visitType,
+                $providerId, $schedule_start_time, $schedule_end_time,
+                $date);
 
             $selected_start_time = $this->schedulerLogRepo->getSelectedTime($this->getUserSessionId(),
                 $facilityId, $visitType, $providerId, $date);
 
-            $appts_slots = $this->getTimes($providerId, $facilityId, $visitType, $provider_work_hours->minutes,
-                $provider_work_hours->StartTime, $provider_work_hours->EndTime,
-                $overlapping_times['startTime'], $overlapping_times['endTime'], $date, $selected_start_time);
-
-
-            $model->scheduler_slots = $appts_slots;
+            $model->scheduler_slots = $this->build_appt_slot_view_model($available_times['times'],
+                $selected_start_time, $available_times['startTime'], $available_times['endTime'],
+                $available_times['past_times']);
             $model->selectedProvider = $providerId;
             $model->firstAvailableProvider = 0;
-            $model->visitDuration = $provider_work_hours->minutes;
-
+            $model->visitDuration = $available_times['minutes'];
 
             //Available for month
             $hrs = $this->providerRepo->getProviderWorkHoursForMonth($visitType, $facilityId, $providerId);
@@ -211,7 +197,7 @@ class NewAppointmentController extends BaseController
                 $providerId, $visitType, $this->getUserSessionId(),
                 $hrs->StartTime,
                 $hrs->EndTime,
-                $provider_work_hours->minutes);
+                $available_times['minutes']);
 
         }
 
@@ -230,13 +216,22 @@ class NewAppointmentController extends BaseController
 
     }
 
-    function build_appt_slot_view_model($filter_times, $selected_startTime, $startTime, $endTime)
+    function build_appt_slot_view_model($filter_times, $selected_startTime, $startTime, $endTime, $past_times)
     {
 
         if (isset($selected_startTime) && IsTimeInRange($selected_startTime, $startTime, $endTime))
             $filter_times[] = $selected_startTime;
 
-        usort($filter_times, function ($startTime1, $startTime2) {
+
+        if (count($past_times) > 0) {
+            $all_times = array_merge($filter_times, $past_times);
+
+        } else {
+            $all_times = $filter_times;
+        }
+
+
+        usort($all_times, function ($startTime1, $startTime2) {
             $s1 = strtotime($startTime1);
             $s2 = strtotime($startTime2);
             return $s1 < $s2 ? -1 : ($s1 == $s2) ? 0 : 1;
@@ -244,7 +239,7 @@ class NewAppointmentController extends BaseController
 
 
         $appts_slots = array();
-        foreach ($filter_times as $slot) {
+        foreach ($all_times as $slot) {
             $slot_model = new \AppointmentSlotViewModel();
             $slot_model->time = $slot;
             $slot_model->time_text = $slot;
@@ -255,55 +250,22 @@ class NewAppointmentController extends BaseController
 
                 $slot_model->flag = true;
 
+            } else {
+                $slot_model->flag = false;
             }
 
-            $appts_slots[] = $slot_model;
 
+            // past times for current day
+            if (in_array($slot, $past_times)) {
+                $slot_model->past_time_flag = true;
+            }
+
+
+            $appts_slots[] = $slot_model;
 
         }
 
         return $appts_slots;
-    }
-
-    /*** HELPER **/
-    function getTimes($providerId, $facilityId, $visitType, $visitTypeMinutes, $providerStartTime, $providerEndTime,
-                      $startTime, $endTime, $encDate,
-                      $selected_startTime = null)
-    {
-
-        $duration = $visitTypeMinutes * 60;
-
-        $available_times = $this->apptRepo->getAllAppointmentTimes($visitType,
-            $providerId,
-            $providerStartTime,
-            $providerEndTime, $encDate, $this->getUserSessionId());
-
-        //send appointment date
-        return $this->build_time_slots($available_times, $duration, $startTime, $endTime, $selected_startTime, $encDate);
-
-    }
-
-    function build_time_slots($available_times, $duration, $startTime, $endTime, $selected_startTime, $encDate)
-    {
-        $time_slots = array();
-
-        foreach ($available_times as $available) {
-            split_range_into_slots_by_duration($available['Available_from'], $available['Available_to'],
-                $duration,
-                $time_slots);
-        }
-
-        $filter_times = array_filter($time_slots, function ($item) use ($startTime, $endTime, $encDate) {
-            if ($encDate == date('Y-m-d')) {
-                $timeNow = date('H:i');
-                return $item >= $startTime && $item <= $endTime && $item >= $timeNow;
-            }
-            return $item >= $startTime && $item <= $endTime;
-        });
-
-        return $this->build_appt_slot_view_model($filter_times, $selected_startTime, $startTime, $endTime);
-
-
     }
 
     private function appendFirstAvailableProviderItem()
@@ -338,37 +300,42 @@ class NewAppointmentController extends BaseController
         $schedule_start_time = $schedule_times->getStartTimeForDay($tabId);
         $schedule_end_time = $schedule_times->getEndTimeForDay($tabId);
 
-        if ($providerId==0){
-            $provider_work_hours = $this->providerRepo->getFirstAvailableProviderWorkHours($facilityId,
-                $visitType, $date, $schedule_start_time, $schedule_end_time);
-            $selected_start_time = $this->schedulerLogRepo->getSelectedTime($this->getUserSessionId(),
-                $facilityId, $visitType, $provider_work_hours['Id'], $date);
+        if ($providerId == 0) {
 
-            $appts_slots = $this->build_appt_slot_view_model($provider_work_hours['times'],
-                $selected_start_time, $provider_work_hours['startTime'], $provider_work_hours['endTime']);
-            $model->firstAvailableProvider = $provider_work_hours['Id'];
-        }
-        else{
+            $first_available_provider_info = $this->providerRepo
+                ->getFirstAvailableProviderWorkHours($facilityId,
+                    $visitType, $date, $schedule_start_time, $schedule_end_time);
+
+
+            $id = $first_available_provider_info['Id'];
+            $selected_start_time = $this->schedulerLogRepo->getSelectedTime($this->getUserSessionId(),
+                $facilityId, $visitType, $id, $date);
+            $appts_slots = $this->build_appt_slot_view_model($first_available_provider_info['times'],
+                $selected_start_time, $first_available_provider_info['startTime'],
+                $first_available_provider_info['endTime'],
+                $first_available_provider_info['past_times']);
+
+
+            $model->firstAvailableProvider = $first_available_provider_info['Id'];
+
+            $model->visitDuration = $first_available_provider_info['minutes'];
+        } else {
+
+            $available_times = $this->apptRepo->getAllAppointmentTimes($facilityId, $visitType,
+                $providerId, $schedule_start_time, $schedule_end_time,
+                $date);
+
             $selected_start_time = $this->schedulerLogRepo->getSelectedTime($this->getUserSessionId(),
                 $facilityId, $visitType, $providerId, $date);
 
-            $provider_work_hours = $this->providerRepo->getProviderWorkHours($providerId, $facilityId, $visitType, $date);
+            $appts_slots = $this->build_appt_slot_view_model($available_times['times'],
+                $selected_start_time, $available_times['startTime'], $available_times['endTime'],
+                $available_times['past_times']);
 
-            $overlapping_times = get_overlapping_hr($schedule_start_time, $schedule_end_time,
-                $provider_work_hours->StartTime, $provider_work_hours->EndTime);
-
-            $appts_slots = $this->getTimes($providerId, $facilityId, $visitType, $provider_work_hours->minutes,
-                $provider_work_hours->StartTime, $provider_work_hours->EndTime,
-                $overlapping_times['startTime'], $overlapping_times['endTime'], $date, $selected_start_time);
-
-        }
+            $model->firstAvailableProvider = 0;
+            $model->visitDuration = $available_times['minutes'];
 
 
-        if (empty($provider_work_hours)) {
-            $model = array('message' => $this->lang['noProviders']);
-            $response = Response::json($model);
-            $response->header('Content-Type', 'application/json');
-            return $response;
         }
 
 
@@ -393,7 +360,7 @@ class NewAppointmentController extends BaseController
         $input_date = \Input::get('date');
         $startTime = \Input::get('startTime');
         $duration = \Input::get('visitDuration');
-        $tabId =\Input::get('tabId');
+        $tabId = \Input::get('tabId');
 
 
         $endTime = getEndTime($startTime, convertMinToSec($duration));
@@ -411,9 +378,20 @@ class NewAppointmentController extends BaseController
             $response->header('Content-Type', 'application/json');
         }
 
-        return \Redirect::action('NewAppointmentController@getAvailableTimes', array('facility' => $facilityId,
-            'visitType'=>$visitType,'providerId'=>$providerId,'firstAvailableProvider'=>$firstAvailableProvider,
-            'date'=>$input_date,'tabId'=>$tabId));
+        $model = new \SchedulerTabViewModel();
+        $date = parseDateString($input_date);
+        $schedule_start_time = $schedule_times->getStartTimeForDay($tabId);
+        $schedule_end_time = $schedule_times->getEndTimeForDay($tabId);
+
+        $model->scheduler_slots = $appts_slots;
+        $model->tabs = array(\ScheduleTimes::DAY => 'Morning', \ScheduleTimes::AFTERNOON => "Afternoon");
+        $model->activeTab = $tabId;
+        $model->selected_startTime = $selected_start_time;
+
+        return \View::make('includes.timeslots',
+            array('model' => $model));
+
+
     }
 
     /**
@@ -574,5 +552,89 @@ class NewAppointmentController extends BaseController
             'email' => $this->user_profile->email, 'message' => $message, 'subject' => $this->lang['Appointment_Creation_Email_Subject']));
     }
 
+
+    /** Helper functions */
+
+    function getAppointmentTimesForFirstAvailableProvider($facilityId,$visitType,$date,$schedule_start_time,
+                                                          $schedule_end_time,$get_dates=false)
+    {
+        $result = array();
+
+
+        $first_available_provider_info = $this->providerRepo
+            ->getFirstAvailableProviderWorkHours($facilityId,
+                $visitType, $date, $schedule_start_time, $schedule_end_time);
+
+
+        $id = $first_available_provider_info['Id'];
+        $selected_start_time = $this->schedulerLogRepo->getSelectedTime($this->getUserSessionId(),
+            $facilityId, $visitType, $id, $date);
+
+        $result['selected_start_time'] = $selected_start_time;
+
+
+        $result['scheduler_slots'] = $this->build_appt_slot_view_model($first_available_provider_info['times'],
+            $selected_start_time, $first_available_provider_info['startTime'],
+            $first_available_provider_info['endTime'],
+            $first_available_provider_info['past_times']);
+
+
+        $result['selectedProvider'] = self::FIRST_AVAILABLE_PROVIDER;
+        $result['firstAvailableProvider'] = $id;
+        $result['visitDuration'] = $first_available_provider_info['minutes'];
+
+        //Available for month
+        if($get_dates){
+            $hrs = $this->providerRepo->getProviderWorkHoursForMonth($visitType, $facilityId, $id);
+            $result['available_dates'] = $this->apptRepo->getAvailableDates(date('m', strtotime($date)), date('Y',
+                    strtotime($date)),
+                $id, $visitType, $this->getUserSessionId(),
+                $hrs->StartTime,
+                $hrs->EndTime,
+                $first_available_provider_info['minutes']);
+        }
+
+        return $result;
+
+
+    }
+
+
+
+    function getAppointmentTimesForProvider($facilityId,$visitType,$date,$schedule_start_time,
+                                            $schedule_end_time,$providerId,
+                                            $get_dates=false)
+    {
+
+        $result = array();
+
+        $available_times = $this->apptRepo->getAllAppointmentTimes($facilityId, $visitType,
+            $providerId, $schedule_start_time, $schedule_end_time,
+            $date);
+
+
+        $result['selected_start_time'] = $this->schedulerLogRepo->getSelectedTime($this->getUserSessionId(),
+            $facilityId, $visitType, $providerId, $date);
+
+        $result['scheduler_slots'] = $this->build_appt_slot_view_model($available_times['times'],
+            $result['selected_start_time'] , $available_times['startTime'], $available_times['endTime'],
+            $available_times['past_times']);
+
+
+        $result['selectedProvider'] = $providerId;
+        $result['firstAvailableProvider'] = 0;
+        $result['visitDuration'] =  $available_times['minutes'];
+
+        //Available for month
+        if($get_dates) {
+            $hrs = $this->providerRepo->getProviderWorkHoursForMonth($visitType, $facilityId, $providerId);
+            $result['available_dates'] = $this->apptRepo->getAvailableDates(date('m', strtotime($date)), date('Y',
+                    strtotime($date)),
+                $providerId, $visitType, $this->getUserSessionId(),
+                $hrs->StartTime,
+                $hrs->EndTime,
+                $available_times['minutes']);
+        }
+    }
 
 }

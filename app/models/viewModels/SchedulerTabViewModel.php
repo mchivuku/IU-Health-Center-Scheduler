@@ -31,5 +31,6 @@ class AppointmentSlotViewModel
     public $time;
     public $time_text;
     public $flag;
+    public $past_time_flag;
 }
 

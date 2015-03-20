@@ -90,37 +90,42 @@
 
 
 \HTML::macro('display_times', function ($data) {
+
     $html = '';
     array_walk($data, function ($item) use (&$html) {
         $build_row = function ($slot) {
             if (is_null($slot)) return false;
 
-            if ($slot->flag) {
-                $row = sprintf("<div class='selected'>");
-            } else {
-                $row = sprintf("<div>");
-            }
 
-            $link = function ($x) {
+            $link = function ($slot) {
+
+
+                $x = $slot->time;
                 $hours = date('H', strtotime($x));
-                $ext = ($hours <= 12) ? 'a.m.' : 'p.m.';
-                $time_now = strtotime(date('H:i:s'));
-                $time_x = strtotime($x);
-
+                $ext = ($hours < 12) ? 'a.m.' : 'p.m.';
                 $time_display = date('g:i',
                         strtotime($x)) . " " . $ext;
 
-                //TODO - ZACH
-                // return ($time_x<=$time_now)?$time_display:sprintf("<a href='#' title='%s'>%s</a>",$x,
-                //  $time_display);
+                if(!$slot->past_time_flag){
+                    if($slot->flag){
+                        return sprintf("<div class='selected'><a href='#' title='%s'>%s</a></div>", $x,
+                            $time_display);
+                    }else{
+                        return sprintf("<div><a href='#' title='%s'>%s</a></div>", $x,
+                            $time_display);
+                    }
 
-                return sprintf("<a href='#' title='%s'>%s</a>", $x,
-                    $time_display);
+                }else{
+
+                    return sprintf("<div id='past_time' class='unavailable-day'>%s</div>",
+                     $time_display);
+                }
+
+
             };
 
-            $row .= $link($slot->time);
-            $row .= "</div>";
-            return $row;
+
+            return $link($slot);
 
         };
 

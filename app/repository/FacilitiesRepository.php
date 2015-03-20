@@ -43,7 +43,7 @@ class FacilitiesRepository
 
     /* Facilities allowed for students */
     public function getAllFacilities(){
-        return $this->getFacilities(false);
+        return $this->getFacilities();
     }
 
 

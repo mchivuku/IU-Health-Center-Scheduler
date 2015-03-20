@@ -18,7 +18,7 @@ class ScheduleTimes
             return date('H:i', mktime(9, 0, 0, 0, 0, 0));
         }
 
-        return date('H:i', mktime(13, 0, 0, 0, 0, 0));
+        return date('H:i', mktime(12, 0, 0, 0, 0, 0));
 
     }
 
@@ -26,7 +26,7 @@ class ScheduleTimes
     {
         if ($scheduleTime == self::DAY) {
 
-            return date('H:i', mktime(12, 59, 0, 0, 0, 0));
+            return date('H:i', mktime(11, 59, 0, 0, 0, 0));
         }
 
         return date('H:i', mktime(16, 59, 0, 0, 0, 0));

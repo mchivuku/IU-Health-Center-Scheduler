@@ -11,18 +11,6 @@ class EmailService
 
     protected $headers;
 
-    /**
-     * Date: Wed, 15 Dec 2014 12:45:55 -0700
-     * To: test@test.com
-     * From: testfrom@test.com
-     * Subject: UTF-8
-     * Message-ID: <e06deabc923f3378e4b237a20be324cc@www.test.com>
-     * X-Priority: 3
-     * X-Mailer: EOAMailer 5.0.0
-     * MIME-Version: 1.0
-     * Content-Transfer-Encoding: 8bit
-     * Content-Type: text/html; charset="UTF-8"
-     */
 
     public $priorities = array(
         1 => 'Highest',

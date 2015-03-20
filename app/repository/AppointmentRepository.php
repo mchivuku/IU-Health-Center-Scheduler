@@ -8,8 +8,10 @@
 
 namespace Scheduler\Repository;
 
+require_once 'BaseRepository.php';
 
-class AppointmentRepository
+
+class AppointmentRepository extends BaseRepository
 {
     protected $table = 'enc';
     protected $active_appointment_statuses = array('Pending', 'Arrived', 'Checked', 'Rescheduled');
@@ -117,8 +119,12 @@ class AppointmentRepository
      * @param $sessionId - as user interactions are saved to the database.
      * @param $date
      */
-    public function getAllAppointmentTimes($visitType, $providerId, $startTime, $endTime, $date)
+    public function getAllAppointmentTimes($facilityId,$visitType, $providerId, $startTime, $endTime, $date)
     {
+
+        $provider_repo = new ProviderRepository();
+        $provider_work_hours = $provider_repo->getProviderWorkHours($providerId,$facilityId,$visitType,$date);
+
 
         // 1. Appointment query
         $all_appt_times_query = \DB::table('enc')
@@ -146,91 +152,47 @@ class AppointmentRepository
 
         $merged_unavailable = $this->merge_unavailable($unavailable);
 
-        $available = $this->construct_available_times($startTime, $endTime, $merged_unavailable);
+        $available_times = $this->construct_available_times($startTime, $endTime, $merged_unavailable);
+        $overlapping_hours = get_overlapping_hr($startTime,$endTime,$provider_work_hours->StartTime,
+            $provider_work_hours->EndTime);
 
-        return $available;
+        $time_slots = array();
 
+        foreach ($available_times as $available) {
+            split_range_into_slots_by_duration($available['Available_from'], $available['Available_to'],
+                $provider_work_hours->minutes*60,
+                $time_slots);
 
-    }
+        }
+        $start = $overlapping_hours['startTime'];
+        $end = $overlapping_hours['endTime'];
 
-    private function merge_unavailable($times)
-    {
-        if (count($times) <= 0)
-            return;
+        $past_times=array();
+        $filter_times = array_filter($time_slots, function ($item) use ($start, $end, $date,&$past_times) {
+            if ($date == date('Y-m-d')){
+                $timeNow = date('H:i');
+                if(($item >= $start && $item <= $end)){
+                    $past_times[]= $item;
+                }
 
-        // Create an empty stack of intervals
-        $return = array();
-
-        // sort the intervals based on start time
-        usort($times, function ($item1, $item2) {
-
-            $first_slot_1 = $item1->startTime;
-            $first_slot_2 = $item2->startTime;
-
-            if ($first_slot_1 == $first_slot_2) {
-                return 0;
+                return $item >= $start && $item <= $end && $item >= $timeNow;
             }
-            return ($first_slot_1 > $first_slot_2) ? 1 : -1;
 
+
+            return $item >= $start && $item <= $end;
         });
 
-        $i = 1;
 
-        $first = $times[0];
-        $starttime = $first->startTime;
-        $endTime = $first->endTime;
 
-        for ($i = 1; $i < count($times); $i++) {
-            $current = $times[$i];
+        return  array('Id' => $providerId,
+             'minutes' => $provider_work_hours->minutes,
+            'startTime' => $start, 'endTime' => $end,
+            'times' => $filter_times,'past_times'=>$past_times);
 
-            if ($current->startTime <= $endTime) {
-                $endTime = max($current->endTime, $endTime);
-            } else {
-                $return[] = array('startTime' => $starttime, 'endTime' => $endTime);
-                $starttime = $current->startTime;
-                $endTime = $current->endTime;
-            }
-        }
-        $return[] = array('startTime' => $starttime, 'endTime' => $endTime);
 
-        return $return;
+
     }
 
-    //function to get the entire schedule
-    private function construct_available_times($startTime, $endTime, $unavailable_times)
-    {
-
-        $available = array();
-
-        for ($i = 0; $i < count($unavailable_times); $i++) {
-
-            if ($i == 0) {
-                $start = $startTime;
-                $end = $unavailable_times[$i]['startTime'];
-
-            } else {
-
-                $start = $unavailable_times[$i - 1]['endTime'];
-                $end = $unavailable_times[$i]['startTime'];
-
-            }
-
-            $available[] = array('Available_from' => $start, 'Available_to' => $end);
-
-        }
-
-        if (count($unavailable_times) > 0) {
-            //insert the last element
-            $last = end($unavailable_times);
-            $available[] = array('Available_from' => $last['endTime'], 'Available_to' => $endTime);
-
-        } else {
-            $available[] = array('Available_from' => $startTime, 'Available_to' => $endTime);
-        }
-
-
-        return $available;
-    }
 
     public function createAppointment($controlNo, $sessionId, \Appointment $appointment)
     {
