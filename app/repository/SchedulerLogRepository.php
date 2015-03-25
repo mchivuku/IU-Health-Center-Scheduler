@@ -139,6 +139,8 @@ class SchedulerLogRepository
             return true;
 
         }
+
+
         $pdo->commit();
         return false;
 
@@ -182,7 +184,7 @@ class SchedulerLogRepository
     {
 
         \DB::table($this->table)->whereRaw(\DB::Raw(" time_to_sec(timediff(updateTimestamp,now()
-        )) <=-300"))->delete();
+        )) <="."-".CLEAR_OLD_SESSIONS_FROM_LOG_AFTER))->delete();
 
 
     }

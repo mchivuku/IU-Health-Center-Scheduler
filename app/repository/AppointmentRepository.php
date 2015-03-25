@@ -171,11 +171,11 @@ class AppointmentRepository extends BaseRepository
         $filter_times = array_filter($time_slots, function ($item) use ($start, $end, $date,&$past_times) {
             if ($date == date('Y-m-d')){
                 $timeNow = date('H:i');
-                if(($item >= $start && $item <= $end)){
+                if(($item <= $timeNow && $item>=$start && $item<=$end)){
                     $past_times[]= $item;
                 }
 
-                return $item >= $start && $item <= $end && $item >= $timeNow;
+                return $item >= $start && $item <= $end;
             }
 
 
@@ -507,7 +507,7 @@ where controlNo=:controlNo)
             ->select('content')
             ->first();
 
-        if (empty($email_template_content)) {
+        if (($email_template_content)=="") {
 
             $email_template_content = \DB::table('tblwebTemplates')
                 ->select('content')->where("Name", 'like',
@@ -515,9 +515,7 @@ where controlNo=:controlNo)
 
         }
 
-        // $email = (strip_tags($email_template_content->content,'<br/><br><p><strong><DIV><div><P><STRONG><FONT>'));
-
-        preg_replace('/(<font[^>]*>)|(<\/font>)/', '', $str);;
+        //preg_replace('/(<font[^>]*>)|(<\/font>)/', '', $email_template_content);;
         $email = "<div>" . ($email_template_content->content) . "</div>";
 
         return $email;

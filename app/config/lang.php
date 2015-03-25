@@ -12,3 +12,4 @@ $LANG['generalNotes'] = 'Appointment created online';
 $LANG['session-expiration-message'] = 'Your session has expired and your selection has been cleared';
 $LANG['Cancellation_Email_Subject'] = 'Your appointment has been cancelled';
 $LANG['Appointment_Creation_Email_Subject'] = 'Your appointment has been created';
+$LANG['Unable_to_select_start_time']='start time for the appointment couldn\'t be selected';

@@ -27,3 +27,5 @@ define('DEFAULT_POS_VALUE', 11);
 //Minutes
 define('ALLOW_CANCELLATION_UNTIL_TIME', 60);
 define('CANCELLATION_EMAIL_TXT_PATH', '/config/cancellationEmail.txt');
+
+define('CLEAR_OLD_SESSIONS_FROM_LOG_AFTER', 1800);

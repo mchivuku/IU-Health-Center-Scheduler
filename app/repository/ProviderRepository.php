@@ -270,11 +270,12 @@ class ProviderRepository extends BaseRepository
                 $filter_times = array_filter($time_slots, function ($item) use ($start, $end, $date,&$past_times) {
                     if ($date == date('Y-m-d')){
                         $timeNow = date('H:i');
-                        if(($item >= $start && $item <= $end)){
+
+                        if(($item <= $timeNow && $item>=$start && $item<=$end)){
                             $past_times[]= $item;
                         }
 
-                        return $item >= $start && $item <= $end && $item >= $timeNow;
+                        return $item >= $start && $item <= $end;
                     }
 
 
@@ -289,14 +290,24 @@ class ProviderRepository extends BaseRepository
 
         }
 
-        usort($providerArray, function ($item1, $item2) {
+        usort($providerArray, function ($item1, $item2)use($date){
 
-            $t1 = current($item1['times']);
-            $t2 = current($item2['times']);
+           //ToDO - think about it.
+            if ($date == date('Y-m-d')) {
+                $timeNow = date('H:i');
+                $t1 = current(array_filter($item1['times'],function($x)use($timeNow){return $x>=$timeNow;}));
+                $t2 = current(array_filter($item2['times'],function($x)use($timeNow){return $x>=$timeNow;}));
+
+            }else{
+                $t1 = current($item1['times']);
+                $t2 = current($item2['times']);
+
+            }
 
             if ($t1 == $t2) {
                 return 0;
             }
+
             return ($t1 > $t2) ? 1 : -1;
         });
 

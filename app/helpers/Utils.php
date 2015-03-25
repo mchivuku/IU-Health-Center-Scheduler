@@ -25,7 +25,7 @@ function split_range_into_slots_by_duration($starttime, $endtime, $duration, &$s
     while ($time < $end_time) {
 
         //add date as a key in first level array
-        if (!array_key_exists(date("H:i", $time), $slots)) {
+        if (!in_array(date("H:i", $time), $slots)) {
             $slots[] = date("H:i", $time);
         }
         $time += $duration;

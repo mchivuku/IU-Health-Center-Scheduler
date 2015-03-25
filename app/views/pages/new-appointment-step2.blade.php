@@ -9,8 +9,7 @@
 
 {{Form::hidden('facility', $model->facility,array('id'=>'facility','name'=>'facility'));}}
 {{Form::hidden('visitType', $model->visitType,array('id'=>'visitType','name'=>'visitType'));}}
-{{Form::hidden('visitDuration',
-$model->visitDuration,array('id'=>'visitDuration','name'=>'visitDuration'));}}
+
  {{Form::hidden('date','',array('id'=>'date','name'=>'date'));}}
  {{Form::hidden('startTime',$model->selected_startTime,array('id'=>'startTime','name'=>'startTime'));}}
  {{Form::hidden('tabId','',array('id'=>'tabId','name'=>'tabId'));}}
@@ -33,9 +32,10 @@ $model->visitDuration,array('id'=>'visitDuration','name'=>'visitDuration'));}}
 
 
 <div class="column schedule-appointments">
-
+<span class="step times">3</span>
+<label class="times">Select a Start Time</label>
     <div class="timeslots">
-    <span class="step block">3</span>
+
 
     <ul class="time-of-day">
     @foreach($model->tabs as $k=>$v)
@@ -49,8 +49,9 @@ $model->visitDuration,array('id'=>'visitDuration','name'=>'visitDuration'));}}
     @endif
     @endforeach
     </ul>
-
+<div class="available-timeslots">
        @include('includes.timeslots',array('model'=>$model))
+       </div>
 </div>
 
 </div>

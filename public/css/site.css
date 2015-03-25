@@ -1568,6 +1568,12 @@ body:not(.home) .emergency-info h2 {
     padding-left: 2rem;
     padding-right: 2rem;
     width: auto; }
+.button.back.disabled,
+.button.next.disabled {
+    border: 1px solid #e4e4e4;
+    background-color: #e4e4e4;
+    color: #000;
+    cursor: default; }
 
 .button.back {
     float: left; }
@@ -1882,7 +1888,8 @@ body:not(.home) .emergency-info h2 {
     margin-top: 16px; }
 
 .time-of-day {
-    margin: 0; }
+    margin: 0;
+    margin-bottom: 16px; }
 .time-of-day li {
     display: block;
     padding: 0.3rem 0.5rem;
@@ -1904,7 +1911,6 @@ body:not(.home) .emergency-info h2 {
     color: #fff; }
 
 .available-timeslots {
-    margin-top: 16px;
     margin-bottom: 24px; }
 .available-timeslots .morning > div,
 .available-timeslots .afternoon > div {
@@ -1927,6 +1933,21 @@ body:not(.home) .emergency-info h2 {
 .available-timeslots .morning > div a:hover,
 .available-timeslots .afternoon > div a:hover {
     text-decoration: none; }
+.available-timeslots .morning > .past_time,
+.available-timeslots .afternoon > .past_time {
+    background-color: #e4e4e4;
+    color: #000;
+    cursor: default; }
+.available-timeslots .morning > .past_time a,
+.available-timeslots .afternoon > .past_time a {
+    color: #000; }
+.available-timeslots .morning > .past_time a:hover, .available-timeslots .morning > .past_time:hover,
+.available-timeslots .afternoon > .past_time a:hover,
+.available-timeslots .afternoon > .past_time:hover {
+    cursor: default; }
+.available-timeslots .morning > .past_time:hover,
+.available-timeslots .afternoon > .past_time:hover {
+    background-color: #e4e4e4; }
 .available-timeslots .morning > div:nth-child(4n),
 .available-timeslots .afternoon > div:nth-child(4n) {
     margin-right: 0; }
@@ -1945,6 +1966,9 @@ body:not(.home) .emergency-info h2 {
 .available-timeslots .afternoon .selected,
 .available-timeslots .afternoon .selected:hover {
     background-color: #1a0000; }
+.available-timeslots #error,
+.available-timeslots #warning {
+    margin-bottom: 16px; }
 
 @media only screen and (min-width: 40.125em) {
     .schedule-appointments.column {
@@ -2132,6 +2156,18 @@ td.ui-datepicker-unselectable:hover {
         margin-top: 1rem;
         float: right; } }
 /* Error Pages */
-.error .row:first-child {
+#error,
+#warning {
+    padding: 0.25rem 0.5rem; }
+
+#error {
+    background-color: #ff9494;
+    color: #990000; }
+#error .row:first-child {
     padding-top: 24px; }
 
+#warning {
+    background-color: #FEEFB3;
+    color: #9F6000; }
+
+/*# sourceMappingURL=site.css.map */

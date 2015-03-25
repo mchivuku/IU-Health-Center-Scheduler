@@ -70,9 +70,9 @@ abstract class BaseController extends Controller
 
         $CI = $this;
         //Before every request - check the scheduler log and clear it.
-      //  $this->beforeFilter(function () use ($CI) {
-        //    $CI->schedulerLogRepo->clearAllPreviousSessions();
-        //});
+       $this->beforeFilter(function () use ($CI) {
+            $CI->schedulerLogRepo->clearAllPreviousSessions();
+      });
 
 
         $this->user_profile = $this->getUserProfile();

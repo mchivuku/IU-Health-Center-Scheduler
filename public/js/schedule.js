@@ -5,6 +5,7 @@
 
 
 $(document).ready(function () {
+    update_time_links();
 
 
     $('ul.time-of-day li').on("click", function (event) {
@@ -72,7 +73,7 @@ $(document).ready(function () {
 
     });
 
-    update_time_links();
+
 
     /* Form post */
 
@@ -114,18 +115,37 @@ function refreshDatePicker(dates) {
 
 
 function update_time_links() {
+      $('a.available-time').unbind('click');
 
-    $('#available-times div a').on('click', function (event) {
+      $('a.available-time').click(function(event){
 
         event.preventDefault();
-
-
         var startTime = $(this).attr('title');
         console.log(startTime);
-        saveSelectedTime(startTime)
+        saveSelectedTime(startTime);
 
     });
+
+    showhideNextButton();
+
+
 }
+
+function showhideNextButton(){
+
+    if($('div.selected').text()!='')
+    {
+        $('#scheduleSubmit').removeClass('disabled');
+
+    }else{
+        if(!$('#scheduleSubmit').hasClass('disabled')){
+            $('#scheduleSubmit').addClass('disabled');
+        }
+
+    }
+
+}
+
 
 function getProviderId() {
     return $('#providers').val();
@@ -147,7 +167,6 @@ function getFirstAvailableProvider() {
     return $('#firstAvailableProvider').val();
 
 }
-
 
 function getAvailableTimes(providerId, date, tabId) {
     var params = {
@@ -181,11 +200,13 @@ function getAvailableTimeAndDates(providerId, date, tabId, year, month) {
             else {
                 $('.available-timeslots').empty().html(data);
                 update_time_links();
-
-            }
-
+             }
             getAvailableDates(year, month);
+
+
         });
+
+
 }
 
 
@@ -196,18 +217,18 @@ function getData(params, url) {
         function (data) {
 
             if (data.message) {
-                $('.available-timeslots').empty().html(data.message);
+                $('#error-message').empty().html(data.message);
             }
             else {
-
-
                 $('.available-timeslots').empty().html(data);
-
-                update_time_links();
+               update_time_links();
 
             }
 
+
         });
+
+
 
 }
 
@@ -216,7 +237,6 @@ function saveSelectedTime(startTime) {
 
     var visitDuration = $('#visitDuration').val();
     var firstAvailableProvider = getFirstAvailableProvider();
-    console.log(startTime);
     $.get('saveSelectedTime',
         {
             'providerId': getProviderId(),
@@ -226,10 +246,9 @@ function saveSelectedTime(startTime) {
             'date': getDate(), 'startTime': startTime,
             'visitDuration': visitDuration
         },function(data){
-            if(data.message){
 
-            }
-            $('.available-timeslots').empty().html(data);
+                $('.available-timeslots').empty().html(data);
+                update_time_links();
 
         }
     );

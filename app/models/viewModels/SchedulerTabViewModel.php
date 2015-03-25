@@ -23,7 +23,12 @@ class SchedulerTabViewModel extends NewAppointmentBaseViewModel
     public $available_dates;
     public $selectedProvider;
     public $selectedDate;
+
+
+    public $errorMsg;
+
 }
+
 
 
 class AppointmentSlotViewModel

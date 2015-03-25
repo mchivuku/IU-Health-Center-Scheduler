@@ -99,7 +99,6 @@
 
             $link = function ($slot) {
 
-
                 $x = $slot->time;
                 $hours = date('H', strtotime($x));
                 $ext = ($hours < 12) ? 'a.m.' : 'p.m.';
@@ -108,19 +107,17 @@
 
                 if(!$slot->past_time_flag){
                     if($slot->flag){
-                        return sprintf("<div class='selected'><a href='#' title='%s'>%s</a></div>", $x,
+                        return sprintf("<div class='selected'><a href='#' class='available-time' title='%s'>%s</a></div>", $x,
                             $time_display);
                     }else{
-                        return sprintf("<div><a href='#' title='%s'>%s</a></div>", $x,
+                        return sprintf("<div><a href='#' class='available-time' title='%s'>%s</a></div>", $x,
                             $time_display);
                     }
 
                 }else{
-
-                    return sprintf("<div id='past_time' class='unavailable-day'>%s</div>",
+                    return sprintf("<div class='past_time'>%s</div>",
                      $time_display);
                 }
-
 
             };
 
