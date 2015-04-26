@@ -15,7 +15,7 @@ class ScheduleTimes
     function getStartTimeForDay($scheduleTime)
     {
         if ($scheduleTime == self::DAY) {
-            return date('H:i', mktime(9, 0, 0, 0, 0, 0));
+            return date('H:i', mktime(8, 0, 0, 0, 0, 0));
         }
 
         return date('H:i', mktime(12, 0, 0, 0, 0, 0));

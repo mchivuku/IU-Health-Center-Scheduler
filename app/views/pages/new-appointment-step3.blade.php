@@ -1,5 +1,12 @@
 @extends('...layouts.new-appointment')
+
 @section('new-appointment-content')
+
+
+<div id="sessioncounter">
+<p>You must confirm your appointment.</p>
+<p>Time remaining: <span id="timeremaining"></span></p>
+</div>
      <div class="section-confirm">
 
 
@@ -20,13 +27,11 @@
 
             {{Form::hidden('facility',
             $model->facility,array('id'=>'facility','name'=>'facility'));}}
+
+
+
             {{Form::hidden('provider', $model->providerId,array('id'=>'provider','name'=>'provider'));}}
 
-<div id="sessioncounter">
-
-
-
-</div>
             <ul>
             <li><strong>Visit Type: </strong>{{$model->visitTypeText}}</li>
             <li><strong>Provider Name: </strong>{{$model->providerName}}</li>
@@ -35,7 +40,9 @@
             </ul>
             @if(($model->email)!="")
                     <p>
-                        <input type="checkbox" name="sendemail"> <label>Send me an email confirmation of this appointment</label>
+                        <input type="checkbox" name="sendemail" checked> <label>Send me an email confirmation of
+                        this
+                        appointment</label>
                    </p>
             @endif
 
@@ -62,13 +69,13 @@
 
 
 
-          <script type="text/javascript">
+  <script type="text/javascript">
 
-           function timeoutwarming() {
-               if (window.confirm('session is timing out')) {
-                   location.href = location.href;
-               }
-           }
+function checkTime(i) {
+    if (i<10) {i = "0" + i};  // add zero in front of numbers < 10
+    return i;
+}
+
 
            function sessiontimeout(topRef, expire) {
                expire.setSeconds(expire.getSeconds() - 1);
@@ -78,15 +85,20 @@
                    +"&facility="+$('#facility').val()
                    return;
                }
-               if (topRef) {
-                   topRef.innerHTML = ('' + expire).match(/\d\d:\d\d:\d\d/);
-               }
+              if (topRef) {
+
+                   var min = expire.getMinutes();
+                   var sec = expire.getSeconds();
+                   topRef.innerHTML = ' ' + checkTime(min)+":"+checkTime(sec);
+                }
+
+
            }
 
            window.onload = function() {
                var expire = new Date(2015, 0, 1);
-               expire.setSeconds(<?echo SESSION_ACTIVITY_TIME;?> * 60);
-               var topRef = document.getElementById('sessioncounter');
+               expire.setSeconds(<?echo 5;?> * 60);
+               var topRef = document.getElementById('timeremaining');
 
                window.setInterval(
                    function() {

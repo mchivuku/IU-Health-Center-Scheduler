@@ -1573,7 +1573,8 @@ body:not(.home) .emergency-info h2 {
     border: 1px solid #e4e4e4;
     background-color: #e4e4e4;
     color: #000;
-    cursor: default; }
+    cursor: default;
+}
 
 .button.back {
     float: left; }
@@ -2157,7 +2158,9 @@ td.ui-datepicker-unselectable:hover {
         float: right; } }
 /* Error Pages */
 #error,
-#warning {
+#warning,
+.alert,
+.alert-info {
     padding: 0.25rem 0.5rem; }
 
 #error {
@@ -2169,5 +2172,41 @@ td.ui-datepicker-unselectable:hover {
 #warning {
     background-color: #FEEFB3;
     color: #9F6000; }
+
+.row > .alert-info,
+.row > .alert {
+    margin-top: 1.5rem; }
+
+.alert-info,
+#sessioncounter {
+    background-color: #BDE5F8;
+    color: #054781; }
+
+/* Session Counter */
+#sessioncounter {
+    padding: 0.5rem 1rem; }
+#sessioncounter p {
+    font-size: 1.5rem;
+    line-height: 1.3; }
+#sessioncounter p span {
+    font-weight: bold; }
+#sessioncounter p:last-of-type {
+    margin-bottom: 0; }
+
+a.ui-state-disabled{
+
+    display: none;
+}
+
+
+@media only screen and (min-width: 642px) {
+    .row > .alert-info,
+    .row > .alert {
+        margin-left: 2.25rem;
+        margin-right: 2.25rem; }
+
+    #sessioncounter {
+        margin-left: 2.25rem;
+        margin-right: 2.25rem; } }
 
 /*# sourceMappingURL=site.css.map */

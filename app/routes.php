@@ -13,30 +13,36 @@
 use Scheduler\Controllers;
 
 
-Route::get('/', array(
+Route::get('/', array( 'before' => 'auth.basic',
     'as' => 'home',
     'uses' => 'HomeController@getIndex'
 ));
 
 
-Route::get('/confirmCancellation', array(
+Route::get('/confirmCancellation', array('before' => 'auth.basic',
     'as' => 'confirmCancellation',
     'uses' => 'HomeController@confirmCancellation'
 ));
 
 
-Route::post('/cancelAppointment', array(
+Route::get('/policies', array('before' => 'auth.basic',
+    'as' => 'policies',
+    'uses' => 'PoliciesController@getIndex'
+));
+
+
+Route::post('/cancelAppointment', array('before' => 'auth.basic',
     'as' => 'cancelAppointment',
     'uses' => 'HomeController@cancelAppointment'
 ));
 
-Route::get('/logout', array(
+Route::get('/logout', array('before' => 'auth.basic',
     'as' => 'logout',
     'uses' => 'HomeController@logout'
 ));
 
 
-Route::get('/getMoreInformation', array(
+Route::get('/getMoreInformation', array('before' => 'auth.basic',
     'as' => 'getMoreInformation',
     'uses' => 'HomeController@getMoreInformation'
 ));
@@ -49,12 +55,12 @@ Route::get('/serverdump', function () {
 
 Route::group(array('prefix' => 'settings'), function () {
 
-    Route::get('/', array(
+    Route::get('/', array('before' => 'auth.basic',
         'as' => 'settings',
         'uses' => 'SettingsController@getIndex'
     ));
 
-    Route::get('/save', array(
+    Route::get('/save', array('before' => 'auth.basic',
         'as' => 'settings.save',
         'uses' => 'SettingsController@save'
     ));
@@ -64,70 +70,76 @@ Route::group(array('prefix' => 'settings'), function () {
 //TODO - route grouping
 Route::group(array('prefix' => 'newAppointment'), function () {
 
-    Route::get('/schedule', array(
+    Route::get('/schedule', array('before' => 'auth.basic',
         'as' => 'newAppointment.schedule',
         'uses' => 'NewAppointmentController@schedule'
     ));
 
-    Route::post('/scheduleSave', array(
+    Route::post('/scheduleSave', array('before' => 'auth.basic',
         'as' => 'newAppointment.save',
         'uses' => 'NewAppointmentController@scheduleSave'
     ));
 
-    Route::get('/getTimes', array(
+    Route::get('/getTimes', array('before' => 'auth.basic',
         'as' => 'newAppointment.getTimes',
         'uses' => 'NewAppointmentController@getTimes'
     ));
 
     Route::get('/getVisitTypes',
-        array(
+        array('before' => 'auth.basic',
             'as' => 'newAppointment.visitType',
             'uses' => 'NewAppointmentController@getVisitTypes'
         ));
 
     Route::get('/getAvailableTimes',
-        array(
+        array('before' => 'auth.basic',
             'as' => 'newAppointment.availableTimes',
             'uses' => 'NewAppointmentController@getAvailableTimes'
         ));
 
     Route::get('/getAvailableDates',
-        array(
+        array('before' => 'auth.basic',
             'as' => 'newAppointment.availableDate',
             'uses' => 'NewAppointmentController@getAvailableDates'
         ));
 
 
     Route::get('/saveSelectedTime',
-        array(
+        array('before' => 'auth.basic',
             'as' => 'newAppointment.saveSelectedTime',
             'uses' => 'NewAppointmentController@saveSelectedTime'
         ));
 
     Route::post('/scheduleConfirm',
-        array(
+        array('before' => 'auth.basic',
             'as' => 'newAppointment.finish',
             'uses' => 'NewAppointmentController@scheduleConfirm'
         ));
 
     Route::get('/clearsession',
-        array(
+        array('before' => 'auth.basic',
             'as' => 'newAppointment.clearsession',
             'uses' => 'NewAppointmentController@clearsession'
         ));
 
     Route::post('/scheduleSave',
-        array(
+        array('before' => 'auth.basic',
             'as' => 'newAppointment.scheduleSave',
             'uses' => 'NewAppointmentController@scheduleSave'
         ));
 
     Route::get('/{facility?}{visitType?}',
-        array(
+        array('before' => 'auth.basic',
             'as' => 'newAppointment.index',
             'uses' => 'NewAppointmentController@getIndex'
         ));
 
+
+});
+
+Route::filter('auth.basic', function()
+{
+    CASAuthenticate::logon();
 
 });
 

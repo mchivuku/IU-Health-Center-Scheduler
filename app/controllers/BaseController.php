@@ -7,12 +7,13 @@ use Illuminate\Support\Facades\View;
 
 require_once app_path() . '/models/Filter.php';
 require_once app_path() . "/helpers/EmailService.php";
+require_once app_path() . "/helpers/CASHelper.php";
 
 
 abstract class BaseController extends Controller
 {
 
-    protected $shibboleth;
+    protected $ldap;
     protected $userRepo;
     protected $apptRepo;
     protected $facilitiesRepo;
@@ -46,11 +47,15 @@ abstract class BaseController extends Controller
     public function __construct($app, $sublayout = null)
     {
 
+        $CI = $this;
+
+
+
         global $LANG;
         $this->app = $app;
 
 
-        $this->shibboleth = $app->ShibbolethRepository;
+        $this->ldap = $app->LDAPService;
         $this->userRepo = $app->UserRepository;
         $this->apptRepo = $app->AppointmentRepository;
         $this->facilitiesRepo = $app->FacilitiesRepository;
@@ -65,17 +70,17 @@ abstract class BaseController extends Controller
 
         $this->lang = $LANG;
 
-        $sessionId = $this->getUserSessionId();
 
 
-        $CI = $this;
         //Before every request - check the scheduler log and clear it.
-       $this->beforeFilter(function () use ($CI) {
+        $this->beforeFilter(function () use ($CI) {
+
             $CI->schedulerLogRepo->clearAllPreviousSessions();
-      });
+        });
 
 
         $this->user_profile = $this->getUserProfile();
+
 
 
         // Layout - pass data for the partial views in the layout
@@ -149,14 +154,16 @@ abstract class BaseController extends Controller
 
     protected function  getUniversityId()
     {
-        return $this->shibboleth->getUserUniversityId();
+
+        return $this->ldap->getUserUniversityId($this->getUserId());
 
     }
 
 
     protected function  getPersonAffiliation()
     {
-        return $this->shibboleth->getPersonAffiliation();
+
+       return ($this->ldap->getUserAffiliations($this->getUserId()));
 
     }
 
@@ -168,19 +175,14 @@ abstract class BaseController extends Controller
 
         return $user;
 
-
     }
 
-
-
-    protected function getUserSessionId()
+    /** Function to return networkId */
+    protected function getUserId()
     {
-        if (isset($_SERVER['Shib-Session-ID'])) {
-            return $_SERVER['Shib-Session-ID'];
-        }
-        //reading laravel session cookie - TEMP will remove;
-        $val = explode('=', $_SERVER['HTTP_COOKIE']);
-        return $val[1];
+        return $_SESSION['user'];
+
+        //return 'hussaint';
     }
 
 
@@ -190,5 +192,8 @@ abstract class BaseController extends Controller
 
     }
 
+    protected function getUserSessionId(){
+        return session_id();
 
+    }
 }

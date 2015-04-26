@@ -35,6 +35,11 @@ class ControllerServiceProvider extends ServiceProvider
             return new \Scheduler\Controllers\SettingsController($app);
         });
 
+        $app->bind('PoliciesController', function ($app) {
+            return new \Scheduler\Controllers\PoliciesController($app);
+        });
+
+
     }
 
 

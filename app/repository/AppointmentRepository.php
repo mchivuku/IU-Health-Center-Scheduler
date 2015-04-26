@@ -119,12 +119,11 @@ class AppointmentRepository extends BaseRepository
      * @param $sessionId - as user interactions are saved to the database.
      * @param $date
      */
-    public function getAllAppointmentTimes($facilityId,$visitType, $providerId, $startTime, $endTime, $date)
+    public function getAllAppointmentTimes($facilityId,$visitType, $providerId, $scheduleID, $date,$session_id)
     {
 
         $provider_repo = new ProviderRepository();
         $provider_work_hours = $provider_repo->getProviderWorkHours($providerId,$facilityId,$visitType,$date);
-
 
         // 1. Appointment query
         $all_appt_times_query = \DB::table('enc')
@@ -145,32 +144,45 @@ class AppointmentRepository extends BaseRepository
         $scheduler_log_query = \DB::table('iu_scheduler_log')
             ->where('providerId', '=', $providerId)->where('encDate', '=', $date)
             ->where('visitType', '=', $visitType)
-            ->select(array('startTime',
-                'endTime'));
+            ->where('sessionId','!=',$session_id)
+            ->select(array('startTime','endTime'));
 
         $unavailable = $all_appt_times_query->unionAll($blocks_query)->unionAll($scheduler_log_query)->get();
 
         $merged_unavailable = $this->merge_unavailable($unavailable);
 
-        $available_times = $this->construct_available_times($startTime, $endTime, $merged_unavailable);
-        $overlapping_hours = get_overlapping_hr($startTime,$endTime,$provider_work_hours->StartTime,
-            $provider_work_hours->EndTime);
+        $available_times = $this->construct_available_times($provider_work_hours->StartTime,
+            $provider_work_hours->EndTime,
+            $merged_unavailable);
+
+        $overlapping_hours = get_overlapping_hr($provider_work_hours->StartTime,
+            $provider_work_hours->EndTime,$scheduleID);
 
         $time_slots = array();
 
-        foreach ($available_times as $available) {
+
+        foreach ($available_times as $available){
+
             split_range_into_slots_by_duration($available['Available_from'], $available['Available_to'],
                 $provider_work_hours->minutes*60,
                 $time_slots);
 
         }
+
         $start = $overlapping_hours['startTime'];
-        $end = $overlapping_hours['endTime'];
+        $end =   $overlapping_hours['endTime'];
+
+
 
         $past_times=array();
+
+
         $filter_times = array_filter($time_slots, function ($item) use ($start, $end, $date,&$past_times) {
             if ($date == date('Y-m-d')){
-                $timeNow = date('H:i');
+                $time = SHOW_APPT_TIMENOW_OFFSET;
+                $timeNow = date('H:i',strtotime("+ $time minutes"));
+
+
                 if(($item <= $timeNow && $item>=$start && $item<=$end)){
                     $past_times[]= $item;
                 }
@@ -178,17 +190,15 @@ class AppointmentRepository extends BaseRepository
                 return $item >= $start && $item <= $end;
             }
 
-
             return $item >= $start && $item <= $end;
+
         });
 
 
-
-        return  array('Id' => $providerId,
+         return  array('Id' => $providerId,
              'minutes' => $provider_work_hours->minutes,
             'startTime' => $start, 'endTime' => $end,
             'times' => $filter_times,'past_times'=>$past_times);
-
 
 
     }
@@ -259,22 +269,24 @@ class AppointmentRepository extends BaseRepository
             endif;
 
             if ($nRow == 0) {
-                $insert_variables = array('patientID', 'date', 'startTime', 'endTime', 'VisitType', 'visittypeid',
+                $insert_variables = array('patientID', 'date', 'startTime', 'endTime', 'visitType', 'visittypeid',
                     'STATUS',
                     'vmid', 'ResourceId', 'facilityId', 'doctorID', 'generalNotes', 'POS', 'visitstscodeId',
-                    'VisitCopay', 'ClaimReq', 'CopayChanged');
+                    'VisitCopay', 'ClaimReq', 'CopayChanged','reason');
+
+
 
                 // 2. create appointment otherwise return;
                 $insert_sql = "INSERT INTO enc(" . implode(", ", $insert_variables) . ")
                 select (select pid from patients where controlNo=:controlNo)patientID,
                 :encDate as date,:startTime as startTime, :endTime as endTime,
-                (select Name from visitcodes  where CodeId=:visitType) as VisitType  ,
+                (select Name as visitType from visitcodes  where CodeId=:visitType),
                 (select CodeId from visitcodes  where CodeId=:visitType) as visittypeid,
                 :status as STATUS, :vmid,
                 :resourceId as ResourceId,
                      primaryservicelocation   as facilityId, (case when userType=1 then uid else
                      DefApptProvForResource end) as doctorID, :generalNotes , :pos,
-                     (select CodeId from visitstscodes where code=:status) as visitstscodeId,0.0,1,0
+                     (select CodeId from visitstscodes where code=:status) as visitstscodeId,0.0,1,0,''
                    from
                     Users where uid=:resourceId
                  ";
@@ -323,10 +335,10 @@ class AppointmentRepository extends BaseRepository
 
                 //step3 - insert into log set encounterId=632912, userId=317150, date='2015-03-12', time='13:53:50', actionFlag=1
                 $log_sql = "
-INSERT INTO log (encounterID, userId, date,time,actionFlag)
+                  INSERT INTO log (encounterID, userId, date,time,actionFlag)
                     (select :encounterId, pid  as userId,:encDate as date,
                     :startTime as time, 1 as actionFlag from patients
-where controlNo=:controlNo)
+                  where controlNo=:controlNo)
                 ";
 
                 $log_statement = $pdo->prepare($log_sql);
@@ -365,7 +377,8 @@ where controlNo=:controlNo)
 
     function  uniqueId()
     {
-        return rand(1, 1000003033);
+       return  substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:',5)),0,
+           40);
     }
 
     /**
@@ -450,11 +463,9 @@ where controlNo=:controlNo)
             $available[$k] = array_filter($this->construct_available_times($start, $end, $item),
                 function ($times) {
                     return $times['Available_to'] >= $times['Available_from'];
-                });;
-
+                });
 
         }
-
 
         $available_dates = array();
 
@@ -500,12 +511,14 @@ where controlNo=:controlNo)
             ->whereExists(function ($query) use ($encId) {
                 $query->select(\DB::raw(1))
                     ->from('enc')
-                    ->whereRaw('lower(visitType) like lower(tblwebTemplates.Name)')
+                    ->whereRaw('lower(tblwebTemplates.Name) like lower(visitType)')
                     ->where('encounterId', '=', $encId);
             })
             ->Where('deleteFlag', '=', 0)
             ->select('content')
             ->first();
+
+
 
         if (($email_template_content)=="") {
 
@@ -515,8 +528,11 @@ where controlNo=:controlNo)
 
         }
 
+        // allowable tags - p, div, strong,
+        $email_content = html_entity_decode($email_template_content->content,ENT_QUOTES, 'UTF-8');
+
         //preg_replace('/(<font[^>]*>)|(<\/font>)/', '', $email_template_content);;
-        $email = "<div>" . ($email_template_content->content) . "</div>";
+        $email = "<div>" . (strip_tags($email_content,'<p></p><div></div><strong></strong>')) . "</div>";
 
         return $email;
 
@@ -531,10 +547,18 @@ where controlNo=:controlNo)
     public function getAppointment($encId)
     {
 
-        $appointment = \DB::table($this->table)->where('encounterId', '=', $encId)
-            ->select(array('encounterID as encId', 'patientId',
-                'enc.visitType', 'reason', 'startTime',
-                'endTime', 'enc.date as date'
+        $appointment = \DB::table($this->table)
+            ->join('patients', 'enc.patientID', '=', 'patients.pid')
+            ->leftJoin('users as resource', 'enc.resourceID', '=', 'resource.uid')
+            ->leftJoin('iu_scheduler_facility_charttitle', 'enc.facilityId', '=', 'iu_scheduler_facility_charttitle.FacilityId')
+            ->leftJoin('visitcodes', 'enc.visitType', '=', 'visitcodes.Name')
+            ->where('encounterId', '=', $encId)
+            ->select(array('encounterID as encId', 'patientId', 'visitcodes.Description as visitType', 'reason',
+                'startTime',
+                'endTime', 'enc.date as date', 'iu_scheduler_facility_charttitle.Description as facility',
+                'iu_scheduler_facility_charttitle.FacilityId as facilityId',
+                'resource.ufname as providerFirstName',
+                'resource.ulname as providerLastName', 'visitcodes.CodeId as visitTypeId'
             ))
             ->first();
 
@@ -576,6 +600,7 @@ where controlNo=:controlNo)
         return;
 
     }
+
 
 
 }

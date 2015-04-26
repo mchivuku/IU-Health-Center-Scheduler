@@ -4,6 +4,8 @@
   <div class="personal-info">
                     <h2>Personal Information</h2>
                     <div>
+                    <p>If you need to update your personal information, please [do whatever they need to do to update their info].”</p>
+
                         <ul>
                             <li><strong>Name</strong>: <?php echo $profile->getName();?></li>
                             <li><strong>IU ID</strong>: <?php echo $profile->universityId;?></li>
@@ -15,9 +17,15 @@
                             <li><strong>State</strong>: <?php echo $profile->state;?></li>
                             <li><strong>Zip Code</strong>: <?php echo $profile->zipCode;?></li>
                             <li><strong>Phone</strong>: <?php echo $profile->getPhone();?></li>
+
+
+                            <li><strong>Text Enabled</strong>:
                             <?php if($profile->textEnabled==1){
-                               echo  "<li><strong>Text Enabled</strong>: Yes</li>";
-                            }
+                            ?>
+                               <a href="{{ URL::to('settings')}}">Yes</a>
+                            <?}else{?>
+                              <a href="{{ URL::to('settings')}}">No</a>
+                            <?}
                             ?>
 
                         </ul>

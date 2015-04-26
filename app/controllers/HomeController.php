@@ -62,10 +62,6 @@ class HomeController extends BaseController
             $minutes += $interval->h * 60;
             $minutes += $interval->i;
 
-            $more_link = link_to_action('HomeController@getMoreInformation', 'More Information',
-                array(
-                    'encId' => $item->encId), array('data-reveal-id' => "more-info", 'id' => 'more-info-link'));
-
             $last_column = "";
             // Cancellation - appointments - only future that have atleast 60mins
             if ($date_b >= $date_a && $minutes >= ALLOW_CANCELLATION_UNTIL_TIME) {
@@ -74,7 +70,7 @@ class HomeController extends BaseController
                     array(
                         'encId' => $item->encId), array('data-reveal-id' => "more-info", 'id' => 'cancel-appt-link'));
 
-                $last_column = "<span class='tablesaw-cell-content'>" . $more_link . $link
+                $last_column = "<span class='tablesaw-cell-content'>" .  $link
                     . "</span>";
 
             } else {
@@ -84,9 +80,11 @@ class HomeController extends BaseController
                 $schedule_again_link = \URL::to(action('NewAppointmentController@getIndex') . '?' . $queryString);
 
 
-                $last_column = "<span class='tablesaw-cell-content'>" . $more_link . "<a
+                $last_column = "<span class='tablesaw-cell-content'>" . "<a
                                 href='$schedule_again_link'>Schedule Again</span>";
             }
+
+
             $x->data[] = array(date('Y-m-d', strtotime($item->date)),
                 '<span title="' . date('H:i', strtotime($item->startTime)) . '"></span>' . $item->getStart(),
                 $item->visitType,
@@ -136,6 +134,8 @@ class HomeController extends BaseController
                     $appt_date_time->startTime),
                 'd/m/y  g:i a');
 
+
+
             $x = str_replace('%date%', $app_date_time, $message);
 
             //send cancellation email
@@ -148,18 +148,6 @@ class HomeController extends BaseController
         return \Redirect::action('HomeController@getIndex');
     }
 
-    /***
-     * Function to cancel Appointment
-     */
-    public function getMoreInformation()
-    {
-
-        $encId = \Input::get('encId');
-        $email_template = $this->apptRepo->getEmailTemplateForAppointment($encId);
-
-        // More Information from database;
-        return \View::make('includes.more-information', array('info' => $email_template));
-    }
 
     // CAS LOGOUT
     public function logout()
@@ -179,6 +167,7 @@ class HomeController extends BaseController
                 \Cookie::forget($name);
             }
         }
+        session_unset();
         session_destroy();
         return \Redirect::to("https://cas.iu.edu/cas/logout");
     }

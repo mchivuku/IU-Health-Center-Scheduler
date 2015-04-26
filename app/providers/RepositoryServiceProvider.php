@@ -54,5 +54,11 @@ class RepositoryServiceProvider extends ServiceProvider
             return new \Scheduler\Repository\PatientRepository();
         });
 
+        $app->bind('SchedulerDateRangeRepository', function () {
+            return new \Scheduler\Repository\SchedulerDateRangeRepository();
+        });
+
+
+
     }
 }

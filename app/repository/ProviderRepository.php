@@ -111,17 +111,15 @@ class ProviderRepository extends BaseRepository
      * @param $facilityId
      * @param $visitType
      * @param $date
-     * @param $startTime
-     * @param $endTime
+     * getFirstAvailableProviderWorkHours($facilityId,$visitType, $date, $tabId);
      */
     //TODO - change the query;
-    public function  getFirstAvailableProviderWorkHours($facilityId,$visitType, $date, $startTime, $endTime)
+    public function  getFirstAvailableProviderWorkHours($facilityId,$visitType, $date, $scheduleID,$session_id)
     {
 
         $apptRep=new AppointmentRepository();
 
-
-        $raw_sql = $this->build_sql_week_day_clause($date);
+         $raw_sql = $this->build_sql_week_day_clause($date);
 
         //Get All provider for the weekday for the given visitType and facilityId
         $all_providers_query=  \DB::table('iu_scheduler_provider_schedule_info')
@@ -138,7 +136,6 @@ class ProviderRepository extends BaseRepository
 
 
 
-
         // 1. Appointment query
         $all_appt_times_query = \DB::table('enc')
             ->join('iu_scheduler_provider_schedule_info','iu_scheduler_provider_schedule_info.Id','=',
@@ -149,6 +146,7 @@ class ProviderRepository extends BaseRepository
             ->where('iu_scheduler_provider_schedule_info.CodeId', '=', $visitType)
             ->where('iu_scheduler_provider_schedule_info.facilityId', '=', $facilityId)
             ->where('iu_scheduler_provider_schedule_info.weekday', '=', $raw_sql)
+
             ->select(array('enc.startTime as apptstartTime',
                 'enc.endTime as apptendTime','resourceId as providerId',
                 'iu_scheduler_provider_schedule_info.StartTime',
@@ -183,6 +181,7 @@ class ProviderRepository extends BaseRepository
                 'providerId')
             ->where('encDate', '=', $date)->where('iu_scheduler_log.facility', '=', $facilityId)
             ->where('visitType', '=', $visitType)
+            ->where('sessionId','!=',$session_id)
             ->where('iu_scheduler_provider_schedule_info.CodeId', '=', $visitType)
             ->where('iu_scheduler_provider_schedule_info.facilityId', '=', $facilityId)
             ->where('iu_scheduler_provider_schedule_info.weekday', '=', $raw_sql)
@@ -247,10 +246,11 @@ class ProviderRepository extends BaseRepository
 
 
         // For available provider - split the range into slots
+
         $providerArray= array();
         foreach ($available_providers as $k=>$v) {
 
-            $overlapping_hours = get_overlapping_hr($v['startTime'],$v['endTime'],$startTime,$endTime);
+            $overlapping_hours = get_overlapping_hr($v['startTime'],$v['endTime'],$scheduleID);
             $time_slots = array();
             foreach($v['times'] as $available){
 
@@ -260,16 +260,18 @@ class ProviderRepository extends BaseRepository
                     $time_slots);
             }
 
-
-            if (count($time_slots) > 0){
-                //break the time into slots;
+            if(count($time_slots) > 0){
+               //break the time into slots;
                 $start = $overlapping_hours['startTime'];
                 $end = $overlapping_hours['endTime'];
 
                 $past_times =array();
+
                 $filter_times = array_filter($time_slots, function ($item) use ($start, $end, $date,&$past_times) {
                     if ($date == date('Y-m-d')){
-                        $timeNow = date('H:i');
+                        $time = SHOW_APPT_TIMENOW_OFFSET;
+                        $timeNow = date('H:i',strtotime("+ $time minutes"));
+
 
                         if(($item <= $timeNow && $item>=$start && $item<=$end)){
                             $past_times[]= $item;
@@ -278,43 +280,111 @@ class ProviderRepository extends BaseRepository
                         return $item >= $start && $item <= $end;
                     }
 
+                     return $item >= $start && $item <= $end;
 
-                    return $item >= $start && $item <= $end;
                 });
 
+
+
                 $providerArray[$v['Id']] = array('Id' => $v['Id'], 'Name' => $v['Name'],'LastName'=>$v['LastName'],
-                    'minutes' => $v['minutes'], 'startTime' => $start, 'endTime' => $endTime,
+                    'minutes' => $v['minutes'], 'startTime' => $start, 'endTime' => $end,
                     'times' => $filter_times,'past_times'=>$past_times);
 
             }
 
         }
 
-        usort($providerArray, function ($item1, $item2)use($date){
 
-           //ToDO - think about it.
-            if ($date == date('Y-m-d')) {
+
+        //If we are looking at current date - check for the slot that is right after time now.
+        if($date == date('Y-m-d')){
+
+
+            //1. First Filter - provider that have times greater than time now.
+            $providers_available_from_time_now = array_filter($providerArray,function($item){
                 $timeNow = date('H:i');
-                $t1 = current(array_filter($item1['times'],function($x)use($timeNow){return $x>=$timeNow;}));
-                $t2 = current(array_filter($item2['times'],function($x)use($timeNow){return $x>=$timeNow;}));
+                $times = $item['times'];
+                return count(array_filter($times,function($element)use($timeNow){
+                     return $element>=$timeNow;
+                }))>0;
 
-            }else{
-                $t1 = current($item1['times']);
-                $t2 = current($item2['times']);
+            });
 
+            //nothing was found - previous tabId;
+            if(count($providers_available_from_time_now)==0)return current($providerArray);
+
+            usort($providers_available_from_time_now, function ($item1, $item2)use($date){
+                $times1 = $item1['times'];
+                $times2 =  $item2['times'];
+
+                $timeNow = date('H:i');
+                foreach($times1 as $slot){
+                    if($slot>=$timeNow)
+                    {
+                        $t1 = $slot;
+                        break;
+
+                    }
+                }
+                foreach($times2 as $slot){
+                    if($slot>=$timeNow)
+                    {
+                        $t2= $slot;
+                        break;
+
+                    }
+                }
+
+                if ($t1 == $t2) {
+                    return 0;
+                }
+
+                return ($t1 > $t2) ? 1 : -1;
+            });
+           return current($providers_available_from_time_now);
+
+        }
+
+        // else get the first available based on the start time of the day.
+        usort($providerArray, function ($item1, $item2){
+            $times1 = $item1['times'];
+            $times2 =  $item2['times'];
+
+            $start1 = $item1['startTime'];
+            $start2 = $item2['startTime'];
+
+            foreach($times1 as $slot){
+                if($slot>=$start1)
+                {
+                    $t1 = $slot;
+                    break;
+
+                }
             }
 
-            if ($t1 == $t2) {
+            foreach($times2 as $slot){
+                if($slot>=$start2)
+                {
+                    $t2= $slot;
+                    break;
+
+                }
+            }
+
+
+            if ($t1 == $t2){
                 return 0;
             }
 
             return ($t1 > $t2) ? 1 : -1;
         });
 
-        return (current($providerArray));
+
+        return current($providerArray);
+
+
+
     }
-
-
 
 
 }

@@ -74,11 +74,14 @@ require $framework.'/Illuminate/Foundation/start.php';
 */
 require app_path().'/providers/RepositoryServiceProvider.php';
 require app_path().'/providers/ControllerServiceProvider.php';
+
 require app_path().'/config/constants.php';
 require app_path().'/config/lang.php';
+require app_path().'/config/CASAuthenticate.php';
+
+
 
 $app->register('RepositoryServiceProvider');
 $app->register('ControllerServiceProvider');
-
-
-return $app;
+$app->register('LDAPServiceProvider');
+ return $app;

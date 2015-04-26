@@ -37,12 +37,12 @@ class PatientRepository
     public function getTextEnabledValue($universityId)
     {
         $patient = \DB::table('patients')
-            ->select(array('textenabled'
+            ->select(array('textenabled','iu_scheduler_textenabled'
             ))
             ->where('patients.ControlNo', '=', $universityId)
             ->first();
 
-        return $patient->textenabled;
+        return $patient;
     }
 
     /***
@@ -55,7 +55,7 @@ class PatientRepository
     {
         \DB::table('patients')
             ->where('patients.ControlNo', '=', $universityId)
-            ->update(array('textenabled' => $value));
+            ->update(array('textenabled' => $value,'iu_scheduler_textenabled'=>$value));
 
 
     }

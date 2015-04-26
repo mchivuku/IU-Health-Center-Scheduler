@@ -59,7 +59,7 @@
 @else
 
  <div class="column schedule-appointments">
-     <p> {{isset($model) && is_array($model)?$model['message']:""}} </p>
+     <p> {{$model->message}} </p>
 </div>
 @endif
 
@@ -98,18 +98,28 @@ var availableDates =
     (array());?>
 </script>
 
+
 {{ HTML::script('js/schedule.js')}}
 
 
 <script type="text/javascript">
-@if(isset($model->selectedDate))
 
+@if(isset($model->selectedDate))
  $(document).ready(function() {
     $('#datepicker').datepicker("setDate", <?echo "'".$model->selectedDate."'";?>);
-
  });
-
 @endif
+
+
+$(document).ready(function(){
+var date = new Date(<?echo "'".$model->validDateRange->EndDate."'";?>);
+var currentMonth = date.getMonth();
+var currentDate = date.getDate();
+var currentYear = date.getFullYear();
+     $("#datepicker" ).datepicker( "option", "maxDate", new Date(currentYear, currentMonth, currentDate));
+
+});
+
 
 </script>
 @stop

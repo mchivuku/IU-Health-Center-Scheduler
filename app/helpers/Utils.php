@@ -53,26 +53,21 @@ function group_slots_by_hr($array)
 }
 
 
-function get_overlapping_hr($starttime1, $endtime1, $starttime2, $endtime2)
+function get_overlapping_hr($provider_start_time, $provider_end_time, $scheduleTimeID)
 {
+    $convert_time = function($item){
+        return date('H:i',strtotime($item));
+    };
 
-    if (($starttime1 <= $starttime2) && ($endtime1 >= $endtime2) || (($starttime2 <= $starttime1) && ($endtime2 >= $endtime1))) {
+    $schedule = new ScheduleTimes();
+    $schedule_start_time = $schedule->getStartTimeForDay($scheduleTimeID);
+    $schedule_end_time = $schedule->getEndTimeForDay($scheduleTimeID);
 
-        if (($starttime1 <= $starttime2) && ($endtime1 >= $endtime2)) {
-
-            return array('startTime' => $starttime2,
-                'endTime' => $endtime2);
-
-        } else {
-            return array('startTime' => $starttime1,
-                'endTime' => $endtime1);
-
-        }
-
+    if($scheduleTimeID==ScheduleTimes::DAY){
+        return array('startTime'=>$convert_time($provider_start_time),'endTime'=>$convert_time($schedule_end_time));
     }
 
-    return array('startTime' => ($starttime1 < $starttime2) ? $starttime2 : $starttime1,
-        'endTime' => ($endtime1 < $endtime2) ? $endtime1 : $endtime2);
+    return array('startTime'=>$convert_time($schedule_start_time),'endTime'=>$convert_time($provider_end_time));
 
 }
 
@@ -113,3 +108,4 @@ function getTimeDifferenceInMinutes($datetime1, $datetime2)
     echo $interval->format("%H:%I:%S");
     exit;
 }
+

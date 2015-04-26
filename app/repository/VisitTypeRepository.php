@@ -24,6 +24,7 @@ class VisitTypeRepository
                     ->from('iu_scheduler_facility_charttitle')
                     ->whereRaw('lower(iu_scheduler_facility_charttitle.ChartTitle) like
                                 lower(visitcodes.ChartTitle)')
+                    ->where('Active','=',1)
                     ->where('FacilityId', '=', $facilityId);
             })
             ->orderBy('Description', 'ASC')

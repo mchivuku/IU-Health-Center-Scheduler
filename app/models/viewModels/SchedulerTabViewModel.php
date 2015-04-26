@@ -27,6 +27,10 @@ class SchedulerTabViewModel extends NewAppointmentBaseViewModel
 
     public $errorMsg;
 
+    //This is to allow scheduling the appointment slots up until this date.
+    public $validDateRange;
+
+
 }
 
 

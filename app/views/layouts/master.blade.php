@@ -13,22 +13,26 @@
       <!-- Application Logo -->
         <header>
             <div class="row pad">
+
                 <h1><span>{{$header_title['label']}}</span></h1>
                 <p>{{$header_title['text']}}</p>
+ <NOSCRIPT>
+                                     <div id="error">You must enable JavaScript to use the appointment scheduler.</div>
+                               </NOSCRIPT>
             </div>
         </header>
 
     <!-- Navigation -->
    @include('...includes.navigation')
 
-   <NOSCRIPT>
-         You must enable JavaScript to use the appointment scheduler.
-   </NOSCRIPT>
+
 
     @include('...includes.alerts')
 
     <section class="section bg-none persistent-info">
+
         <div class="row">
+
              @include('...includes.emergencyinfo')
              @include('...includes.userprofile')
         </div>

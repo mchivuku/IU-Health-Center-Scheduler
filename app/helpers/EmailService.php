@@ -35,7 +35,7 @@ class EmailService
 
     /**
      *
-     * @param $univId
+     * @param
      */
     function send($parameters)
     {

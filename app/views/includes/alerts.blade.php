@@ -1,5 +1,5 @@
 @if(isset($message))
-     <div class="alert-box success">
+     <div class="alert alert-info">
          <h2>{{ $message }}</h2>
      </div>
  @endif

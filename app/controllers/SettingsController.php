@@ -12,7 +12,8 @@ class SettingsController extends BaseController
 {
 
     protected $patientRepo;
-    protected $header_title = array('label' => 'Settings', 'text' => 'Schedule an appointment or get information about appointments you have already scheduled.');
+    protected $header_title = array('label' => 'Settings',
+        'text' => 'Update your account settings.');
 
 
     public function  __construct($app)
@@ -24,21 +25,19 @@ class SettingsController extends BaseController
     public function getIndex()
     {
 
-        $text_enabled = $this->patientRepo->getTextEnabledValue($this->getUniversityId());
-        $checked = ($text_enabled == 1) ? "true" : "";
-
+        $text_enabled_values = $this->patientRepo->getTextEnabledValue($this->getUniversityId());
         return $this->view('pages.settings')->viewdata(array('textenabled'
-        => $text_enabled, "checked" => $checked))->title('Settings');
+        => $text_enabled_values))->title('Settings');
 
     }
 
     public function save()
     {
-        $textEnabled = \Input::get('textEnabled');
+        $textEnabled = \Input::get('textenabled');
 
         $this->patientRepo->updateTextEnabledValue($this->getUniversityId(),
-            ($textEnabled == "true") ? 1 : 0);
-        return \Redirect::action('SettingsController@getIndex');
+            isset($textEnabled) ? 1 : 0);
+        return   \Redirect::action('HomeController@getIndex');
 
     }
 

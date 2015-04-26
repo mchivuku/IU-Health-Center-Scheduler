@@ -3,9 +3,7 @@
  */
 
 
-
 $(document).ready(function () {
-    update_time_links();
 
 
     $('ul.time-of-day li').on("click", function (event) {
@@ -15,6 +13,8 @@ $(document).ready(function () {
         getAvailableTimes(getProviderId(), getDate(), gettabId());
 
     });
+
+    update_time_links();
 
 
     $('#providers').change(function () {
@@ -62,6 +62,7 @@ $(document).ready(function () {
 
         },
         minDate: new Date(),
+
         onSelect: function () {
             getAvailableTimes(getProviderId(), $(this).val(), gettabId());
 
@@ -133,14 +134,26 @@ function update_time_links() {
 
 function showhideNextButton(){
 
+
+
     if($('div.selected').text()!='')
     {
+        //enabled.
+        $('#scheduleSubmit').prop("disabled", false);
+
         $('#scheduleSubmit').removeClass('disabled');
+
 
     }else{
         if(!$('#scheduleSubmit').hasClass('disabled')){
             $('#scheduleSubmit').addClass('disabled');
+
+
         }
+
+        // disabled.
+        $('#scheduleSubmit').prop("disabled", true);
+
 
     }
 
@@ -227,8 +240,6 @@ function getData(params, url) {
 
 
         });
-
-
 
 }
 
