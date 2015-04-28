@@ -16,7 +16,6 @@ class CASAuthenticate{
     {
 
         $helper = new \CASHelper();
-        $url = $helper->buildRedirectURL();
 
         // check session time - how long a session has been active
         if (isset($_SESSION['LAST_SESSION']) && (time() - $_SESSION['LAST_SESSION'] > 900)) {
@@ -31,18 +30,17 @@ class CASAuthenticate{
         if (!$authenticated) {
             $_SESSION['LAST_SESSION'] = time(); // update last activity time stamp
             $_SESSION['CAS'] = true;
-            $authenticationURL = $helper->getAuthenticationURL($url);
+            $authenticationURL = $helper->getAuthenticationURL();
             $helper->authenticate($authenticationURL);
         }
 
         // retrieve the CAS ticket
         $casticket = $helper->extractCASticket();
-        $netid = '';
+
 
         if ($authenticated) {
             if (isset($casticket)) {
-                $netid = '';
-                $helper->validate($casticket, $netid);
+                $helper->validate($casticket);
 
             } else if (!isset($_SESSION['user'])) {
                 //END GET CAS TICKET

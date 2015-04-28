@@ -19,7 +19,7 @@ define('APPT_PATIENTNOSHOW', 'PTnoShow');
 
 
 //THIS IS THE SESSION TIME - 5mins
-define('SESSION_ACTIVITY_TIME', 300);
+define('SESSION_ACTIVITY_TIME', 5);
 define('EMAIL', 'iuhctech@indiana.edu');
 
 

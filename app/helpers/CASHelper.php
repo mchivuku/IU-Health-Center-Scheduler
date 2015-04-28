@@ -48,17 +48,17 @@ class CASHelper
 
 
     /// The URL to which *CAS* should redirect after successful authentication.
-    function getAuthenticationURL($absoluteurl)
+    function getAuthenticationURL()
     {
-        $url = sprintf(self::FmtAuthenticationUrl, self::CASServer, $absoluteurl);
+        $url = sprintf(self::FmtAuthenticationUrl, self::CASServer, $this->buildRedirectURL());
         return $url;
     }
 
 
     //first time - redirect to Login
-    function authenticate()
+    function authenticate($url)
     {
-        echo '<META HTTP-EQUIV="Refresh" Content="0; URL=https://cas.iu.edu/cas/login?cassvc=IU&casurl='.$this->buildRedirectURL().'">';
+        echo '<META HTTP-EQUIV="Refresh" Content="0; URL='.$url.'">';
         exit;
 
     }
@@ -71,11 +71,11 @@ class CASHelper
      * @param $netid
      * @return bool
      */
-    function validate($casticket,&$netId)
+    function validate($casticket)
     {
         // remove any cas tickets;
         $url = $this->buildRedirectURL();
-        $updatedAbsoluteUrl = $this->removeCASticket($casticket,$url);
+      //  $updatedAbsoluteUrl = $this->removeCASticket($casticket,$url);
         $validateurl = sprintf(self::FmtValidationUrl, self::CASServer, $casticket, $url);
 
         $ch = curl_init();
@@ -92,10 +92,7 @@ class CASHelper
         $access = trim($access);
         $user = trim($user);
 
-
-
         if ($access == "yes") {
-            $netId = $user;
             $_SESSION['user']=$user;
         }
 

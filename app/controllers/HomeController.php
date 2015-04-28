@@ -2,6 +2,8 @@
 namespace Scheduler\Controllers;
 
 
+use Whoops\Example\Exception;
+
 require_once app_path() . "/models/viewModels/IndexViewModel.php";
 require_once app_path() . "/models/viewModels/TableListViewModel.php";
 require_once app_path() . "/models/ClientSideDataTableFunctionModel.php";
@@ -35,7 +37,6 @@ class HomeController extends BaseController
     {
 
         $path = app_path() . "/config/cancellationEmail.txt";
-
 
         $univId = $this->getUniversityId();
         $model = new \IndexViewModel();

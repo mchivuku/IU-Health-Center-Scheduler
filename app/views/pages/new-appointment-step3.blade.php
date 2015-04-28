@@ -81,8 +81,7 @@ function checkTime(i) {
                expire.setSeconds(expire.getSeconds() - 1);
                if (expire.getFullYear() < 2015) {
                    window.location.href = "https://seville.iuhc.iub" +
-                   ".edu/comm/hcScheduler/public/newAppointment/clearsession?visitType="+$('#visitType').val()
-                   +"&facility="+$('#facility').val()
+                   ".edu/comm/hcScheduler/public/newAppointment/clearsession?visitType="+$('#visitType').val()+"&facility="+$('#facility').val()
                    return;
                }
               if (topRef) {
@@ -97,7 +96,7 @@ function checkTime(i) {
 
            window.onload = function() {
                var expire = new Date(2015, 0, 1);
-               expire.setSeconds(<?echo 5;?> * 60);
+               expire.setSeconds(<?echo SESSION_ACTIVITY_TIME;?> * 60);
                var topRef = document.getElementById('timeremaining');
 
                window.setInterval(

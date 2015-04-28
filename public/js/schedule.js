@@ -116,6 +116,8 @@ function refreshDatePicker(dates) {
 
 
 function update_time_links() {
+
+      $('div.past_time').unbind('click');
       $('a.available-time').unbind('click');
 
       $('a.available-time').click(function(event){

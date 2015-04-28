@@ -130,7 +130,7 @@ class NewAppointmentController extends BaseController
         if (!isset($date))
             $date = date('Y-m-d');
 
-         $date = date('Y-m-d',date(strtotime("+1 day", strtotime(date('Y-m-d')))));
+       //  $date = date('Y-m-d',date(strtotime("+1 day", strtotime(date('Y-m-d')))));
 
         if (!isset($tabId) || $tabId == "")
             $tabId = \ScheduleTimes::DAY;
@@ -301,7 +301,7 @@ class NewAppointmentController extends BaseController
 
         $available_times = $this->apptRepo->getAllAppointmentTimes($facilityId, $visitType,
             $providerId, $scheduleID,
-            $date);
+            $date,$this->getUserSessionId());
 
 
         $result['selected_start_time'] = $this->schedulerLogRepo->getSelectedTime($this->getUserSessionId(),
