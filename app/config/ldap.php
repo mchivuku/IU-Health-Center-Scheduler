@@ -1,5 +1,5 @@
-user = hcldapsa
-password = '!welcome2 the inner sanctum!'
+user = 
+password = ''
 domain = LDAP://ads.iu.edu/
 port = 389
 
