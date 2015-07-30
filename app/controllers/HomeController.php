@@ -37,6 +37,7 @@ class HomeController extends BaseController
     public function getIndex()
     {
 
+
         $path = app_path() . "/config/cancellationEmail.txt";
 
         $univId = $this->getUniversityId();
