@@ -6,7 +6,7 @@ use Illuminate\Routing\Controllers\Controller;
 use Illuminate\Support\Facades\View;
 
 require_once app_path() . '/models/Filter.php';
-require_once app_path() . "/helpers/EmailService.php";
+
 require_once app_path() . "/helpers/CASHelper.php";
 
 
@@ -63,8 +63,6 @@ abstract class BaseController extends Controller
         $this->schedulerLogRepo = $app->SchedulerLogRepository;
         $this->patientRepo = $app->PatientRepository;
         $this->providerRepo = $app->ProviderRepository;
-
-        $this->emailService = new \EmailService();
 
         $this->view = $sublayout;
 
