@@ -50,9 +50,9 @@ return array(
             'host' => 'bl-iuhc-tokyo.ads.iu.edu',
             'port' => 4928,
 
-            'database' => 'mobiledoc',
-            'username' => 'ecwDbUser',
-            'password' => 'Pwd4db@IUH',
+            'database' => '',
+            'username' => '',
+            'password' => '',
             'charset' => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix' => '',
