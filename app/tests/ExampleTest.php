@@ -10,7 +10,7 @@ class ExampleTest extends TestCase
      */
     public function testBasicExample()
     {
-        $crawler = $this->client->request('GET', '/');
+        $crawler = $this->client->request('GET', 'https://seville.iuhc.iub.edu/comm/hcScheduler/public');
 
         $this->assertTrue($this->client->getResponse()->isOk());
     }

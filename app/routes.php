@@ -67,7 +67,6 @@ Route::group(array('prefix' => 'settings'), function () {
 
 });
 
-//TODO - route grouping
 Route::group(array('prefix' => 'newAppointment'), function () {
 
     Route::get('/schedule', array('before' => 'auth.basic',

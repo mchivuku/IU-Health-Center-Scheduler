@@ -32,7 +32,7 @@
 
 </div>
 
- <div class="right-off-canvas-menu show-for-medium-down">
+        <div class="right-off-canvas-menu show-for-medium-down">
             <nav class="mobile off-canvas-list">
                 <ul>
                    @include('...includes.navigation-items')

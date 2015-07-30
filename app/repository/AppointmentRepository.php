@@ -10,13 +10,35 @@ namespace Scheduler\Repository;
 
 require_once 'BaseRepository.php';
 
+/**
+ * Class AppointmentRepository - contains method that retrieve information about the appointment
+ * @package Scheduler\Repository
+ */
 
 class AppointmentRepository extends BaseRepository
 {
+    /**
+     * @var string $table     Should contain name of the table
+
+     */
     protected $table = 'enc';
+
+    /**
+     * @var string $active_appointment_statuses Should contain a valid appointment statuses value to be used by the
+     * scheduler
+     */
     protected $active_appointment_statuses = array('Pending', 'Arrived', 'Checked', 'Rescheduled');
 
-    public   function valid_appt_status_query()
+
+    /**
+     * Function that returns status code for appointment statuses that scheduler.
+     *
+     * The function takes read data from ecw_visitstatus table filtering the statuses to @var - $active_appointment_statuses
+     *
+     * @return subquery
+     */
+
+    public  function valid_appt_status_query()
     {
         $where_clause = "";
         foreach ($this->active_appointment_statuses as $val) {
@@ -32,11 +54,17 @@ class AppointmentRepository extends BaseRepository
         return 'enc.STATUS IN (select Code from ecw_visitstatus where ' . $string . ')';
     }
 
-    /***
+    /**
      *
-     * Function is used to retrieve all the previous appointments for the user given universityId.
+     * Function is used to retrieve all the previous appointments for the user based on the universityId.
+     *
+     * The function returns list for the home page.
+     *
      * Only show appointments that are valid - arrived, pending,checkedout
-     * @param $universityId
+     *
+     * @param $universityId - university id value of the user.
+     *
+     * @return - list of appointment objects.
      *
      */
     public function getAllPreviousAppointments($universityId)
@@ -77,47 +105,20 @@ class AppointmentRepository extends BaseRepository
 
     }
 
+
     /**
+     * Function to retrieve available appointment times for a given provider, visit-type, facility, sessionId
      *
-     * @param $universityId
-     * @return appointment
-     */
-    public function getNextAppointment($universityId)
-    {
-
-        $next_appointment = \DB::table($this->table)
-            ->join('patients', 'enc.patientID', '=', 'patients.pid')
-            ->leftJoin('users as resource', 'enc.resourceID', '=', 'resource.uid')
-            ->leftJoin('edi_facilities', 'enc.facilityId', '=', 'edi_facilities.id')
-            ->where('patients.controlNo', '=', $universityId)
-            ->where('enc.Date', '>=', 'CURDATE()')
-            ->select(array('encounterID as encId', 'patientId', 'visitType', 'reason', 'startTime',
-                'endTime', 'enc.date', 'edi_facilities.name as facility', 'resource.ufname as providerFirstName',
-                'resource.ulname as providerLastName'
-            ))->orderBy('enc.date')
-            ->take(1)->first();
-
-        if (isset($next_appointment)) {
-            $appt = new \Appointment();
-            $appt->displayFormat = true;
-            foreach ($next_appointment as $k => $v) {
-                $appt->{$k} = $v;
-            }
-            return $appt;
-        }
-
-        return null;
-
-    }
-
-    /***
-     * Function to retrieve available appointment times for a given provider, visittype, facility.
-     * @param $providerId
-     * @param $startTime
-     * @param $endTime
-     * @param $visitTypeId
-     * @param $sessionId - as user interactions are saved to the database.
-     * @param $date
+     * the function will return all the appointment times that are available to the user instance.
+     *
+     * @param $facilityId - facility Id of interest
+     * @param $visitType -  visit type of the appointment
+     * @param $providerId - provider Id for whome the appointments should be returned.
+     * @param $scheduleID - schedule ID indicates whether the appointment need to scheduled for Morning or Afternoon.
+     * @param $sessionId - reserved slot that is saved in the database.
+     * @param $date - appointment date - date to return appointment slots for.
+     *
+     * @return array - that contains provider times, appointment times, provider information
      */
     public function getAllAppointmentTimes($facilityId,$visitType, $providerId, $scheduleID, $date,$session_id)
     {
@@ -204,6 +205,20 @@ class AppointmentRepository extends BaseRepository
     }
 
 
+
+    /**
+     *
+     * Function to create an appointment
+     *
+     * function to create an appointment.
+     *
+     * @param $controlNo - patients universityId or patientId.
+     * @param $sessionId -  session Id of the user.
+     * @param $appointment - appointment object that contains information about the appointment.
+     *
+     * @return $encId - appointment Id the value of the appointment that is made.
+     *
+     */
     public function createAppointment($controlNo, $sessionId, \Appointment $appointment)
     {
         $scheduler = new \ScheduleTimes();
@@ -241,9 +256,19 @@ class AppointmentRepository extends BaseRepository
                                                         from iu_scheduler_log
                                                         where providerId=:providerId and encDate=:encDate AND
                                                         visitType =:visitType  and
-                                                        sessionId!=:sessionId)x
-                            where TIMediff(startTime,:apptStartTime)<=0 and timediff(:apptEndTime,endTime)<=0
-                                           ", $this->valid_appt_status_query());
+                                                        sessionId!=:sessionId
+                                                         Union ALL
+        select startTime, endTime
+        from enc
+        join patients on enc.patientId= patients.pid
+        where enc.date = :encDate and deleteFlag=0 and
+        patients.controlNo = :controlNo and %s
+
+                                                        )x
+                            where    (TIMediff(startTime,:apptStartTime)=0) or (
+        TIMediff(startTime,:apptStartTime)<=0 and TIMediff(endTime,:apptEndTime)>0
+        ) or (TIMediff(startTime,:apptStartTime)>0 and TIMediff(endTime,:apptEndTime)<=0)
+                                           ", $this->valid_appt_status_query(),$this->valid_appt_status_query());
 
             $statement = $pdo->prepare($available_sql);
             $providerId = $appointment->providerId;
@@ -260,6 +285,8 @@ class AppointmentRepository extends BaseRepository
             $statement->bindParam(":apptStartTime", $apptBeginTime, \PDO::PARAM_STR, 256);
             $statement->bindParam(":apptEndTime", $apptEndTime, \PDO::PARAM_STR, 256);
             $statement->bindParam(":sessionId", $sessionId, \PDO::PARAM_STR, 256);
+            $statement->bindParam(":controlNo", $controlNo, \PDO::PARAM_STR, 256);
+
 
             $nRow = 0;
             if ($statement->execute()):
@@ -369,12 +396,20 @@ class AppointmentRepository extends BaseRepository
 
         } catch (\Exception $ex) {
             throw $ex;
-            exit;
-
             //rollback
         }
     }
 
+
+    /**
+     *
+     * Function to create unique Id.
+     *
+     * Unique Id is required while creating an appointment. The value is saved to VMID column in the enc table.
+     *
+     * @return $uniqueId
+     *
+     */
     function  uniqueId()
     {
        return  substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:',5)),0,
@@ -382,8 +417,10 @@ class AppointmentRepository extends BaseRepository
     }
 
     /**
-     * Cancel Appointment
+     * Function that runs a query to cancel the appointment
+     *
      * @param $encId
+     *
      */
     function cancelAppointment($encId)
     {
@@ -395,10 +432,25 @@ class AppointmentRepository extends BaseRepository
 
 
     /**
-     * Function to get available dates for the appointment
+     * Function that returns available dates for a provider.
      *
+     * @param $month - integer value of the month
+     * @param $year - string value of the year
+     * @param $providerId
+     * @param $visitType
+     * @param $sessionId
+     * @param $startTime
+     * @param $endTime
+     * @param $duration
+     * @providerId - Id of the provider for whome availableDates should be returned
+     * @visitType - visitType of the appointment to retreive reserved slots in the scheduler_log_table.
+     * @sessionId - sessionId value of the logged in user
+     * @starttime - default start time for the day
+     * @endtime - default end time for the day
+     * @duration - duration of the visit.
      *
-     * */
+     * @return array - array of available dates
+     */
     function getAvailableDates($month, $year, $providerId, $visitType, $sessionId, $startTime, $endTime, $duration)
     {
 
@@ -504,45 +556,11 @@ class AppointmentRepository extends BaseRepository
     }
 
 
-    public function getEmailTemplateForAppointment($encId)
-    {
-
-        $email_template_content = \DB::table('tblwebTemplates')
-            ->whereExists(function ($query) use ($encId) {
-                $query->select(\DB::raw(1))
-                    ->from('enc')
-                    ->whereRaw('lower(tblwebTemplates.Name) like lower(visitType)')
-                    ->where('encounterId', '=', $encId);
-            })
-            ->Where('deleteFlag', '=', 0)
-            ->select('content')
-            ->first();
-
-
-
-        if (($email_template_content)=="") {
-
-            $email_template_content = \DB::table('tblwebTemplates')
-                ->select('content')->where("Name", 'like',
-                    DEFAULT_EMAIL_TEMPLATE)->first();
-
-        }
-
-        // allowable tags - p, div, strong,
-        $email_content = html_entity_decode($email_template_content->content,ENT_QUOTES, 'UTF-8');
-
-        //preg_replace('/(<font[^>]*>)|(<\/font>)/', '', $email_template_content);;
-        $email = "<div>" . (strip_tags($email_content,'<p></p><div></div><strong></strong>')) . "</div>";
-
-        return $email;
-
-
-    }
-
-
     /**
-     * Function to retrieve appointment
+     * Function to retrieve an appointment given appointment Id
+     *
      * @param $encId
+     * @return appointment object - containing information about the appointment.
      */
     public function getAppointment($encId)
     {
@@ -573,11 +591,11 @@ class AppointmentRepository extends BaseRepository
     }
 
 
-
-    // add to logs -
-    //$appntconfemaillogs_sql = "INSERT INTO appntconfemaillogs(uid,encounterId,visitStatus,date,startTime,endTime,facilityId)
-    //values (:uid,:encounterId, :visitstatus,:date,:startTime,:endTime,
-    //:facilityId)";//
+    /**
+     * Function to save a log that appointment confirmation has been sent to the user.
+     *
+     * @param $encId
+     */
 
     public function insertIntoApptCnfLog($encId)
     {

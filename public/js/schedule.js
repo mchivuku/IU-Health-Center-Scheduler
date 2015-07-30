@@ -1,7 +1,7 @@
 /**
  * Created by mchivuku on 3/3/15.
  */
-
+var availableDates;
 
 $(document).ready(function () {
 
@@ -124,7 +124,7 @@ function update_time_links() {
 
         event.preventDefault();
         var startTime = $(this).attr('title');
-        console.log(startTime);
+        //console.log(startTime);
         saveSelectedTime(startTime);
 
     });

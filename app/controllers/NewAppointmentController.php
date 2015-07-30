@@ -69,7 +69,6 @@ class NewAppointmentController extends BaseController
 
         }
 
-
         return $this->view('pages.new-appointment-step1')
             ->viewdata(array('model' => $model))
             ->title('New Appointment');
@@ -80,11 +79,12 @@ class NewAppointmentController extends BaseController
      */
     private function checkIsFacultyOrStaff()
     {
-       // $affiliations = explode(";", $this->getPersonAffiliation());
+       // $affiliations = explode(";", $this->getPersonAffiliation()); - employee, member alum
         $affiliations = $this->getPersonAffiliation();
+
         $staffFaculty = false;
         foreach ($affiliations as $a) {
-            if (strtolower($a) == 'staff' || strtolower($a) == 'faculty') {
+            if (strtolower($a) == 'staff' || strtolower($a) == 'faculty'||strtolower($a) == 'employee') {
                 $staffFaculty = true;
                 break;
             }
@@ -130,29 +130,27 @@ class NewAppointmentController extends BaseController
         if (!isset($date))
             $date = date('Y-m-d');
 
-       //  $date = date('Y-m-d',date(strtotime("+1 day", strtotime(date('Y-m-d')))));
-
         if (!isset($tabId) || $tabId == "")
             $tabId = \ScheduleTimes::DAY;
 
-
-
-        // Get All Providers
+         // Get All Providers
         $providers = $this->providerRepo
             ->getAllProvidersWithWorkHours($facilityId, $visitType, $date);
-
 
         $model = new \SchedulerTabViewModel();
 
         $model->selectedDate =  date('m/d/Y', strtotime($date));
         $model->validDateRange =  $this->schedulerDateRangeRepo->getValidDateRange();
 
-        //Return with a message when no providers are found
-        if (empty($providers)) {
-
-            $model->message=$this->lang['noProviders'];
-            return $this->view('pages.new-appointment-step2')
-                ->viewdata(array('model' => $model, 'back_link' => $back_link))->title('Schedule
+        //Return with a message when no providers are found - can happen during weekends or when visit type and
+        //facility doesnt match.
+        if (empty($providers)){
+            return $this->view('pages.new-appointment-step2-noproviders')
+                ->viewdata(array('message' => $this->lang['noProviders'],'visitType'=>$visitType,
+                    'facility'=>$facilityId,'validDateRange'=>$model->validDateRange ,
+                    'back_link' => $back_link))
+            ->title
+                ('Schedule
                         Appointments');
         }
 
@@ -193,7 +191,6 @@ class NewAppointmentController extends BaseController
 
         $model->providers[] =
             array('label' => 'Providers', 'items' => $providers);
-
 
 
         return $this->view('pages.new-appointment-step2')->viewdata(array('model' => $model,
@@ -316,6 +313,7 @@ class NewAppointmentController extends BaseController
         $result['visitDuration'] = $available_times['minutes'];
 
 
+
         //Available for month
         if ($get_dates) {
             $hrs = $this->providerRepo->getProviderWorkHoursForMonth($visitType, $facilityId, $providerId);
@@ -360,12 +358,12 @@ class NewAppointmentController extends BaseController
 
         //first available provider - was selected
         if ($providerId == 0) {
-
             $result = $this->getAppointmentTimesForFirstAvailableProvider($facilityId, $visitType, $date, $tabId, false);
 
         } else {
 
             $result = $this->getAppointmentTimesForProvider($facilityId, $visitType, $date, $tabId, $providerId);
+
 
         }
 
@@ -375,8 +373,6 @@ class NewAppointmentController extends BaseController
         $model->tabs = array(\ScheduleTimes::DAY => 'Morning', \ScheduleTimes::AFTERNOON => "Afternoon");
         $model->activeTab = $tabId;
         $model->selected_startTime = $result['selected_start_time'];
-
-
         $model->errorMsg = $error_msg;
 
 
@@ -407,20 +403,17 @@ class NewAppointmentController extends BaseController
         $date = parseDateString($input_date);
         $result = false;
 
-        $parameters = array('facility' => $facilityId,
-            'visitType' => $visitType, 'providerId' => $providerId,
-            'date' => $input_date, 'tabId' => $tabId);
 
-        if ($providerId == self::FIRST_AVAILABLE_PROVIDER) {
+        $model = new \SchedulerTabViewModel();
+
+        if ($providerId == self::FIRST_AVAILABLE_PROVIDER){
+
             //get first provider - check if time is available - save
-
-            $first_available_provider_info = $this->providerRepo
+             $first_available_provider_info = $this->providerRepo
                 ->getFirstAvailableProviderWorkHours($facilityId,
                     $visitType, $date, $tabId,$session_id);
 
-
             $id = $first_available_provider_info['Id'];
-            $model = new \SchedulerTabViewModel();
 
             // If time is available - save
             if (in_array($startTime, $first_available_provider_info['times'])){
@@ -431,7 +424,11 @@ class NewAppointmentController extends BaseController
 
                if(!$result){
                     $model->errorMsg=$this->lang['Unable_to_select_start_time'];
-                }
+                    $model->selected_startTime=$this->schedulerLogRepo->getSelectedTime($session_id,
+                       $facilityId, $visitType, $id, $date);
+                }else{
+                   $model->selected_startTime=$startTime;
+               }
 
             }
 
@@ -442,7 +439,7 @@ class NewAppointmentController extends BaseController
             $model->scheduler_slots =
                 $this->build_appt_slot_view_model
                 ($first_available_provider_info['times'],
-                    $startTime, $first_available_provider_info['startTime'],
+                    $model->selected_startTime, $first_available_provider_info['startTime'],
                     $first_available_provider_info['endTime'],
                     $first_available_provider_info['past_times']);
 
@@ -450,29 +447,39 @@ class NewAppointmentController extends BaseController
                 \ScheduleTimes::AFTERNOON => "Afternoon");
             $model->activeTab = $tabId;
 
-            $model->selected_startTime=$startTime;
-
             return \View::make('includes.timeslots',
                 array('model' => $model));
 
         }
 
-        $result = $this->schedulerLogRepo->saveSelectedTime($session_id, $this->getUniversityId(),
+        $save_result = $this->schedulerLogRepo->saveSelectedTime($session_id, $this->getUniversityId(),
                 $facilityId, $visitType, $providerId, $date, $startTime,
                 $endTime);
 
+        $result = $this->getAppointmentTimesForProvider($facilityId, $visitType, $date, $tabId, $providerId);
 
-        if (!$result){
-            $parameters['error_msg'] = $this->lang['Unable_to_select_start_time'];
+        $model->scheduler_slots = $result['scheduler_slots'];
+        $model->selectedProvider = $result['selectedProvider'];
+        $model->visitDuration = $result['visitDuration'];
+        $model->firstAvailableProvider = $result['firstAvailableProvider'];
+        $model->tabs = array(\ScheduleTimes::DAY => 'Morning', \ScheduleTimes::AFTERNOON => "Afternoon");
+        $model->activeTab = $tabId;
+
+
+        if (!$save_result){
+            $model->errorMsg=$this->lang['Unable_to_select_start_time'];
+        }else{
+            $model->selected_startTime = $result['selected_start_time'];
+
         }
 
-        return \Redirect::action('NewAppointmentController@getAvailableTimes', $parameters);
-
+        return \View::make('includes.timeslots',array('model' => $model));
 
     }
 
     /**
      * GetAvailable dates for
+     *
      * the month */
     public function getAvailableDates()
     {
@@ -640,36 +647,28 @@ class NewAppointmentController extends BaseController
     {
 
         $appointment = $this->apptRepo->getAppointment($encId);
-        $confirmation_path =  APPOINTMENT_CONFIRMATION_EMAIL_TXT_PATH;
-        $policies_path = POLICIES_MESSAGE_PATH;
-        $message="";
+
+        //time format
+        $hours = date('H', strtotime($appointment->startTime));
+        $ext = ($hours < 12) ? 'a.m.' : 'p.m.';
+        $time_display = date('g:i',
+                strtotime($appointment->startTime)) . " " . $ext;
+
+        $data = array('visitType'=>$appointment->visitType,'providerName'=>$appointment->getProviderName(),
+           'facility'=>$appointment->facility,'date'=>date('Y-m-d', strtotime($appointment->date)),'startTime'=>
+            $time_display);
 
 
-        if (file_exists($confirmation_path)){
+        $email = $this->user_profile->email;
+        $name =  $this->user_profile->getName();
+        $subject = $this->lang['Appointment_Creation_Email_Subject'];
 
-            //time format
-            $hours = date('H', strtotime($appointment->startTime));
-            $ext = ($hours < 12) ? 'a.m.' : 'p.m.';
-            $time_display = date('g:i',
-                    strtotime($appointment->startTime)) . " " . $ext;
+        \Mail::send('emails.appointment-confirmation', $data, function($message)use($email,
+            $name,$subject)
+        {
+            $message->to($email, $name)->subject($subject);
+        });
 
-            $message .= str_replace(array('%visitType%','%providerName%','%date%','%startTime%','%facility%'),
-                array($appointment->visitType,
-                    $appointment->getProviderName(),
-                    date('Y-m-d', strtotime($appointment->date)),
-                    $time_display,
-                    $appointment->facility),
-                file_get_contents($confirmation_path, FILE_USE_INCLUDE_PATH));
-        }
-
-        // Build Appointment confirmation Message
-        if(file_exists($policies_path))
-            $message.= file_get_contents($policies_path, FILE_USE_INCLUDE_PATH);
-
-
-        return $this->emailService->send(array('name' => $this->user_profile->getName(),
-            'email' => $this->user_profile->email, 'message' => $message,
-            'subject' => $this->lang['Appointment_Creation_Email_Subject']));
     }
 
 

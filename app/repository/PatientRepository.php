@@ -7,7 +7,13 @@
  */
 
 namespace Scheduler\Repository;
-
+/**
+ * Class PatientRepository
+ *
+ * Patient repository contains methods utilities method that returns information from patients table.
+ *
+ * @package Scheduler\Repository
+ */
 class PatientRepository
 {
 
@@ -30,9 +36,9 @@ class PatientRepository
 
 
     /***
-     * Function to return the current value of textenabled field in the patients table
+     * Function to return the current value of text-enabled field from the patients table
      * @param $universityId
-     * @return mixed
+     * @return mixed - array of text enabled value and iu-scheduler-textenabled field
      */
     public function getTextEnabledValue($universityId)
     {
@@ -48,8 +54,9 @@ class PatientRepository
     /***
      * Function that updates the value of textenabled value set by the user
      *
-     * @param $universityId
-     * @param $value
+     * @param $universityId - university Id
+     * @param $value - the value to update
+     * $
      */
     public function updateTextEnabledValue($universityId, $value)
     {

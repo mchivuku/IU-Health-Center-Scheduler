@@ -7,7 +7,7 @@
         <div class="instructions">
             <h2>Appointment Policy</h2>
 
- {{$message}}
+            @include('...includes.policy-message')
   </div>
     </div>
 </section>

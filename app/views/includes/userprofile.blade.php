@@ -4,7 +4,7 @@
   <div class="personal-info">
                     <h2>Personal Information</h2>
                     <div>
-                    <p>If you need to update your personal information, please [do whatever they need to do to update their info].”</p>
+                    <p>If you need to update your personal information, please notify one of our staff members at your next visit to the Health Center.</p>
 
                         <ul>
                             <li><strong>Name</strong>: <?php echo $profile->getName();?></li>

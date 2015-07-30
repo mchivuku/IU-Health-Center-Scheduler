@@ -13,15 +13,14 @@ use Whoops\Example\Exception;
 require_once 'AppointmentRepository.php';
 require_once 'BaseRepository.php';
 
+/**
+ * Class ProviderRepository
+ * Provider Repository - that contains methods 
+ * @package Scheduler\Repository
+ */
 class ProviderRepository extends BaseRepository
 {
 
-    /*
-     *
-     *
-     * Get providers with work hours for a week.
-     *
-     */
 
     //TODO - update the facilityId, workhours, weekday - if the providers are not available on a weekday
     public function getAllProvidersWithWorkHours($facilityId, $visitType, $date)
@@ -45,7 +44,7 @@ class ProviderRepository extends BaseRepository
     function build_sql_week_day_clause($date)
     {
 
-        return \DB::raw('DAYOFWEEK("' . $date . '")');
+        return \DB::raw('DAYOFWEEK("' . date('Y-m-d',strtotime($date)) . '")');
 
     }
 

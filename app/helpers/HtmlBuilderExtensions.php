@@ -10,7 +10,6 @@
  *  File contains functions for HTML extensions
  *
  */
-
 \HTML::macro('build_table', function ($data, $header, $attributes = null) {
 
     $build_tr = function ($data) {
@@ -36,10 +35,15 @@
 
     if (!is_null($header)) {
         $table .= '<thead><tr>';
+        $count=0;
         foreach ($header as $value) {
-            $table .= '<th> ' . $value . ' </th>';
+
+                $table .= '<th > ' . $value . ' </th>';
+
+
+
         }
-        $table .= '</thead>';
+        $table .= '</tr></thead>';
     }
 
     $table .= '<tbody>';

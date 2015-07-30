@@ -40,15 +40,7 @@ class PoliciesController extends BaseController
 
     public function getIndex()
     {
-
-        $path =  POLICIES_MESSAGE_PATH;
-        $message="";
-
-        if(file_exists($path))
-            $message.= file_get_contents($path, FILE_USE_INCLUDE_PATH);
-
-
-        return $this->view('pages.policies')->viewdata(array('message' => $message))->title('Policies');
+        return \View::make('pages.policies',array('title' => 'Policies'));
     }
 
 }

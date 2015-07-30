@@ -16,7 +16,7 @@
                 </div>
  <div class="tablesaw-container">
 
-   {{ HTML::build_table($model->pastAppointmentListViewModel->data,$model->pastAppointmentListViewModel->header ,
+    {{ \HTML::build_table($model->pastAppointmentListViewModel->data,$model->pastAppointmentListViewModel->header ,
    array('class'=>'table display responsive no-wrap tablesaw','id'=>'pastAppts','data-tablesaw-mode'=>"stack"))}}
 
  </div>
@@ -32,7 +32,6 @@
 
 <!-- Render this partial view when you want to enable client-side sorting, pagination and filtering of a table. -->
 {{ HTML::script('js/jquery.dataTables.js')}}
-{{ HTML::script('js/tablesaw.stackonly.js')}}
 
 
 
@@ -57,8 +56,9 @@
 
 
 <script type="text/javascript">
-    $(document).ready(function() {
-        $('table#pastAppts').dataTable({
+
+    $(document).ready(function(){
+      $('table#pastAppts').dataTable({
              responsive: true,
             'bJQueryUI': false,
             'bProcessing': true,

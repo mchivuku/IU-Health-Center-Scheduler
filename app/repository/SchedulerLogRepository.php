@@ -30,7 +30,6 @@ class SchedulerLogRepository
         from enc
         where enc.date = :encDate and deleteFlag=0 and
         enc.resourceId= :providerId and  %s
-
         UNION all
         select StartTime as startTime,
         EndTime as endTime
@@ -43,9 +42,19 @@ class SchedulerLogRepository
         from iu_scheduler_log
         where providerId=:providerId and encDate=:encDate AND
         visitType =:visitType  and
-        sessionId!=:sessionId)x
-        where TIMediff(startTime,:apptStartTime)<=0 and timediff(:apptEndTime,endTime)<=0
-        ", $apptRep->valid_appt_status_query());
+        sessionId!=:sessionId
+
+        Union ALL
+        select startTime, endTime
+        from enc
+        join patients on enc.patientId= patients.pid
+        where enc.date = :encDate and deleteFlag=0 and
+        patients.controlNo = :controlNo and %s
+        )x
+        where (TIMediff(startTime,:apptStartTime)=0) or
+        (TIMediff(startTime,:apptStartTime)<=0 and TIMediff(endTime,:apptEndTime)>0
+        ) or (TIMediff(startTime,:apptStartTime)>0 and TIMediff(endTime,:apptEndTime)<=0)
+        ", $apptRep->valid_appt_status_query(),$apptRep->valid_appt_status_query());
 
 
 
@@ -56,7 +65,7 @@ class SchedulerLogRepository
         $apptBeginTime = $startTime;
         $apptEndTime = $endTime;
 
-        $statement->bindParam(':providerId', $providerId, \PDO::PARAM_STR, 256);
+         $statement->bindParam(':providerId', $providerId, \PDO::PARAM_STR, 256);
         $statement->bindParam(":startTime", $startTime, \PDO::PARAM_STR, 256);
         $statement->bindParam(":endTime", $endTime, \PDO::PARAM_STR, 256);
         $statement->bindParam(":encDate", $date, \PDO::PARAM_STR, 256);
@@ -64,6 +73,8 @@ class SchedulerLogRepository
         $statement->bindParam(":apptStartTime", $apptBeginTime, \PDO::PARAM_STR, 256);
         $statement->bindParam(":apptEndTime", $apptEndTime, \PDO::PARAM_STR, 256);
         $statement->bindParam(":sessionId", $session_id, \PDO::PARAM_STR, 256);
+        $statement->bindParam(":controlNo", $controlNo, \PDO::PARAM_STR, 256);
+
 
         $nRow = 0;
         if ($statement->execute()):
@@ -72,8 +83,8 @@ class SchedulerLogRepository
             }
         endif;
 
-        if ($nRow == 0) {
 
+        if ($nRow == 0) {
             $exists_query = sprintf('select exists(select 1 from %s where sessionId=\'%s\') as `exists`', $this->table,
                 $session_id);
 
@@ -84,7 +95,6 @@ class SchedulerLogRepository
                    $exists = $row['exists'];
                 }
             endif;
-
 
             $insert_update_values = array('facility' => $facilityId, 'visitType' => $visitType,
                 'providerId' => $providerId, 'encDate' => $input_date, 'startTime' => $startTime,

@@ -25,6 +25,7 @@ class HomeController extends BaseController
     |
     |	Route::get('/', 'HomeController@showWelcome');
     |
+    |
     */
 
     public function  __construct($app)
@@ -40,7 +41,7 @@ class HomeController extends BaseController
 
         $univId = $this->getUniversityId();
         $model = new \IndexViewModel();
-        $model->nextAppointment = $this->apptRepo->getNextAppointment($univId);
+       // $model->nextAppointment = $this->apptRepo->getNextAppointment($univId);
 
         $x = new \TableListViewModel();
         $x->header = array('Date', 'Time', 'Visit Type', 'Facility', 'Provider', '&nbsp;');
@@ -71,8 +72,8 @@ class HomeController extends BaseController
                     array(
                         'encId' => $item->encId), array('data-reveal-id' => "more-info", 'id' => 'cancel-appt-link'));
 
-                $last_column = "<span class='tablesaw-cell-content'>" .  $link
-                    . "</span>";
+                $last_column =  $link;
+
 
             } else {
 
@@ -81,10 +82,9 @@ class HomeController extends BaseController
                 $schedule_again_link = \URL::to(action('NewAppointmentController@getIndex') . '?' . $queryString);
 
 
-                $last_column = "<span class='tablesaw-cell-content'>" . "<a
-                                href='$schedule_again_link'>Schedule Again</span>";
+                $last_column =  "<a
+                                href='$schedule_again_link'>Schedule Again</a>";
             }
-
 
             $x->data[] = array(date('Y-m-d', strtotime($item->date)),
                 '<span title="' . date('H:i', strtotime($item->startTime)) . '"></span>' . $item->getStart(),
@@ -93,8 +93,9 @@ class HomeController extends BaseController
                 $last_column
 
             );
-
         });
+
+
         $model->pastAppointmentListViewModel = $x;
 
         return $this->view('pages.home')->viewdata(array('model' => $model))->title('Home');
@@ -126,23 +127,20 @@ class HomeController extends BaseController
 
         $appt_date_time = $this->apptRepo->getAppointment($encId);
 
-        $path = app_path() . "/config/cancellationEmail.txt";
-
-        if (file_exists($path) && ($this->user_profile->email) != "") {
-            $message = file_get_contents($path, FILE_USE_INCLUDE_PATH);
+        if (($this->user_profile->email) != ""){
 
             $app_date_time = date_format(new \Datetime($appt_date_time->date . " " .
                     $appt_date_time->startTime),
                 'd/m/y  g:i a');
 
+            $email = $this->user_profile->email;
+            $name = $this->user_profile->getName();
+            $subject =$this->lang['Cancellation_Email_Subject'];
 
-
-            $x = str_replace('%date%', $app_date_time, $message);
-
-            //send cancellation email
-            $this->emailService->send(array('name' => $this->user_profile->getName(),
-                'email' => $this->user_profile->email, 'message' => $x,
-                'subject' => $this->lang['Cancellation_Email_Subject']));
+            \Mail::send('emails.cancellation', array("date"=>$app_date_time), function($message)use($email,$name,$subject)
+            {
+                $message->to($email, $name)->subject($subject);
+            });
 
         }
 

@@ -154,8 +154,12 @@ abstract class BaseController extends Controller
 
     protected function  getUniversityId()
     {
+        $network_id= $this->getUserId();
+        if(stripos('uisoscan',$network_id)!==false)
+            return $this->__byPassUISOScan();
 
-        return $this->ldap->getUserUniversityId($this->getUserId());
+
+        return $this->ldap->getUserUniversityId($network_id);
 
     }
 
@@ -195,5 +199,11 @@ abstract class BaseController extends Controller
     protected function getUserSessionId(){
         return session_id();
 
+    }
+
+
+    /* For the purpose of scan */
+    protected function __byPassUISOScan(){
+        return '317550';
     }
 }

@@ -7,9 +7,21 @@
  */
 
 namespace Scheduler\Repository;
-
+/**
+ * Class BaseRepository - base
+ * @package Scheduler\Repository
+ */
 abstract class BaseRepository{
 
+
+    /**
+     * Function that merges multiple unavailable time ranges into a fixed range that starts with lowest of all the
+     * ranges to the highest value of ranges.
+     *
+     * @param $times - array of times that have start time and end time values
+     *
+     * @return array -  merged times
+     */
     protected  function merge_unavailable($times)
     {
         if (count($times) <= 0)
@@ -78,9 +90,14 @@ abstract class BaseRepository{
     }
 
 
-
-
-    //function to get the entire schedule
+    /***
+     * Function to compute available times using the unavailable times
+     *
+     * @param $startTime
+     * @param $endTime
+     * @param $unavailable_times
+     * @return array - available times in the form of 'Available from' to 'Available to'
+     */
     protected  function construct_available_times($startTime, $endTime, $unavailable_times)
     {
 

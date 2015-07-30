@@ -7,11 +7,28 @@
  */
 namespace Scheduler\Repository;
 
+/**
+ * Class FacilitiesRepository
+ * Facilities repository contains methods to retrieve facilities from the database.
+ *
+ * @package Scheduler\Repository
+ *
+ */
 class FacilitiesRepository
 {
+    /**
+     * @var string $table - the table to refer that contains facility mapping with chart title.
+     */
     protected $table = 'iu_scheduler_facility_charttitle';
 
 
+    /***
+     * Private method to return facilities from the database
+     *
+     * @param bool $facultyStaff - flag to indicate whether the facilities returned are for faculty staff.
+     *
+     * @return mixed
+     */
     private function getFacilities($facultyStaff=false){
 
        $query= \DB::table($this->table)
@@ -33,21 +50,33 @@ class FacilitiesRepository
     }
 
 
-
-    /* Facilities allowed for faculty and staff*/
+    /**
+     * Public method that returns faculty/staff facilities
+     *
+     * @return mixed
+     */
     public function getAllFacultyStaffFacilities()
     {
         return $this->getFacilities(true);
 
     }
 
-    /* Facilities allowed for students */
+    /**
+     * Public method that returns student facilities
+     *
+     * @return mixed
+     */
     public function getAllFacilities(){
         return $this->getFacilities();
     }
 
 
-
+    /**
+     * Public method returns chart title value given the facility Id.
+     * Chart title maps into visitType table to returns visit types for a given facilities.
+     *
+     * @return mixed
+     */
     public function getFacilityChartTitle($facilityId)
     {
 

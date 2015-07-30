@@ -12887,7 +12887,7 @@
                 }
             }
             else if ( window.console && console.log ) {
-                console.log( msg );
+               // console.log( msg );
             }
         }
 
@@ -22695,6 +22695,9 @@
 /*! Tablesaw - v1.0.3 - 2015-01-27
  * https://github.com/filamentgroup/tablesaw
  * Copyright (c) 2015 Filament Group; Licensed MIT */
+/*! Tablesaw - v1.0.3 - 2015-01-27
+ * https://github.com/filamentgroup/tablesaw
+ * Copyright (c) 2015 Filament Group; Licensed MIT */
 ;(function( $ ) {
     var div = document.createElement('div'),
         all = div.getElementsByTagName('i'),
@@ -23497,7 +23500,7 @@ if( !Tablesaw.config ) {
             // Find index of current step
             var index = $(".steps li").index(currentStep) + 1;
 
-            console.log(index);
+           // console.log(index);
 
             enquire.register("screen and (max-width:47.9375em)", {
 
@@ -23607,7 +23610,7 @@ if( !Tablesaw.config ) {
             scope.debug('Helper: [Overridden] Open external links in new tabs');
         });
 
-        IUComm.init( {debug:true} );
+        IUComm.init( {debug:false} );
 
     });
 })(jQuery);

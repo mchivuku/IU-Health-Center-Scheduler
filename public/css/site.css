@@ -1393,7 +1393,8 @@ table.tablesaw {
     padding-top: 1.5rem; }
 
 .nav-secondary {
-    padding-right: 3rem; }
+    padding-right: 3rem;
+    pointer-events: auto; }
 .nav-secondary ul li {
     font-size: 0.875rem;
     text-transform: none; }
@@ -1435,7 +1436,7 @@ body:not(.home) .emergency-info h2:after {
     content: "\002B";
     position: absolute;
     right: 0.5rem;
-    top: -1px;
+    top: -1px !important;
     line-height: 3rem;
     font-size: 2rem; }
 .js .personal-info h2.open:after,
@@ -1573,8 +1574,7 @@ body:not(.home) .emergency-info h2 {
     border: 1px solid #e4e4e4;
     background-color: #e4e4e4;
     color: #000;
-    cursor: default;
-}
+    cursor: default; }
 
 .button.back {
     float: left; }
@@ -2193,12 +2193,6 @@ td.ui-datepicker-unselectable:hover {
 #sessioncounter p:last-of-type {
     margin-bottom: 0; }
 
-a.ui-state-disabled{
-
-    display: none;
-}
-
-
 @media only screen and (min-width: 642px) {
     .row > .alert-info,
     .row > .alert {
@@ -2209,4 +2203,3 @@ a.ui-state-disabled{
         margin-left: 2.25rem;
         margin-right: 2.25rem; } }
 
-/*# sourceMappingURL=site.css.map */

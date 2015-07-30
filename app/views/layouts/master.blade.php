@@ -1,13 +1,10 @@
-<!-- Header -->
 @include('...includes.header')
 
 
 <body class="home">
 <div class="off-canvas-wrap" data-offcanvas>
-<!-- Branding bar -->
 @include('...includes.branding-bar')
 
-<!-- Body -->
 <div class="inner-wrap">
 
       <!-- Application Logo -->
@@ -57,7 +54,7 @@
 
 
            <!-- javascript files -->
-           <!-- Include jQuery -->
+           <!-- Include jQuery -//code.jquery.com/jquery-2.1.1.min.js -->
            {{ HTML::script('//code.jquery.com/jquery-2.1.1.min.js')}}
            <!-- Include Global files -->
            {{ HTML::script('//assets.iu.edu/web/2.x/js/global.js')}}
@@ -75,8 +72,6 @@
 
 </body>
 </html>
-
-
 
 
 

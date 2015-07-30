@@ -24,6 +24,7 @@ class CASHelper
 
     function buildRedirectURL()
     {
+
         $pageURL = 'http';
 
         if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
@@ -43,14 +44,15 @@ class CASHelper
             }
         }
 
+ 
         return $pageURL;
     }
 
 
     /// The URL to which *CAS* should redirect after successful authentication.
-    function getAuthenticationURL()
+    function getAuthenticationURL($url)
     {
-        $url = sprintf(self::FmtAuthenticationUrl, self::CASServer, $this->buildRedirectURL());
+        $url = sprintf(self::FmtAuthenticationUrl, self::CASServer, $url);
         return $url;
     }
 
@@ -71,11 +73,9 @@ class CASHelper
      * @param $netid
      * @return bool
      */
-    function validate($casticket)
+    function validate($url,$casticket)
     {
-        // remove any cas tickets;
-        $url = $this->buildRedirectURL();
-      //  $updatedAbsoluteUrl = $this->removeCASticket($casticket,$url);
+         //  $updatedAbsoluteUrl = $this->removeCASticket($casticket,$url);
         $validateurl = sprintf(self::FmtValidationUrl, self::CASServer, $casticket, $url);
 
         $ch = curl_init();
