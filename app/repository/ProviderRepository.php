@@ -316,6 +316,9 @@ class ProviderRepository extends BaseRepository
                 $times1 = $item1['times'];
                 $times2 =  $item2['times'];
 
+                $t1 = "";
+                $t2 = "";
+
                 $timeNow = date('H:i');
                 foreach($times1 as $slot){
                     if($slot>=$timeNow)
@@ -334,7 +337,7 @@ class ProviderRepository extends BaseRepository
                     }
                 }
 
-                if ($t1 == $t2) {
+                if ($t1 === $t2) {
                     return 0;
                 }
 
