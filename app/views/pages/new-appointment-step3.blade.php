@@ -80,8 +80,9 @@ function checkTime(i) {
            function sessiontimeout(topRef, expire) {
                expire.setSeconds(expire.getSeconds() - 1);
                if (expire.getFullYear() < 2015) {
-                   window.location.href = "https://seville.iuhc.iub" +
-                   ".edu/comm/hcScheduler/public/newAppointment/clearsession?visitType="+$('#visitType').val()+"&facility="+$('#facility').val()
+                   window.location.href = "https://scheduler.iuhc.iub" +
+                   ".edu/scheduler/newAppointment/clearsession?visitType="+$('#visitType').val()+"&facility="+$
+                           ('#facility').val()
                    return;
                }
               if (topRef) {
