@@ -12,7 +12,7 @@ require_once app_path() . "/helpers/CASHelper.php";
 
 abstract class BaseController extends Controller
 {
-//test
+//testing merge
     protected $ldap;
     protected $userRepo;
     protected $apptRepo;
