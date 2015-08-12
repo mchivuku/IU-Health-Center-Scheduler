@@ -22,6 +22,56 @@ class ProviderRepository extends BaseRepository
 {
 
 
+    public static function log($obj,$query = null,$params=null)
+    {
+        $debug_query = function($string,$data) {
+            if(isset($data) && count($data)>0){
+                $indexed=$data==array_values($data);
+                foreach($data as $k=>$v) {
+                    if(is_string($v)) $v="'$v'";
+                    if($indexed) $string=preg_replace('/\?/',$v,$string,1);
+                    else $string=str_replace(":$k",$v,$string);
+                }
+            }
+
+            return $string;
+        };
+
+
+        $log_file = app_path()."/".'param_dump_error_log.txt';
+
+        if(file_exists($log_file)){
+            $fh = fopen($log_file,'a');
+        }else{
+            $fh = fopen($log_file,'w');
+        }
+
+        if(isset($query)){
+                $message= $debug_query($query,$params);
+                fwrite($fh,$message."\n");
+                fclose($fh);
+
+            }else{
+
+                $message = "<code><pre>";
+                ob_start();
+
+                if (is_object($obj)) {
+                    var_dump($obj);
+                } else if (is_array($obj)) {
+                    print_r($obj);
+                }else{
+                    $message.=$obj;
+                }
+                $message .= ob_get_clean();
+                $message .= "</code><br />\n";
+                fwrite($fh,$message."\n");
+                fclose($fh);
+            }
+
+
+    }
+
     //TODO - update the facilityId, workhours, weekday - if the providers are not available on a weekday
     public function getAllProvidersWithWorkHours($facilityId, $visitType, $date)
     {
@@ -233,7 +283,7 @@ class ProviderRepository extends BaseRepository
         $available_providers = array_filter($provider_times,
             function($item){return count($item['times'])>0;});
 
-        usort($available_providers, function($a,$b){
+        uasort($available_providers, function($a,$b){
             $al = strtolower($a['LastName']);
             $bl = strtolower($b['LastName']);
             if ($al == $bl) {
@@ -244,7 +294,6 @@ class ProviderRepository extends BaseRepository
         });
 
 
-        // For available provider - split the range into slots
 
         $providerArray= array();
         foreach ($available_providers as $k=>$v) {
@@ -294,6 +343,8 @@ class ProviderRepository extends BaseRepository
         }
 
 
+        // For available provider - split the range into slots
+        ProviderRepository::log($providerArray);
 
         //If we are looking at current date - check for the slot that is right after time now.
         if($date == date('Y-m-d')){
@@ -343,11 +394,14 @@ class ProviderRepository extends BaseRepository
 
                 return ($t1 > $t2) ? 1 : -1;
             });
+            ProviderRepository::log(current($providers_available_from_time_now));
            return current($providers_available_from_time_now);
 
         }
 
         // else get the first available based on the start time of the day.
+
+
         usort($providerArray, function ($item1, $item2){
             $times1 = $item1['times'];
             $times2 =  $item2['times'];
@@ -355,6 +409,8 @@ class ProviderRepository extends BaseRepository
             $start1 = $item1['startTime'];
             $start2 = $item2['startTime'];
 
+            $t1="";
+            $t2 = "";
             foreach($times1 as $slot){
                 if($slot>=$start1)
                 {
@@ -382,6 +438,7 @@ class ProviderRepository extends BaseRepository
         });
 
 
+        ProviderRepository::log(current($providerArray));
         return current($providerArray);
 
 
