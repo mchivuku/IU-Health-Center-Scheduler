@@ -246,6 +246,10 @@ class ProviderRepository extends BaseRepository
             ($scheduler_log_query)->get();
 
 
+        //SQL Query
+        ProviderRepository::log(null,$all_appt_times_query->toSql().$blocks_query->toSql().$scheduler_log_query->toSql(),
+            null);
+
         //1. Group By providers
         $provider_times = array();
         foreach($all_providers as $time){
@@ -283,6 +287,8 @@ class ProviderRepository extends BaseRepository
         $available_providers = array_filter($provider_times,
             function($item){return count($item['times'])>0;});
 
+
+
         uasort($available_providers, function($a,$b){
             $al = strtolower($a['LastName']);
             $bl = strtolower($b['LastName']);
@@ -293,7 +299,9 @@ class ProviderRepository extends BaseRepository
 
         });
 
-
+        // For available provider - split the range into slots
+        ProviderRepository::log('available providers - filtered PHP_EOL');
+        ProviderRepository::log($available_providers);
 
         $providerArray= array();
         foreach ($available_providers as $k=>$v) {
@@ -342,9 +350,9 @@ class ProviderRepository extends BaseRepository
 
         }
 
-
-        // For available provider - split the range into slots
+        ProviderRepository::log('provider array - merged/split PHP_EOL');
         ProviderRepository::log($providerArray);
+
 
         //If we are looking at current date - check for the slot that is right after time now.
         if($date == date('Y-m-d')){
@@ -399,15 +407,12 @@ class ProviderRepository extends BaseRepository
 
         }
 
-        // else get the first available based on the start time of the day.
-
 
         $p = array_filter($providerArray,function($item) {
-
-            return count($item['times']) > 0;
+                return count($item['times']) > 0;
         });
-
-        usort(  $p , function ($item1, $item2){
+       //no need to sort.
+        /*usort(  $p , function ($item1, $item2){
             $times1 = $item1['times'];
             $times2 =  $item2['times'];
 
@@ -441,9 +446,9 @@ class ProviderRepository extends BaseRepository
 
             return ($t1 > $t2) ? 1 : -1;
         });
+*/
 
-
-       // ProviderRepository::log(current($providerArray));
+        ProviderRepository::log(current($providerArray));
         return current($p);
 
     }
