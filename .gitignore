@@ -1,2 +1,6 @@
 config/database.php
 .idea/
+config/ldap.php
+config/app.php
+config/constants.php
+

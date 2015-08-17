@@ -394,7 +394,7 @@ class ProviderRepository extends BaseRepository
 
                 return ($t1 > $t2) ? 1 : -1;
             });
-            ProviderRepository::log(current($providers_available_from_time_now));
+           // ProviderRepository::log(current($providers_available_from_time_now));
            return current($providers_available_from_time_now);
 
         }
@@ -402,7 +402,12 @@ class ProviderRepository extends BaseRepository
         // else get the first available based on the start time of the day.
 
 
-        usort($providerArray, function ($item1, $item2){
+        $p = array_filter($providerArray,function($item) {
+
+            return count($item['times']) > 0;
+        });
+
+        usort(  $p , function ($item1, $item2){
             $times1 = $item1['times'];
             $times2 =  $item2['times'];
 
@@ -438,10 +443,8 @@ class ProviderRepository extends BaseRepository
         });
 
 
-        ProviderRepository::log(current($providerArray));
-        return current($providerArray);
-
-
+       // ProviderRepository::log(current($providerArray));
+        return current($p);
 
     }
 
