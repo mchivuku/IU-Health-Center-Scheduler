@@ -408,45 +408,26 @@ class ProviderRepository extends BaseRepository
         }
 
 
+        
         $p = array_filter($providerArray,function($item) {
                 return count($item['times']) > 0;
         });
-       //no need to sort.
-        /*usort(  $p , function ($item1, $item2){
-            $times1 = $item1['times'];
-            $times2 =  $item2['times'];
 
-            $start1 = $item1['startTime'];
-            $start2 = $item2['startTime'];
+        //no need to sort.
+         usort(  $p , function ($item1, $item2){
 
-            $t1="";
-            $t2 = "";
-            foreach($times1 as $slot){
-                if($slot>=$start1)
-                {
-                    $t1 = $slot;
-                    break;
-
-                }
-            }
-
-            foreach($times2 as $slot){
-                if($slot>=$start2)
-                {
-                    $t2= $slot;
-                    break;
-
-                }
-            }
+             $start1 = $item1['times'][0];
+             $start2 = $item2['times'][0];
 
 
-            if ($t1 == $t2){
+            if ($start1 == $start2){
                 return 0;
             }
 
-            return ($t1 > $t2) ? 1 : -1;
+            return $start1 < $start2?1:-1;
+
         });
-*/
+
 
         ProviderRepository::log(current($providerArray));
         return current($p);
