@@ -407,8 +407,6 @@ class ProviderRepository extends BaseRepository
 
         }
 
-
-        
         $p = array_filter($providerArray,function($item) {
                 return count($item['times']) > 0;
         });
@@ -416,9 +414,8 @@ class ProviderRepository extends BaseRepository
         //no need to sort.
          usort(  $p , function ($item1, $item2){
 
-             $start1 = $item1['times'][0];
-             $start2 = $item2['times'][0];
-
+             $start1 = current($item1['times']);
+             $start2 = current($item2['times']);
 
             if ($start1 == $start2){
                 return 0;
@@ -429,7 +426,7 @@ class ProviderRepository extends BaseRepository
         });
 
 
-        ProviderRepository::log(current($providerArray));
+        ProviderRepository::log(current($p));
         return current($p);
 
     }
