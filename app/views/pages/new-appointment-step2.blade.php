@@ -67,7 +67,7 @@
 
 @section('javascript')
 
-{{ HTML::script('js/jquery-ui.js')}}
+
 
 <script type="text/javascript">
 
