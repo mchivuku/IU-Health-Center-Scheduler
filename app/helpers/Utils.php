@@ -18,19 +18,29 @@ function getDayOfTheWeek($date)
 
 function split_range_into_slots_by_duration($starttime, $endtime, $duration, &$slots)
 {
-    $start_time = strtotime($starttime);
+
     $end_time = strtotime($endtime);
 
-    $time = $start_time;
+    // initialization
+    if(strtotime(date('H:i', strtotime($starttime) + $duration)) < $end_time){
+        $time = strtotime($starttime);
+    }else{
+        $time = strtotime(date('H:i', strtotime($starttime) + $duration));
+    }
+
+
     while ($time < $end_time) {
 
         //add date as a key in first level array
-        if (!in_array(date("H:i", $time), $slots)) {
-            $slots[] = date("H:i", $time);
+       if (!in_array(date("H:i", $time), $slots)){
+             $slots[] = date("H:i", $time);
         }
         $time += $duration;
 
-    }
+   }
+
+
+
 }
 
 

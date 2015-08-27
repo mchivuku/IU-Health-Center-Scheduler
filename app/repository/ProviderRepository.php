@@ -411,6 +411,8 @@ class ProviderRepository extends BaseRepository
                 return count($item['times']) > 0;
         });
 
+
+
         //no need to sort.
          usort(  $p , function ($item1, $item2){
 
@@ -421,12 +423,14 @@ class ProviderRepository extends BaseRepository
                 return 0;
             }
 
-            return $start1 < $start2?1:-1;
+            return $start1 < $start2?-1:1;
 
         });
 
 
         ProviderRepository::log(current($p));
+
+
         return current($p);
 
     }

@@ -156,16 +156,19 @@ class AppointmentRepository extends BaseRepository
             $provider_work_hours->EndTime,
             $merged_unavailable);
 
+
         $overlapping_hours = get_overlapping_hr($provider_work_hours->StartTime,
-            $provider_work_hours->EndTime,$scheduleID);
+            $provider_work_hours->EndTime,
+            $scheduleID);
+
 
         $time_slots = array();
 
 
         foreach ($available_times as $available){
-
-            split_range_into_slots_by_duration($available['Available_from'], $available['Available_to'],
-                $provider_work_hours->minutes*60,
+           split_range_into_slots_by_duration($available['Available_from'],
+               $available['Available_to'],
+               $provider_work_hours->minutes*60,
                 $time_slots);
 
         }
@@ -173,10 +176,7 @@ class AppointmentRepository extends BaseRepository
         $start = $overlapping_hours['startTime'];
         $end =   $overlapping_hours['endTime'];
 
-
-
         $past_times=array();
-
 
         $filter_times = array_filter($time_slots, function ($item) use ($start, $end, $date,&$past_times) {
             if ($date == date('Y-m-d')){
@@ -262,13 +262,11 @@ class AppointmentRepository extends BaseRepository
         from enc
         join patients on enc.patientId= patients.pid
         where enc.date = :encDate and deleteFlag=0 and
-        patients.controlNo = :controlNo and %s
-
-                                                        )x
-                            where    (TIMediff(startTime,:apptStartTime)=0) or (
-        TIMediff(startTime,:apptStartTime)<=0 and TIMediff(endTime,:apptEndTime)>0
-        ) or (TIMediff(startTime,:apptStartTime)>0 and TIMediff(endTime,:apptEndTime)<=0)
-                                           ", $this->valid_appt_status_query(),$this->valid_appt_status_query());
+        patients.controlNo = :controlNo and %s )x
+                            where
+                           not (TIMediff(:apptEndTime,startTime)<=0 || TIMediff(:apptStartTime,endTime)>=0)
+                                           ",
+                    $this->valid_appt_status_query(),$this->valid_appt_status_query());
 
             $statement = $pdo->prepare($available_sql);
             $providerId = $appointment->providerId;
@@ -363,16 +361,16 @@ class AppointmentRepository extends BaseRepository
                 //step3 - insert into log set encounterId=632912, userId=317150, date='2015-03-12', time='13:53:50', actionFlag=1
                 $log_sql = "
                   INSERT INTO log (encounterID, userId, date,time,actionFlag)
-                    (select :encounterId, pid  as userId,:encDate as date,
-                    :startTime as time, 1 as actionFlag from patients
+                    (select :encounterId, pid  as userId,curDate(),
+                     curTime() as time, 1 as actionFlag from patients
                   where controlNo=:controlNo)
                 ";
 
                 $log_statement = $pdo->prepare($log_sql);
                 $log_statement->bindParam(':encounterId', $encId, \PDO::PARAM_INT);
                 $log_statement->bindParam(':controlNo', $controlNo, \PDO::PARAM_STR, 256);
-                $log_statement->bindParam(':encDate', $date, \PDO::PARAM_STR, 256);
-                $log_statement->bindParam(":startTime", $apptstartTime, \PDO::PARAM_STR, 256);
+                //$log_statement->bindParam(':encDate', $date, \PDO::PARAM_STR, 256);
+                //$log_statement->bindParam(":startTime", $apptstartTime, \PDO::PARAM_STR, 256);
                 $log_statement->bindParam(':controlNo', $controlNo, \PDO::PARAM_STR, 256);
 
                 $log_statement->execute();

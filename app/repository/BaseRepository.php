@@ -105,7 +105,7 @@ abstract class BaseRepository{
 
         for ($i = 0; $i < count($unavailable_times); $i++) {
 
-            if ($i == 0) {
+            if ($i == 0){
                 $start = $startTime;
                 $end = $unavailable_times[$i]['startTime'];
 
