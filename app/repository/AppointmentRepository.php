@@ -177,13 +177,11 @@ class AppointmentRepository extends BaseRepository
         $end =   $overlapping_hours['endTime'];
 
         $past_times=array();
-        $filter_times=array();
 
         $filter_times = array_filter($time_slots, function ($item) use ($start, $end, $date,&$past_times) {
             if ($date == date('Y-m-d')){
                 $time = SHOW_APPT_TIMENOW_OFFSET;
                 $timeNow = date('H:i',strtotime("+ $time minutes"));
-
 
                 if(($item <= $timeNow && $item>=$start && $item<=$end)){
                     $past_times[]= $item;
@@ -195,6 +193,8 @@ class AppointmentRepository extends BaseRepository
             return $item >= $start && $item <= $end;
 
         });
+
+        if(is_null($filter_times))$filter_times=array();
 
          return  array('Id' => $providerId,
              'minutes' => $provider_work_hours->minutes,

@@ -36,22 +36,22 @@
       <file leaf-file-name="AppointmentRepository.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/repository/AppointmentRepository.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.29680365">
-              <caret line="179" column="21" selection-start-line="179" selection-start-column="8" selection-end-line="179" selection-end-column="21" />
+            <state vertical-scroll-proportion="0.79908675">
+              <caret line="196" column="34" selection-start-line="196" selection-start-column="34" selection-end-line="196" selection-end-column="34" />
               <folding>
                 <element signature="e#6#90#0#PHP" expanded="true" />
-                <marker date="1441819782000" expanded="true" signature="8307:10184" placeholder="SELECT count..startTime..." />
-                <marker date="1441819782000" expanded="true" signature="8404:10039" placeholder="select start..enc..." />
-                <marker date="1441819782000" expanded="true" signature="12040:12097" placeholder="INSERT INTO ..." />
-                <marker date="1441819782000" expanded="true" signature="12114:12879" placeholder="select (sele..." />
-                <marker date="1441819782000" expanded="true" signature="12122:12173" placeholder="select pid f..patients..." />
-                <marker date="1441819782000" expanded="true" signature="14459:14514" placeholder="INSERT INTO ..." />
-                <marker date="1441819782000" expanded="true" signature="14961:15062" placeholder="INSERT INTO ..." />
-                <marker date="1441819782000" expanded="true" signature="15464:15707" placeholder="INSERT INTO ..." />
-                <marker date="1441819782000" expanded="true" signature="15545:15706" placeholder="select :enco..." />
-                <marker date="1441819782000" expanded="true" signature="16419:16475" placeholder="delete from ..." />
-                <marker date="1441819782000" expanded="true" signature="23894:24137" placeholder="INSERT INTO ..." />
-                <marker date="1441819782000" expanded="true" signature="23998:24058" placeholder="select patie..." />
+                <marker date="1441820289000" expanded="true" signature="8333:10210" placeholder="SELECT count..startTime..." />
+                <marker date="1441820289000" expanded="true" signature="8430:10065" placeholder="select start..enc..." />
+                <marker date="1441820289000" expanded="true" signature="12066:12123" placeholder="INSERT INTO ..." />
+                <marker date="1441820289000" expanded="true" signature="12140:12905" placeholder="select (sele..." />
+                <marker date="1441820289000" expanded="true" signature="12148:12199" placeholder="select pid f..patients..." />
+                <marker date="1441820289000" expanded="true" signature="14485:14540" placeholder="INSERT INTO ..." />
+                <marker date="1441820289000" expanded="true" signature="14987:15088" placeholder="INSERT INTO ..." />
+                <marker date="1441820289000" expanded="true" signature="15490:15733" placeholder="INSERT INTO ..." />
+                <marker date="1441820289000" expanded="true" signature="15571:15732" placeholder="select :enco..." />
+                <marker date="1441820289000" expanded="true" signature="16445:16501" placeholder="delete from ..." />
+                <marker date="1441820289000" expanded="true" signature="23920:24163" placeholder="INSERT INTO ..." />
+                <marker date="1441820289000" expanded="true" signature="24024:24084" placeholder="select patie..." />
               </folding>
             </state>
           </provider>
@@ -193,8 +193,8 @@
         <option value="$PROJECT_DIR$/app/repository/SchedulerLogRepository.php" />
         <option value="$PROJECT_DIR$/app/repository/ProviderRepository.php" />
         <option value="$PROJECT_DIR$/app/helpers/Utils.php" />
-        <option value="$PROJECT_DIR$/app/repository/AppointmentRepository.php" />
         <option value="$PROJECT_DIR$/app/views/pages/new-appointment-step2-noproviders.blade.php" />
+        <option value="$PROJECT_DIR$/app/repository/AppointmentRepository.php" />
       </list>
     </option>
   </component>
@@ -1179,22 +1179,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/repository/AppointmentRepository.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.29680365">
-          <caret line="179" column="21" selection-start-line="179" selection-start-column="8" selection-end-line="179" selection-end-column="21" />
+        <state vertical-scroll-proportion="0.79908675">
+          <caret line="196" column="34" selection-start-line="196" selection-start-column="34" selection-end-line="196" selection-end-column="34" />
           <folding>
             <element signature="e#6#90#0#PHP" expanded="true" />
-            <marker date="1441819782000" expanded="true" signature="8307:10184" placeholder="SELECT count..startTime..." />
-            <marker date="1441819782000" expanded="true" signature="8404:10039" placeholder="select start..enc..." />
-            <marker date="1441819782000" expanded="true" signature="12040:12097" placeholder="INSERT INTO ..." />
-            <marker date="1441819782000" expanded="true" signature="12114:12879" placeholder="select (sele..." />
-            <marker date="1441819782000" expanded="true" signature="12122:12173" placeholder="select pid f..patients..." />
-            <marker date="1441819782000" expanded="true" signature="14459:14514" placeholder="INSERT INTO ..." />
-            <marker date="1441819782000" expanded="true" signature="14961:15062" placeholder="INSERT INTO ..." />
-            <marker date="1441819782000" expanded="true" signature="15464:15707" placeholder="INSERT INTO ..." />
-            <marker date="1441819782000" expanded="true" signature="15545:15706" placeholder="select :enco..." />
-            <marker date="1441819782000" expanded="true" signature="16419:16475" placeholder="delete from ..." />
-            <marker date="1441819782000" expanded="true" signature="23894:24137" placeholder="INSERT INTO ..." />
-            <marker date="1441819782000" expanded="true" signature="23998:24058" placeholder="select patie..." />
+            <marker date="1441820289000" expanded="true" signature="8333:10210" placeholder="SELECT count..startTime..." />
+            <marker date="1441820289000" expanded="true" signature="8430:10065" placeholder="select start..enc..." />
+            <marker date="1441820289000" expanded="true" signature="12066:12123" placeholder="INSERT INTO ..." />
+            <marker date="1441820289000" expanded="true" signature="12140:12905" placeholder="select (sele..." />
+            <marker date="1441820289000" expanded="true" signature="12148:12199" placeholder="select pid f..patients..." />
+            <marker date="1441820289000" expanded="true" signature="14485:14540" placeholder="INSERT INTO ..." />
+            <marker date="1441820289000" expanded="true" signature="14987:15088" placeholder="INSERT INTO ..." />
+            <marker date="1441820289000" expanded="true" signature="15490:15733" placeholder="INSERT INTO ..." />
+            <marker date="1441820289000" expanded="true" signature="15571:15732" placeholder="select :enco..." />
+            <marker date="1441820289000" expanded="true" signature="16445:16501" placeholder="delete from ..." />
+            <marker date="1441820289000" expanded="true" signature="23920:24163" placeholder="INSERT INTO ..." />
+            <marker date="1441820289000" expanded="true" signature="24024:24084" placeholder="select patie..." />
           </folding>
         </state>
       </provider>
