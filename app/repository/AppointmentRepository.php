@@ -194,6 +194,8 @@ class AppointmentRepository extends BaseRepository
 
         });
 
+        if(is_null($filter_times))$filter_times=array();
+
 
          return  array('Id' => $providerId,
              'minutes' => $provider_work_hours->minutes,
