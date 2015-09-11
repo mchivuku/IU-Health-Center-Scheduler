@@ -287,7 +287,7 @@ class ProviderRepository extends BaseRepository
              function($item){return count($item['times'])>0;});
 
 
-        if($available_providers>2){
+        if($available_providers>1){
             uasort($available_providers, function($a,$b){
                 $al = strtolower($a['LastName']);
                 $bl = strtolower($b['LastName']);

@@ -194,7 +194,7 @@ class AppointmentRepository extends BaseRepository
 
         });
 
-        
+
          return  array('Id' => $providerId,
              'minutes' => $provider_work_hours->minutes,
             'startTime' => $start, 'endTime' => $end,

@@ -33,37 +33,37 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="AppointmentRepository.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="AppointmentRepository.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/repository/AppointmentRepository.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7837838">
-              <caret line="196" column="8" selection-start-line="196" selection-start-column="8" selection-end-line="196" selection-end-column="8" />
+            <state vertical-scroll-proportion="-4.294872">
+              <caret line="50" column="9" selection-start-line="50" selection-start-column="9" selection-end-line="50" selection-end-column="9" />
               <folding>
                 <element signature="e#6#90#0#PHP" expanded="true" />
-                <marker date="1441935364000" expanded="true" signature="8284:10161" placeholder="SELECT count..startTime..." />
-                <marker date="1441935364000" expanded="true" signature="8381:10016" placeholder="select start..enc..." />
-                <marker date="1441935364000" expanded="true" signature="12017:12074" placeholder="INSERT INTO ..." />
-                <marker date="1441935364000" expanded="true" signature="12091:12856" placeholder="select (sele..." />
-                <marker date="1441935364000" expanded="true" signature="12099:12150" placeholder="select pid f..patients..." />
-                <marker date="1441935364000" expanded="true" signature="14436:14491" placeholder="INSERT INTO ..." />
-                <marker date="1441935364000" expanded="true" signature="14938:15039" placeholder="INSERT INTO ..." />
-                <marker date="1441935364000" expanded="true" signature="15441:15684" placeholder="INSERT INTO ..." />
-                <marker date="1441935364000" expanded="true" signature="15522:15683" placeholder="select :enco..." />
-                <marker date="1441935364000" expanded="true" signature="16396:16452" placeholder="delete from ..." />
-                <marker date="1441935364000" expanded="true" signature="23871:24114" placeholder="INSERT INTO ..." />
-                <marker date="1441935364000" expanded="true" signature="23975:24035" placeholder="select patie..." />
+                <marker date="1441935553000" expanded="true" signature="8276:10153" placeholder="SELECT count..startTime..." />
+                <marker date="1441935553000" expanded="true" signature="8373:10008" placeholder="select start..enc..." />
+                <marker date="1441935553000" expanded="true" signature="12009:12066" placeholder="INSERT INTO ..." />
+                <marker date="1441935553000" expanded="true" signature="12083:12848" placeholder="select (sele..." />
+                <marker date="1441935553000" expanded="true" signature="12091:12142" placeholder="select pid f..patients..." />
+                <marker date="1441935553000" expanded="true" signature="14428:14483" placeholder="INSERT INTO ..." />
+                <marker date="1441935553000" expanded="true" signature="14930:15031" placeholder="INSERT INTO ..." />
+                <marker date="1441935553000" expanded="true" signature="15433:15676" placeholder="INSERT INTO ..." />
+                <marker date="1441935553000" expanded="true" signature="15514:15675" placeholder="select :enco..." />
+                <marker date="1441935553000" expanded="true" signature="16388:16444" placeholder="delete from ..." />
+                <marker date="1441935553000" expanded="true" signature="23863:24106" placeholder="INSERT INTO ..." />
+                <marker date="1441935553000" expanded="true" signature="23967:24027" placeholder="select patie..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ProviderRepository.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ProviderRepository.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/repository/ProviderRepository.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.8627453">
-              <caret line="302" column="36" selection-start-line="302" selection-start-column="36" selection-end-line="302" selection-end-column="36" />
+            <state vertical-scroll-proportion="0.5882353">
+              <caret line="299" column="9" selection-start-line="299" selection-start-column="9" selection-end-line="299" selection-end-column="9" />
               <folding>
-                <marker date="1441934850000" expanded="true" signature="13586:13949" placeholder="..." />
+                <marker date="1441936452000" expanded="true" signature="13586:13949" placeholder="..." />
               </folding>
             </state>
           </provider>
@@ -126,8 +126,8 @@
         <option value="$PROJECT_DIR$/app/views/pages/new-appointment-step2-noproviders.blade.php" />
         <option value="$PROJECT_DIR$/app/controllers/NewAppointmentController.php" />
         <option value="$PROJECT_DIR$/app/helpers/LDAP/LDAPService.php" />
-        <option value="$PROJECT_DIR$/app/repository/ProviderRepository.php" />
         <option value="$PROJECT_DIR$/app/repository/AppointmentRepository.php" />
+        <option value="$PROJECT_DIR$/app/repository/ProviderRepository.php" />
       </list>
     </option>
   </component>
@@ -916,16 +916,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/repository/ProviderRepository.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.8627453">
-          <caret line="302" column="36" selection-start-line="302" selection-start-column="36" selection-end-line="302" selection-end-column="36" />
-          <folding>
-            <marker date="1441934850000" expanded="true" signature="13586:13949" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/controllers/NewAppointmentController.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-8.784314">
@@ -936,22 +926,32 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/repository/AppointmentRepository.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7837838">
-          <caret line="196" column="8" selection-start-line="196" selection-start-column="8" selection-end-line="196" selection-end-column="8" />
+        <state vertical-scroll-proportion="-4.294872">
+          <caret line="50" column="9" selection-start-line="50" selection-start-column="9" selection-end-line="50" selection-end-column="9" />
           <folding>
             <element signature="e#6#90#0#PHP" expanded="true" />
-            <marker date="1441935364000" expanded="true" signature="8284:10161" placeholder="SELECT count..startTime..." />
-            <marker date="1441935364000" expanded="true" signature="8381:10016" placeholder="select start..enc..." />
-            <marker date="1441935364000" expanded="true" signature="12017:12074" placeholder="INSERT INTO ..." />
-            <marker date="1441935364000" expanded="true" signature="12091:12856" placeholder="select (sele..." />
-            <marker date="1441935364000" expanded="true" signature="12099:12150" placeholder="select pid f..patients..." />
-            <marker date="1441935364000" expanded="true" signature="14436:14491" placeholder="INSERT INTO ..." />
-            <marker date="1441935364000" expanded="true" signature="14938:15039" placeholder="INSERT INTO ..." />
-            <marker date="1441935364000" expanded="true" signature="15441:15684" placeholder="INSERT INTO ..." />
-            <marker date="1441935364000" expanded="true" signature="15522:15683" placeholder="select :enco..." />
-            <marker date="1441935364000" expanded="true" signature="16396:16452" placeholder="delete from ..." />
-            <marker date="1441935364000" expanded="true" signature="23871:24114" placeholder="INSERT INTO ..." />
-            <marker date="1441935364000" expanded="true" signature="23975:24035" placeholder="select patie..." />
+            <marker date="1441935553000" expanded="true" signature="8276:10153" placeholder="SELECT count..startTime..." />
+            <marker date="1441935553000" expanded="true" signature="8373:10008" placeholder="select start..enc..." />
+            <marker date="1441935553000" expanded="true" signature="12009:12066" placeholder="INSERT INTO ..." />
+            <marker date="1441935553000" expanded="true" signature="12083:12848" placeholder="select (sele..." />
+            <marker date="1441935553000" expanded="true" signature="12091:12142" placeholder="select pid f..patients..." />
+            <marker date="1441935553000" expanded="true" signature="14428:14483" placeholder="INSERT INTO ..." />
+            <marker date="1441935553000" expanded="true" signature="14930:15031" placeholder="INSERT INTO ..." />
+            <marker date="1441935553000" expanded="true" signature="15433:15676" placeholder="INSERT INTO ..." />
+            <marker date="1441935553000" expanded="true" signature="15514:15675" placeholder="select :enco..." />
+            <marker date="1441935553000" expanded="true" signature="16388:16444" placeholder="delete from ..." />
+            <marker date="1441935553000" expanded="true" signature="23863:24106" placeholder="INSERT INTO ..." />
+            <marker date="1441935553000" expanded="true" signature="23967:24027" placeholder="select patie..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/repository/ProviderRepository.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5882353">
+          <caret line="299" column="9" selection-start-line="299" selection-start-column="9" selection-end-line="299" selection-end-column="9" />
+          <folding>
+            <marker date="1441936452000" expanded="true" signature="13586:13949" placeholder="..." />
           </folding>
         </state>
       </provider>
