@@ -261,8 +261,8 @@ class ProviderRepository extends BaseRepository
                     'Name' => $time->Name,'LastName'=>$time->LastName,
                     'minutes' => $time->minutes, 'startTime' => $time->StartTime, 'endTime' => $time->EndTime,
                     'times' => array(array('startTime'=>$time->apptstartTime,'endTime'=>$time->apptendTime)));
-            }
 
+            }
 
         }
 
@@ -279,29 +279,31 @@ class ProviderRepository extends BaseRepository
                 $provider_times[$k]['times']=
                     $this->construct_available_times($v['startTime'], $v['endTime'], array());
             }
-
-
         }
 
+
         //use only providers that have times
-        $available_providers = array_filter($provider_times,
-            function($item){return count($item['times'])>0;});
+         $available_providers = array_filter($provider_times,
+             function($item){return count($item['times'])>0;});
 
 
+        if($available_providers>2){
+            uasort($available_providers, function($a,$b){
+                $al = strtolower($a['LastName']);
+                $bl = strtolower($b['LastName']);
+                if ($al == $bl) {
+                    return 0;
+                }
+                return ($al > $bl) ? +1 : -1;
 
-        uasort($available_providers, function($a,$b){
-            $al = strtolower($a['LastName']);
-            $bl = strtolower($b['LastName']);
-            if ($al == $bl) {
-                return 0;
-            }
-            return ($al > $bl) ? +1 : -1;
+            });
+        }
 
-        });
 
         // For available provider - split the range into slots
         ProviderRepository::log('available providers - filtered PHP_EOL');
         ProviderRepository::log($available_providers);
+
 
         $providerArray= array();
         foreach ($available_providers as $k=>$v) {
@@ -350,6 +352,7 @@ class ProviderRepository extends BaseRepository
 
         }
 
+
         ProviderRepository::log('provider array - merged/split PHP_EOL');
         ProviderRepository::log($providerArray);
 
@@ -357,7 +360,7 @@ class ProviderRepository extends BaseRepository
         //If we are looking at current date - check for the slot that is right after time now.
         if($date == date('Y-m-d')){
 
-
+            $providers_available_from_time_now=array();
             //1. First Filter - provider that have times greater than time now.
             $providers_available_from_time_now = array_filter($providerArray,function($item){
                 $timeNow = date('H:i');
@@ -369,39 +372,46 @@ class ProviderRepository extends BaseRepository
             });
 
             //nothing was found - previous tabId;
-            if(count($providers_available_from_time_now)==0)return current($providerArray);
+            if(is_null($providers_available_from_time_now)||count($providers_available_from_time_now)==0)
+            {
+                return current($providerArray);
+            }
+
+
 
             usort($providers_available_from_time_now, function ($item1, $item2)use($date){
-                $times1 = $item1['times'];
-                $times2 =  $item2['times'];
+                    $times1 = $item1['times'];
+                    $times2 =  $item2['times'];
 
-                $t1 = "";
-                $t2 = "";
+                    $t1 = "";
+                    $t2 = "";
 
-                $timeNow = date('H:i');
-                foreach($times1 as $slot){
-                    if($slot>=$timeNow)
-                    {
-                        $t1 = $slot;
-                        break;
+                    $timeNow = date('H:i');
+                    foreach($times1 as $slot){
+                        if($slot>=$timeNow)
+                        {
+                            $t1 = $slot;
+                            break;
 
+                        }
                     }
-                }
-                foreach($times2 as $slot){
-                    if($slot>=$timeNow)
-                    {
-                        $t2= $slot;
-                        break;
+                    foreach($times2 as $slot){
+                        if($slot>=$timeNow)
+                        {
+                            $t2= $slot;
+                            break;
 
+                        }
                     }
-                }
 
-                if ($t1 === $t2) {
-                    return 0;
-                }
+                    if ($t1 === $t2) {
+                        return 0;
+                    }
 
-                return ($t1 > $t2) ? 1 : -1;
-            });
+                    return ($t1 > $t2) ? 1 : -1;
+                });
+
+
            // ProviderRepository::log(current($providers_available_from_time_now));
            return current($providers_available_from_time_now);
 
@@ -413,8 +423,8 @@ class ProviderRepository extends BaseRepository
 
 
 
-        //no need to sort.
-         usort(  $p , function ($item1, $item2){
+         //no need to sort.
+         usort( $p , function ($item1, $item2){
 
              $start1 = current($item1['times']);
              $start2 = current($item2['times']);
@@ -429,7 +439,6 @@ class ProviderRepository extends BaseRepository
 
 
         ProviderRepository::log(current($p));
-
 
         return current($p);
 
