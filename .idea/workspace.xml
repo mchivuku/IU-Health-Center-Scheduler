@@ -33,14 +33,48 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ProviderRepository.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="AppointmentRepository.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/repository/AppointmentRepository.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.7837838">
+              <caret line="196" column="8" selection-start-line="196" selection-start-column="8" selection-end-line="196" selection-end-column="8" />
+              <folding>
+                <element signature="e#6#90#0#PHP" expanded="true" />
+                <marker date="1441935364000" expanded="true" signature="8284:10161" placeholder="SELECT count..startTime..." />
+                <marker date="1441935364000" expanded="true" signature="8381:10016" placeholder="select start..enc..." />
+                <marker date="1441935364000" expanded="true" signature="12017:12074" placeholder="INSERT INTO ..." />
+                <marker date="1441935364000" expanded="true" signature="12091:12856" placeholder="select (sele..." />
+                <marker date="1441935364000" expanded="true" signature="12099:12150" placeholder="select pid f..patients..." />
+                <marker date="1441935364000" expanded="true" signature="14436:14491" placeholder="INSERT INTO ..." />
+                <marker date="1441935364000" expanded="true" signature="14938:15039" placeholder="INSERT INTO ..." />
+                <marker date="1441935364000" expanded="true" signature="15441:15684" placeholder="INSERT INTO ..." />
+                <marker date="1441935364000" expanded="true" signature="15522:15683" placeholder="select :enco..." />
+                <marker date="1441935364000" expanded="true" signature="16396:16452" placeholder="delete from ..." />
+                <marker date="1441935364000" expanded="true" signature="23871:24114" placeholder="INSERT INTO ..." />
+                <marker date="1441935364000" expanded="true" signature="23975:24035" placeholder="select patie..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ProviderRepository.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/repository/ProviderRepository.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5137457">
+            <state vertical-scroll-proportion="-5.8627453">
               <caret line="302" column="36" selection-start-line="302" selection-start-column="36" selection-end-line="302" selection-end-column="36" />
               <folding>
                 <marker date="1441934850000" expanded="true" signature="13586:13949" placeholder="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="NewAppointmentController.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/controllers/NewAppointmentController.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-8.784314">
+              <caret line="375" column="37" selection-start-line="375" selection-start-column="37" selection-end-line="375" selection-end-column="37" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -92,8 +126,8 @@
         <option value="$PROJECT_DIR$/app/views/pages/new-appointment-step2-noproviders.blade.php" />
         <option value="$PROJECT_DIR$/app/controllers/NewAppointmentController.php" />
         <option value="$PROJECT_DIR$/app/helpers/LDAP/LDAPService.php" />
-        <option value="$PROJECT_DIR$/app/repository/AppointmentRepository.php" />
         <option value="$PROJECT_DIR$/app/repository/ProviderRepository.php" />
+        <option value="$PROJECT_DIR$/app/repository/AppointmentRepository.php" />
       </list>
     </option>
   </component>
@@ -414,10 +448,10 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3422222" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32666665" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32996845" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19456366" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19456366" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24006489" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22103004" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22103004" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.10714286" sideWeight="0.5085092" order="12" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -486,7 +520,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="php">
           <url>file://$PROJECT_DIR$/app/repository/AppointmentRepository.php</url>
-          <line>597</line>
+          <line>596</line>
           <option name="timeStamp" value="19" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="php">
@@ -874,14 +908,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/controllers/NewAppointmentController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5405405">
-          <caret line="368" column="0" selection-start-line="368" selection-start-column="0" selection-end-line="368" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/helpers/LDAP/LDAPService.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.45812806">
@@ -890,34 +916,42 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/repository/AppointmentRepository.php">
+    <entry file="file://$PROJECT_DIR$/app/repository/ProviderRepository.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.1891892">
-          <caret line="352" column="40" selection-start-line="352" selection-start-column="40" selection-end-line="352" selection-end-column="40" />
+        <state vertical-scroll-proportion="-5.8627453">
+          <caret line="302" column="36" selection-start-line="302" selection-start-column="36" selection-end-line="302" selection-end-column="36" />
           <folding>
-            <element signature="e#6#90#0#PHP" expanded="true" />
-            <marker date="1441933658000" expanded="true" signature="-1:-1" placeholder="SELECT count..startTime..." />
-            <marker date="1441933658000" expanded="true" signature="-1:-1" placeholder="select start..enc..." />
-            <marker date="1441933658000" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-            <marker date="1441933658000" expanded="true" signature="-1:-1" placeholder="select (sele..." />
-            <marker date="1441933658000" expanded="true" signature="-1:-1" placeholder="select pid f..patients..." />
-            <marker date="1441933658000" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-            <marker date="1441933658000" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-            <marker date="1441933658000" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-            <marker date="1441933658000" expanded="true" signature="-1:-1" placeholder="select :enco..." />
-            <marker date="1441933658000" expanded="true" signature="-1:-1" placeholder="delete from ..." />
-            <marker date="1441933658000" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-            <marker date="1441933658000" expanded="true" signature="-1:-1" placeholder="select patie..." />
+            <marker date="1441934850000" expanded="true" signature="13586:13949" placeholder="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/repository/ProviderRepository.php">
+    <entry file="file://$PROJECT_DIR$/app/controllers/NewAppointmentController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5137457">
-          <caret line="302" column="36" selection-start-line="302" selection-start-column="36" selection-end-line="302" selection-end-column="36" />
+        <state vertical-scroll-proportion="-8.784314">
+          <caret line="375" column="37" selection-start-line="375" selection-start-column="37" selection-end-line="375" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/repository/AppointmentRepository.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7837838">
+          <caret line="196" column="8" selection-start-line="196" selection-start-column="8" selection-end-line="196" selection-end-column="8" />
           <folding>
-            <marker date="1441934850000" expanded="true" signature="13586:13949" placeholder="..." />
+            <element signature="e#6#90#0#PHP" expanded="true" />
+            <marker date="1441935364000" expanded="true" signature="8284:10161" placeholder="SELECT count..startTime..." />
+            <marker date="1441935364000" expanded="true" signature="8381:10016" placeholder="select start..enc..." />
+            <marker date="1441935364000" expanded="true" signature="12017:12074" placeholder="INSERT INTO ..." />
+            <marker date="1441935364000" expanded="true" signature="12091:12856" placeholder="select (sele..." />
+            <marker date="1441935364000" expanded="true" signature="12099:12150" placeholder="select pid f..patients..." />
+            <marker date="1441935364000" expanded="true" signature="14436:14491" placeholder="INSERT INTO ..." />
+            <marker date="1441935364000" expanded="true" signature="14938:15039" placeholder="INSERT INTO ..." />
+            <marker date="1441935364000" expanded="true" signature="15441:15684" placeholder="INSERT INTO ..." />
+            <marker date="1441935364000" expanded="true" signature="15522:15683" placeholder="select :enco..." />
+            <marker date="1441935364000" expanded="true" signature="16396:16452" placeholder="delete from ..." />
+            <marker date="1441935364000" expanded="true" signature="23871:24114" placeholder="INSERT INTO ..." />
+            <marker date="1441935364000" expanded="true" signature="23975:24035" placeholder="select patie..." />
           </folding>
         </state>
       </provider>
