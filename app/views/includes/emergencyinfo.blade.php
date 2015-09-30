@@ -5,6 +5,6 @@
                         <li>Need an appointment in the next hour</li>
                         <li>Need to schedule multiple appointments</li>
                         <li>Are enrolled in the intensive english program</li>
-                        <li>Are under 18 years of age</li>
+                        <li>Are under 18 years of age</li> <li>Please note: The IU Health Center is not a Medicare or HIP provider</li>
                     </ul>
                 </div>
