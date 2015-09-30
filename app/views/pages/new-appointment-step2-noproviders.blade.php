@@ -35,7 +35,7 @@ $(document).ready(function(){
                  beforeShowDay: $.datepicker.noWeekends,
                  minDate: 0,
                  onSelect: function () {
-                 	window.location.href = 'https://seville.iuhc.iub.edu/comm/hcScheduler/public/' +
+                 	window.location.href = 'https://scheduler.iuhc.iub.edu/scheduler/' +
                  	 'newAppointment/schedule?facility='+$('#facility').val()+'&visitType='+$('#visitType').val()+'&date='+
                  	  $(this).val()
                  }
