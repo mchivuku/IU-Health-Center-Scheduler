@@ -8,8 +8,6 @@
 namespace Scheduler\Controllers;
 
 
-use Illuminate\Support\Facades\Response;
-
 require_once app_path() . "/models/viewModels/SchedulerTabViewModel.php";
 require_once app_path() . "/models/viewModels/NewAppointmentViewModel.php";
 require_once app_path() . "/models/viewModels/SchedulerConfirmViewModel.php";
@@ -35,62 +33,64 @@ class NewAppointmentController extends BaseController
     }
 
     /**
+     *  Function to check if the logged in user is staff or faculty
+     */
+    private function IsFacultyStaff()
+    {
+        // $affiliations = explode(";", $this->getPersonAffiliation()); - employee, member alum
+        $affiliations = $this->getPersonAffiliation();
+
+        $student = false;
+        foreach ($affiliations as $a) {
+            if (strtolower($a) == 'student'){
+                $student = true;
+                break;
+            }
+        }
+        return !$student;
+    }
+
+    //Get facility based on person's affiliation and database settings
+    private function getFacilities(){
+        $facultyStaffPersonnel = $this->IsFacultyStaff();
+
+        if ($facultyStaffPersonnel == 1) {
+            $facilities = $this->facilitiesRepo->getAllFacultyStaffFacilities();
+
+        } else {
+            $facilities = $this->facilitiesRepo->getAllFacilities();
+
+        }
+        return $facilities;
+    }
+
+    /**
      * Function to return index view for the new appointment - loads the form with facilities
      * and visitTypes
      */
     public function getIndex()
     {
-
         $model = new \NewAppointmentViewModel();
-
         $model->selectedFacility = \Input::get('facility');
         $model->selectedvisitType = \Input::get('visitType');
 
-        $facultyStaffPersonnel = $this->checkIsFacultyOrStaff();
-
-        if ($facultyStaffPersonnel == 1) {
-            $model->facilities = $this->facilitiesRepo->getAllFacultyStaffFacilities();
-
-        } else {
-            $model->facilities = $this->facilitiesRepo->getAllFacilities();
-
-        }
-
+        $model->facilities = $this->getFacilities();
         if (count($model->facilities) > 0) {
             if (isset($model->selectedFacility)){
                 $facility = $model->selectedFacility;
             } else {
                 $f = current($model->facilities);
                 $facility = $f->Id;
-
             }
             //chart title of the facilities is linked back to visit type
             $model->visitTypes = $this->visitTypeRepo->getAllVisitTypes($facility);
-
         }
-
         return $this->view('pages.new-appointment-step1')
             ->viewdata(array('model' => $model))
             ->title('New Appointment');
     }
 
-    /**
-     *  Function to check if the logged in user is staff or faculty
-     */
-    private function checkIsFacultyOrStaff()
-    {
-       // $affiliations = explode(";", $this->getPersonAffiliation()); - employee, member alum
-        $affiliations = $this->getPersonAffiliation();
 
-        $staffFaculty = false;
-        foreach ($affiliations as $a) {
-            if (strtolower($a) == 'staff' || strtolower($a) == 'faculty'||strtolower($a) == 'employee') {
-                $staffFaculty = true;
-                break;
-            }
-        }
-        return $staffFaculty;
-    }
 
     /***
      * Function to return json response for visitTypes for a given facilityId
@@ -107,7 +107,9 @@ class NewAppointmentController extends BaseController
 
     /**
      *
-     * Function to return providers and schedules
+     * Function to return providers and schedules, check facility if staff is allowed.
+     *
+     * 1. facility check, weekend check
      *
      */
     public function schedule()
@@ -118,6 +120,12 @@ class NewAppointmentController extends BaseController
         $date = \Input::get('date');
         $providerId = \Input::get('providerId');
 
+        $model = new \SchedulerTabViewModel();
+
+        $model->selectedDate =  date('m/d/Y', strtotime($date));
+        $model->validDateRange =  $this->schedulerDateRangeRepo->getValidDateRange();
+
+        $facilities=$this->getFacilities();
 
         /* back link */
         $params = array('visitType' => $visitType, 'facility' => $facilityId);
@@ -127,36 +135,53 @@ class NewAppointmentController extends BaseController
 
         $schedule_times = new \ScheduleTimes();
 
-        if (!isset($date))
-            $date = date('Y-m-d');
+        if (!isset($date)){
+            $date = date("Y-m-d");
+        }
+
+
+        // if it is a weekend - do not load - return to no providers page, check if the facility Id is allowed for
+        // given person affiliation
+        $valid_facility = false;
+        foreach($facilities as $fac){
+            if($fac->Id==$facilityId){
+                $valid_facility=true;
+                break;
+            }
+        }
+
+
+        $dayOfweek = \Config::get('settings.dayOfweek');
+
+
+        if((\Config::get('settings.weekends') && (getDayOfTheWeek($date)== $dayOfweek['Sat'] || getDayOfTheWeek($date)==
+                $dayOfweek['Sun'])) ||
+        !$valid_facility)
+            return $this->view('pages.new-appointment-step2-noproviders')
+                ->viewdata(array('message' => $this->lang['noProviders'],'visitType'=>$visitType,
+                    'facility'=>$facilityId,'validDateRange'=>$model->validDateRange ,
+                    'back_link' => $back_link))
+                ->title('Schedule Appointments');
 
         if (!isset($tabId) || $tabId == "")
             $tabId = \ScheduleTimes::DAY;
 
          // Get All Providers
-        $providers = $this->providerRepo
-            ->getAllProvidersWithWorkHours($facilityId, $visitType, $date);
+        $providers = $this->providerRepo->getAllProvidersWithWorkHours($facilityId, $visitType, $date);
 
-        $model = new \SchedulerTabViewModel();
 
-        $model->selectedDate =  date('m/d/Y', strtotime($date));
-        $model->validDateRange =  $this->schedulerDateRangeRepo->getValidDateRange();
-
-        //Return with a message when no providers are found - can happen during weekends or when visit type and
-        //facility doesnt match.
+        // empty providers - return
         if (empty($providers)){
             return $this->view('pages.new-appointment-step2-noproviders')
                 ->viewdata(array('message' => $this->lang['noProviders'],'visitType'=>$visitType,
                     'facility'=>$facilityId,'validDateRange'=>$model->validDateRange ,
                     'back_link' => $back_link))
             ->title
-                ('Schedule
-                        Appointments');
+                ('Schedule Appointments');
         }
 
 
         //If there are providers - get the first available provider
-
         $model->tabs = $schedule_times->getTabsForScheduleTimes();
         if (!isset($tabId))
             $tabId = key($model->tabs);
@@ -168,16 +193,18 @@ class NewAppointmentController extends BaseController
 
         // First time - get first available provider
         if (!isset($providerId)) {
-            $result = $this->getAppointmentTimesForFirstAvailableProvider($facilityId, $visitType, $date,
-                $tabId, true);
-
-
-        } else {
-
-            $result = $this->getAppointmentTimesForProvider($facilityId, $visitType, $date, $tabId, $providerId,
-                true);
-
+            $result = $this->getAppointmentTimesForFirstAvailableProvider($facilityId, $visitType, $date,$tabId, true);
+        }else {
+            $result = $this->getAppointmentTimesForProvider($facilityId, $visitType, $date, $tabId, $providerId,true);
         }
+
+        // No times available return -
+        if(empty($result)){
+            $this->view('pages.new-appointment-step2')->viewdata(array('model' => $model,
+                'back_link' => $back_link))->title('Schedule
+             Appointments');
+        }
+
 
         $model->selected_startTime = $result['selected_start_time'];
         $model->scheduler_slots = $result['scheduler_slots'];
@@ -197,7 +224,6 @@ class NewAppointmentController extends BaseController
             'back_link' => $back_link))->title('Schedule
              Appointments');
 
-
     }
 
     /** Helper functions */
@@ -206,8 +232,10 @@ class NewAppointmentController extends BaseController
     {
         $result = array();
         $session_id = $this->getUserSessionId();
-        $first_available_provider_info = $this->providerRepo->getFirstAvailableProviderWorkHours($facilityId,
+
+        $first_available_provider_info = $this->providerRepo->getFirstAvailableProviderTimes($facilityId,
             $visitType, $date, $tabId,$session_id);
+
 
 
         $id = $first_available_provider_info['Id'];
@@ -231,16 +259,16 @@ class NewAppointmentController extends BaseController
         //Available for month
         if ($get_dates) {
             $hrs = $this->providerRepo->getProviderWorkHoursForMonth($visitType, $facilityId, $id);
-            $result['available_dates'] = $this->apptRepo->getAvailableDates(date('m', strtotime($date)), date('Y',
+
+            $result['available_dates'] = $this->providerRepo->getAvailableDates(date('m', strtotime($date)), date('Y',
                     strtotime($date)),
-                $id, $visitType, $this->getUserSessionId(),
+                $id, $visitType,$facilityId, $this->getUserSessionId(),
                 $hrs->StartTime,
                 $hrs->EndTime,
                 $first_available_provider_info['minutes']);
         }
 
         return $result;
-
 
     }
 
@@ -253,11 +281,13 @@ class NewAppointmentController extends BaseController
             $filter_times[] = $selected_startTime;
 
 
-        usort($filter_times, function ($startTime1, $startTime2) {
-            $s1 = strtotime($startTime1);
-            $s2 = strtotime($startTime2);
-            return $s1 < $s2 ? -1 : ($s1 == $s2) ? 0 : 1;
-        });
+        if($filter_times>2){
+            usort($filter_times, function ($startTime1, $startTime2) {
+                $s1 = strtotime($startTime1);
+                $s2 = strtotime($startTime2);
+                return $s1 < $s2 ? -1 : ($s1 == $s2) ? 0 : 1;
+            });
+        }
 
 
         $appts_slots = array();
@@ -296,9 +326,10 @@ class NewAppointmentController extends BaseController
 
         $result = array();
 
-        $available_times = $this->apptRepo->getAllAppointmentTimes($facilityId, $visitType,
+        $available_times = $this->providerRepo->getAllAppointmentTimes($facilityId, $visitType,
             $providerId, $scheduleID,
             $date,$this->getUserSessionId());
+
 
 
         $result['selected_start_time'] = $this->schedulerLogRepo->getSelectedTime($this->getUserSessionId(),
@@ -312,14 +343,12 @@ class NewAppointmentController extends BaseController
         $result['firstAvailableProvider'] = 0;
         $result['visitDuration'] = $available_times['minutes'];
 
-
-
         //Available for month
-        if ($get_dates) {
+        if ($get_dates){
             $hrs = $this->providerRepo->getProviderWorkHoursForMonth($visitType, $facilityId, $providerId);
-            $result['available_dates'] = $this->apptRepo->getAvailableDates(date('m', strtotime($date)), date('Y',
+            $result['available_dates'] = $this->providerRepo->getAvailableDates(date('m', strtotime($date)), date('Y',
                     strtotime($date)),
-                $providerId, $visitType, $this->getUserSessionId(),
+                $providerId, $visitType,$facilityId, $this->getUserSessionId(),
                 $hrs->StartTime,
                 $hrs->EndTime,
                 $available_times['minutes']);
@@ -410,7 +439,7 @@ class NewAppointmentController extends BaseController
 
             //get first provider - check if time is available - save
              $first_available_provider_info = $this->providerRepo
-                ->getFirstAvailableProviderWorkHours($facilityId,
+                ->getFirstAvailableProviderTimes($facilityId,
                     $visitType, $date, $tabId,$session_id);
 
             $id = $first_available_provider_info['Id'];
@@ -496,8 +525,8 @@ class NewAppointmentController extends BaseController
 
         $provider_workhours = $this->providerRepo->getProviderWorkHoursForMonth($visitType, $facilityId, $pId);
 
-        return $this->apptRepo->getAvailableDates($month, $year,
-            $pId, $visitType, $this->getUserSessionId(),
+        return $this->providerRepo->getAvailableDates($month, $year,
+            $pId, $visitType, $facilityId,$this->getUserSessionId(),
             $provider_workhours->StartTime, $provider_workhours->EndTime,
             $provider_workhours->minutes);
 

@@ -6,7 +6,6 @@
  * Time: 7:05 PM
  */
 
-//TODO: Malinda
 $LANG['noProviders'] = 'No providers were found for the selected visit type at the facility on the selected date.';
 $LANG['generalNotes'] = 'Appointment created online';
 $LANG['session-expiration-message'] = 'Your session has expired and your selection has been cleared';

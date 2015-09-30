@@ -17,6 +17,8 @@ $(document).ready(function () {
     update_time_links();
 
 
+
+
     $('#providers').change(function () {
         var longMonths = new Array("January", "February", "March", "April", "May", "June", "July",
             "August", "September", "October", "November", "December");
@@ -27,7 +29,6 @@ $(document).ready(function () {
             month = month;
 
         var year = $('.ui-datepicker-year').text();
-
 
         getAvailableTimeAndDates(getProviderId(), getDate(), gettabId(), year, month);
 
@@ -74,8 +75,6 @@ $(document).ready(function () {
 
     });
 
-
-
     /* Form post */
 
     $('#scheduleSubmit').click(function (event) {
@@ -106,6 +105,7 @@ function getAvailableDates(year, month) {
 
 function refreshDatePicker(dates) {
 
+
     $.each(dates, function (index, value) {
         availableDates.push(value);
     });
@@ -135,7 +135,6 @@ function update_time_links() {
 }
 
 function showhideNextButton(){
-
 
 
     if($('div.selected').text()!='')
@@ -188,38 +187,53 @@ function getAvailableTimes(providerId, date, tabId) {
         providerId: providerId,
         visitType: getVisitType(),
         facility: getFacility(),
-        firstAvailableProvider: getFirstAvailableProvider(),
         date: date,
         tabId: tabId
     };
-    getData(params, 'getAvailableTimes');
+    if(providerId==0){
+
+        firstAvailableProviderUpdate();
+
+    }
+    else{
+
+        getData(params, 'getAvailableTimes');
+    }
+
 
 }
 
 function getAvailableTimeAndDates(providerId, date, tabId, year, month) {
-    var params = {
-        providerId: providerId,
-        visitType: getVisitType(),
-        facility: getFacility(),
-        firstAvailableProvider: getFirstAvailableProvider(),
-        date: date,
-        tabId: tabId
-    };
-    var get_params_to_send = $.param(params);
-    $.get('getAvailableTimes',
-        get_params_to_send,
-        function (data) {
-            if (data.message) {
-                $('.available-timeslots').empty().html(data.message);
-            }
-            else {
-                $('.available-timeslots').empty().html(data);
-                update_time_links();
-             }
-            getAvailableDates(year, month);
 
+    if(providerId==0)
+    {
+        firstAvailableProviderUpdate();
+    }
+    else{
+        var params = {
+            providerId: providerId,
+            visitType: getVisitType(),
+            facility: getFacility(),
+            firstAvailableProvider: getFirstAvailableProvider(),
+            date: date,
+            tabId: tabId
+        };
 
-        });
+        var get_params_to_send = $.param(params);
+        $.get('getAvailableTimes',
+            get_params_to_send,
+            function (data) {
+                if (data.message) {
+                    $('.available-timeslots').empty().html(data.message);
+                }
+                else {
+                    $('.available-timeslots').empty().html(data);
+                    update_time_links();
+                }
+                getAvailableDates(year, month);
+
+            });
+    }
 
 
 }
@@ -265,5 +279,22 @@ function saveSelectedTime(startTime) {
 
         }
     );
+
+}
+
+function firstAvailableProviderUpdate(){
+
+    if($('#providers').val()==0){
+        var params = {
+            visitType: getVisitType(),
+            facility: getFacility(),
+            date: $('#datepicker').val(),
+            tabId: gettabId()
+        };
+        var url ='schedule?'+$.param(params,true);
+
+        window.location.href = url+"#content";
+    }
+
 
 }

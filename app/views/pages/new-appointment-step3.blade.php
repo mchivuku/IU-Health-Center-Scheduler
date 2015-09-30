@@ -97,7 +97,7 @@ function checkTime(i) {
 
            window.onload = function() {
                var expire = new Date(2015, 0, 1);
-               expire.setSeconds(<?echo SESSION_ACTIVITY_TIME;?> * 60);
+               expire.setSeconds(<?echo Config::get('settings.session_activity_time');?> * 60);
                var topRef = document.getElementById('timeremaining');
 
                window.setInterval(

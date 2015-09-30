@@ -23,11 +23,6 @@ class AppointmentRepository extends BaseRepository
      */
     protected $table = 'enc';
 
-    /**
-     * @var string $active_appointment_statuses Should contain a valid appointment statuses value to be used by the
-     * scheduler
-     */
-    protected $active_appointment_statuses = array('Pending', 'Arrived', 'Checked', 'Rescheduled');
 
 
     /**
@@ -37,21 +32,12 @@ class AppointmentRepository extends BaseRepository
      *
      * @return subquery
      */
-
     public  function valid_appt_status_query()
     {
-        $where_clause = "";
-        foreach ($this->active_appointment_statuses as $val) {
-            if (empty($where_clause)) {
-                $where_clause[] = "lower(description)  LIKE '" . strtolower($val) . "%'";
-            } else {
-                $where_clause[] = " or lower(description)  LIKE '" . strtolower($val) . "%'";
-            }
-
-        }
-
-        $string = implode('  ', $where_clause);
-        return 'enc.STATUS IN (select Code from ecw_visitstatus where ' . $string . ')';
+        $string = implode(',', array_map(function($item){
+            return "'".$item."'";
+        },\Config::get('visitstatus.valid_appt_statuses')));
+        return 'enc.STATUS IN ( ' . $string . ')';
     }
 
     /**
@@ -71,6 +57,8 @@ class AppointmentRepository extends BaseRepository
     {
 
         $string = $this->valid_appt_status_query();
+
+
         $appointment_list = \DB::table($this->table)
             ->join('patients', 'enc.patientID', '=', 'patients.pid')
             ->leftJoin('users as resource', 'enc.resourceID', '=', 'resource.uid')
@@ -86,11 +74,9 @@ class AppointmentRepository extends BaseRepository
                 'resource.ulname as providerLastName', 'visitcodes.CodeId as visitTypeId'
             ))
             ->orderBy('date', 'desc')
-            ->orderBy('startTime', 'desc')
-            ->get();
+            ->orderBy('startTime', 'desc')->get();
 
 
-        $result = array();
         foreach ($appointment_list as $appointment) {
             $appt = new \Appointment();
             $appt->displayFormat = true;
@@ -106,104 +92,6 @@ class AppointmentRepository extends BaseRepository
     }
 
 
-    /**
-     * Function to retrieve available appointment times for a given provider, visit-type, facility, sessionId
-     *
-     * the function will return all the appointment times that are available to the user instance.
-     *
-     * @param $facilityId - facility Id of interest
-     * @param $visitType -  visit type of the appointment
-     * @param $providerId - provider Id for whome the appointments should be returned.
-     * @param $scheduleID - schedule ID indicates whether the appointment need to scheduled for Morning or Afternoon.
-     * @param $sessionId - reserved slot that is saved in the database.
-     * @param $date - appointment date - date to return appointment slots for.
-     *
-     * @return array - that contains provider times, appointment times, provider information
-     */
-    public function getAllAppointmentTimes($facilityId,$visitType, $providerId, $scheduleID, $date,$session_id)
-    {
-
-        $provider_repo = new ProviderRepository();
-        $provider_work_hours = $provider_repo->getProviderWorkHours($providerId,$facilityId,$visitType,$date);
-
-        // 1. Appointment query
-        $all_appt_times_query = \DB::table('enc')
-            ->where("resourceId", "=", $providerId)
-            ->where('date', '=', $date)
-            ->where('deleteFlag', '=', 0)
-            ->whereRaw(\DB::RAW($this->valid_appt_status_query()))->select(array('startTime',
-                'endTime'));
-
-        // 2. Blocks query
-        $blocks_query = \DB::table('ApptBlocks')
-            ->join('ApptBlockDetails', 'ApptBlocks.Id', '=', 'ApptBlockDetails.Id')
-            ->where('userId', '=', $providerId)->where('StartDate', '=', $date)
-            ->select(array('StartTime as startTime',
-                'EndTime as endTime'));
-
-        //3. Log query
-        $scheduler_log_query = \DB::table('iu_scheduler_log')
-            ->where('providerId', '=', $providerId)->where('encDate', '=', $date)
-            ->where('visitType', '=', $visitType)
-            ->where('sessionId','!=',$session_id)
-            ->select(array('startTime','endTime'));
-
-        $unavailable = $all_appt_times_query->unionAll($blocks_query)->unionAll($scheduler_log_query)->get();
-
-        $merged_unavailable = $this->merge_unavailable($unavailable);
-
-        $available_times = $this->construct_available_times($provider_work_hours->StartTime,
-            $provider_work_hours->EndTime,
-            $merged_unavailable);
-
-
-        $overlapping_hours = get_overlapping_hr($provider_work_hours->StartTime,
-            $provider_work_hours->EndTime,
-            $scheduleID);
-
-
-        $time_slots = array();
-
-
-        foreach ($available_times as $available){
-           split_range_into_slots_by_duration($available['Available_from'],
-               $available['Available_to'],
-               $provider_work_hours->minutes*60,
-                $time_slots);
-
-        }
-
-        $start = $overlapping_hours['startTime'];
-        $end =   $overlapping_hours['endTime'];
-
-        $past_times=array();
-
-        $filter_times = array_filter($time_slots, function ($item) use ($start, $end, $date,&$past_times) {
-            if ($date == date('Y-m-d')){
-                $time = SHOW_APPT_TIMENOW_OFFSET;
-                $timeNow = date('H:i',strtotime("+ $time minutes"));
-
-                if(($item <= $timeNow && $item>=$start && $item<=$end)){
-                    $past_times[]= $item;
-                }
-
-                return $item >= $start && $item <= $end;
-            }
-
-            return $item >= $start && $item <= $end;
-
-        });
-
-        if(is_null($filter_times))$filter_times=array();
-
-
-         return  array('Id' => $providerId,
-             'minutes' => $provider_work_hours->minutes,
-            'startTime' => $start, 'endTime' => $end,
-            'times' => $filter_times,'past_times'=>$past_times);
-
-
-    }
 
 
 
@@ -308,7 +196,7 @@ class AppointmentRepository extends BaseRepository
                 :encDate as date,:startTime as startTime, :endTime as endTime,
                 (select Name as visitType from visitcodes  where CodeId=:visitType),
                 (select CodeId from visitcodes  where CodeId=:visitType) as visittypeid,
-                :status as STATUS, :vmid,
+                (select CodeId from ecw_visitstatus  where description like :status) as status,:vmid,
                 :resourceId as ResourceId,
                      primaryservicelocation   as facilityId, (case when userType=1 then uid else
                      DefApptProvForResource end) as doctorID, :generalNotes , :pos,
@@ -318,9 +206,11 @@ class AppointmentRepository extends BaseRepository
                  ";
 
                 $vmid = $this->uniqueId();
-                $status = APPT_PENDING;
+                $status =  \Config::get('visitstatus.pending') . "%";
                 $generalNotes = $LANG['generalNotes'];
-                $pos = DEFAULT_POS_VALUE;
+
+
+                $pos = \Config::get('settings.default_pos_value');
 
                 $apptstartTime = date('H:i:s', strtotime($apptBeginTime));
                 $apptendTime = date('H:i:s', strtotime($apptEndTime));
@@ -386,6 +276,7 @@ class AppointmentRepository extends BaseRepository
 
                 $pdo->commit();
 
+
                 return $encId;
 
             }
@@ -423,136 +314,21 @@ class AppointmentRepository extends BaseRepository
      */
     function cancelAppointment($encId)
     {
+
+        $cancelled = \Config::get('settings.cancelled_visit_status_description');
+
         \DB::table('enc')
             ->where('encounterID', '=', $encId)
-            ->update(array('STATUS' => APPT_CANCELLED_STATUS));
+            ->update(array('STATUS' => \DB::raw('(select Code from ecw_visitstatus where description like "'
+                .$cancelled.'")'))
+            );
+
+
         return;
     }
 
 
-    /**
-     * Function that returns available dates for a provider.
-     *
-     * @param $month - integer value of the month
-     * @param $year - string value of the year
-     * @param $providerId
-     * @param $visitType
-     * @param $sessionId
-     * @param $startTime
-     * @param $endTime
-     * @param $duration
-     * @providerId - Id of the provider for whome availableDates should be returned
-     * @visitType - visitType of the appointment to retreive reserved slots in the scheduler_log_table.
-     * @sessionId - sessionId value of the logged in user
-     * @starttime - default start time for the day
-     * @endtime - default end time for the day
-     * @duration - duration of the visit.
-     *
-     * @return array - array of available dates
-     */
-    function getAvailableDates($month, $year, $providerId, $visitType, $sessionId, $startTime, $endTime, $duration)
-    {
 
-
-        $enc_query = \DB::table('enc')
-            ->where("resourceId", "=", $providerId)
-            ->whereRaw("month(date) = $month")
-            ->whereRaw(\DB::RAW($this->valid_appt_status_query()))
-            ->whereRaw("year(enc.date)= $year")->where('deleteFlag', '=', 0)
-            ->select(\DB::raw('timestamp(date,startTime) as startTime, timestamp(date,endTime) as endTime'));
-
-
-        // 2. Blocks query
-        $blocks_query = \DB::table('ApptBlocks')
-            ->join('ApptBlockDetails', 'ApptBlocks.Id', '=', 'ApptBlockDetails.Id')
-            ->where('userId', '=', $providerId)
-            ->whereRaw('month(StartDate)=' . $month)
-            ->whereRaw('year(StartDate)= ' . $year)
-            ->select(\DB::raw('timestamp(StartDate,StartTime) as startTime, timestamp(StartDate,EndTime) as endTime'));
-
-        //3. Log query
-        $scheduler_log_query = \DB::table('iu_scheduler_log')
-            ->where('providerId', '=', $providerId)
-            ->whereRaw('month(encDate) =' . $month)
-            ->whereRaw('year(encDate)=' . $year)
-            ->where('visitType', '=', $visitType)
-            ->where('sessionId', '!=', $sessionId)
-            ->select(\DB::raw('timestamp(encDate,startTime) as startTime, timestamp(encDate,endTime) as endTime'));
-
-
-        $unavailable = $enc_query->unionAll($blocks_query)->unionAll($scheduler_log_query)->get();
-
-        $merged_unavailable = $this->merge_unavailable($unavailable);
-
-
-        $group_times_by_days = function ($merged_unavailable) {
-            if (count($merged_unavailable) == 0) return array();
-            $temp = array();
-            foreach ($merged_unavailable as $value) {
-                $date = strtotime($value['startTime']);
-                $current = date('Y-m-d', $date);
-
-                if (!isset($temp[$current])) {
-                    $temp[$current] = array();
-                }
-                array_push($temp[$current], $value);
-            }
-
-            return $temp;
-        };
-
-
-        $available = array();
-        $x = $group_times_by_days($merged_unavailable);
-
-
-        foreach ($x as $k => $item) {
-            $start = date('Y-m-d H:i', strtotime($k . "" . $startTime));
-            $end = date('Y-m-d H:i', strtotime($k . "" . $endTime));
-
-
-            $available[$k] = array_filter($this->construct_available_times($start, $end, $item),
-                function ($times) {
-                    return $times['Available_to'] >= $times['Available_from'];
-                });
-
-        }
-
-        $available_dates = array();
-
-        $start_date = "01-" . $month . "-" . $year;
-        $start_time = strtotime($start_date);
-
-        $end_time = strtotime("+1 month", $start_time);
-
-        for ($i = $start_time; $i < $end_time; $i += 86400) {
-            $date = date('Y-m-d', $i);
-            if (array_key_exists($date, $available)) {
-                $is_available = false;
-                foreach ($available[$date] as $times) {
-                    $interval = date_diff(new \DateTime($times['Available_to']),
-                        new \DateTime($times['Available_from']));
-                    $minutes = $interval->days * 24 * 60;
-                    $minutes += $interval->h * 60;
-                    $minutes += $interval->i;
-
-                    if ($minutes >= $duration) {
-                        $is_available = true;
-                    }
-                }
-                if ($is_available == true)
-                    $available_dates[] = $date;
-
-            } else {
-                $available_dates[] = $date;
-            }
-
-        }
-
-        return ($available_dates);
-
-
-    }
 
 
     /**

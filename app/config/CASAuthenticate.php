@@ -39,9 +39,8 @@ class CASAuthenticate{
         $casticket = $helper->extractCASticket();
 
         if ($authenticated) {
-            if (isset($casticket)) {
-                $helper->validate($url,$casticket);
-
+            if (isset($_GET['casticket'])) {
+                $helper->validate($url,$_GET['casticket']);
             }
 
             // Authenticate

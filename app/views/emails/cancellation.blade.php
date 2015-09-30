@@ -1,6 +1,7 @@
-Your appointment at the IU Health Center on {{$date}} has been cancelled.
+<p>Your appointment at the IU Health Center on {{$date}} has been cancelled.</p>
 
-If you have any questions, please contact the IUHC appointment desk at 812-855-7688.
+<p>If you have any questions, please contact the IUHC appointment desk at 812-855-7688.</p>
 
-Thank you,
-Indiana University Health Center
+<p>Thank you,
+    <br> Indiana University Health Center
+</p>

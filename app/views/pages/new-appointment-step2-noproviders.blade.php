@@ -27,7 +27,6 @@
 
 @section('javascript')
 
-{{ HTML::script('js/jquery-ui.js')}}
 
 <script type="text/javascript">
 $(document).ready(function(){
@@ -36,9 +35,8 @@ $(document).ready(function(){
                  beforeShowDay: $.datepicker.noWeekends,
                  minDate: 0,
                  onSelect: function () {
-                 	window.location.href = 'https://scheduler.iuhc.iub.edu/scheduler/' +
-                 	 'newAppointment/schedule?facility='+$
-                 	 ('#facility').val()+'&visitType='+$('#visitType').val()+'&date='+
+                 	window.location.href = 'https://seville.iuhc.iub.edu/comm/hcScheduler/public/' +
+                 	 'newAppointment/schedule?facility='+$('#facility').val()+'&visitType='+$('#visitType').val()+'&date='+
                  	  $(this).val()
                  }
            });

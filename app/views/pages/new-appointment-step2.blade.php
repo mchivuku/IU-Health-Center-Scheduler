@@ -89,6 +89,7 @@
     @endif
 
 
+
     $(document).ready(function(){
 
 		var date = new Date(<?echo "'".$model->validDateRange->EndDate."'";?>);
@@ -97,7 +98,13 @@
 		var currentYear = date.getFullYear();
 		$("#datepicker" ).datepicker( "option", "maxDate", new Date(currentYear, currentMonth, currentDate));
 
+        $('#providers').change(function(){
+            firstAvailableProviderUpdate();
+        });
+
     });
+
+
 
 
 </script>

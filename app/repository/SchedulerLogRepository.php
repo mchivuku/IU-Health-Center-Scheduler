@@ -178,7 +178,6 @@ class SchedulerLogRepository
     // Function call to clear session Information for a given session
     public function clearSessionData($session_id)
     {
-
         \DB::table($this->table)->where('sessionId', $session_id)->delete();
     }
 
@@ -186,9 +185,10 @@ class SchedulerLogRepository
     // Function clear all sessions -
     public function clearAllPreviousSessions()
     {
+        $cleartime =\Config::get('settings.clear_old_sessions_from_log_after');
 
         \DB::table($this->table)->whereRaw(\DB::Raw(" time_to_sec(timediff(updateTimestamp,now()
-        )) <="."-".CLEAR_OLD_SESSIONS_FROM_LOG_AFTER))->delete();
+        )) <="."-".$cleartime))->delete();
 
 
     }

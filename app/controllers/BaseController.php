@@ -69,9 +69,8 @@ abstract class BaseController extends Controller
         $this->lang = $LANG;
 
 
-
         //Before every request - check the scheduler log and clear it.
-        $this->beforeFilter(function () use ($CI) {
+        $this->beforeFilter(function () use ($CI){
 
             $CI->schedulerLogRepo->clearAllPreviousSessions();
         });

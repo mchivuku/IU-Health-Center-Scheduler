@@ -69,6 +69,13 @@ Route::group(array('prefix' => 'settings'), function () {
 
 Route::group(array('prefix' => 'newAppointment'), function () {
 
+    Route::get('/',
+        array('before' => 'auth.basic',
+            'as' => 'newAppointment.index',
+            'uses' => 'NewAppointmentController@getIndex'
+     ));
+
+
     Route::get('/schedule', array('before' => 'auth.basic',
         'as' => 'newAppointment.schedule',
         'uses' => 'NewAppointmentController@schedule'
@@ -127,17 +134,14 @@ Route::group(array('prefix' => 'newAppointment'), function () {
             'uses' => 'NewAppointmentController@scheduleSave'
         ));
 
-    Route::get('/{facility?}{visitType?}',
-        array('before' => 'auth.basic',
-            'as' => 'newAppointment.index',
-            'uses' => 'NewAppointmentController@getIndex'
-        ));
+
 
 
 });
 
 Route::filter('auth.basic', function()
 {
+
     CASAuthenticate::logon();
 
 });

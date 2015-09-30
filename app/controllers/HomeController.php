@@ -4,6 +4,8 @@ namespace Scheduler\Controllers;
 
 use Whoops\Example\Exception;
 
+ini_set('display_errors',1);
+
 require_once app_path() . "/models/viewModels/IndexViewModel.php";
 require_once app_path() . "/models/viewModels/TableListViewModel.php";
 require_once app_path() . "/models/ClientSideDataTableFunctionModel.php";
@@ -37,12 +39,8 @@ class HomeController extends BaseController
     public function getIndex()
     {
 
-
-        $path = app_path() . "/config/cancellationEmail.txt";
-
         $univId = $this->getUniversityId();
         $model = new \IndexViewModel();
-       // $model->nextAppointment = $this->apptRepo->getNextAppointment($univId);
 
         $x = new \TableListViewModel();
         $x->header = array('Date', 'Time', 'Visit Type', 'Facility', 'Provider', '&nbsp;');
@@ -65,23 +63,21 @@ class HomeController extends BaseController
             $minutes += $interval->h * 60;
             $minutes += $interval->i;
 
+
             $last_column = "";
-            // Cancellation - appointments - only future that have atleast 60mins
-            if ($date_b >= $date_a && $minutes >= ALLOW_CANCELLATION_UNTIL_TIME) {
+
+            if ($date_b >= $date_a && $minutes >= \Config::get('settings.allow_cancellation_until_time')) {
 
                 $link = link_to_action('HomeController@confirmCancellation', 'Cancel Appointment',
                     array(
-                        'encId' => $item->encId), array('data-reveal-id' => "more-info", 'id' => 'cancel-appt-link'));
-
+                        'encId' => $item->encId), array('data-reveal-id' => "more-info",
+                        'id' => 'cancel-appt-link'));
                 $last_column =  $link;
-
-
             } else {
 
                 $params = array('facility' => $item->facilityId, 'visitType' => $item->visitTypeId);
                 $queryString = http_build_query($params);
                 $schedule_again_link = \URL::to(action('NewAppointmentController@getIndex') . '?' . $queryString);
-
 
                 $last_column =  "<a
                                 href='$schedule_again_link'>Schedule Again</a>";
@@ -130,9 +126,18 @@ class HomeController extends BaseController
 
         if (($this->user_profile->email) != ""){
 
-            $app_date_time = date_format(new \Datetime($appt_date_time->date . " " .
-                    $appt_date_time->startTime),
-                'd/m/y  g:i a');
+
+            //time format
+            $hours = date('H', strtotime($appt_date_time->startTime));
+            $ext = ($hours < 12) ? 'a.m.' : 'p.m.';
+            $time_display = date('g:i',
+                    strtotime($appt_date_time->startTime)) . " " . $ext;
+
+
+            $app_date_time = date_format(
+                new \Datetime($appt_date_time->date),
+                'm/d/y') ." at " .  $time_display;
+
 
             $email = $this->user_profile->email;
             $name = $this->user_profile->getName();

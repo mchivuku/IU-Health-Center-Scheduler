@@ -44,7 +44,7 @@ class CASHelper
             }
         }
 
- 
+
         return $pageURL;
     }
 
@@ -75,7 +75,7 @@ class CASHelper
      */
     function validate($url,$casticket)
     {
-         //  $updatedAbsoluteUrl = $this->removeCASticket($casticket,$url);
+
         $validateurl = sprintf(self::FmtValidationUrl, self::CASServer, $casticket, $url);
 
         $ch = curl_init();
@@ -106,33 +106,6 @@ class CASHelper
     }
 
 
-    function removeCASticket($casticket, $url)
-    {
-
-        $parse_url = parse_url($url);
-
-        if (isset($parse_url)) {
-            $cas_ticket = isset($parse_url['query']["casticket"])?$parse_url['query']["casticket"]:null;
-
-            if (isset($cas_ticket)){
-                $values = explode("=", $cas_ticket);
-                $url = $this->remove_query_params($url);
-
-            } else {
-
-                $url = $this->remove_query_params($url);
-            }
-
-        }
-
-        return $url;
-
-    }
-
-    function remove_query_params($url, $varname = "casticket")
-    {
-        return preg_replace('/([?&])' . $varname . '=[^&]+(&|$)/', '$1', $url);
-    }
 
 
 }
