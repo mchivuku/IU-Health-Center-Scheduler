@@ -77,7 +77,7 @@ class NewAppointmentController extends BaseController
 
 
         $model->facilities = $this->getFacilities();
-        
+
         if (count($model->facilities) > 0){
             foreach($model->facilities as $fac){
                 if($facility==$fac->Id){

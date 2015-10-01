@@ -196,7 +196,7 @@ class AppointmentRepository extends BaseRepository
                 :encDate as date,:startTime as startTime, :endTime as endTime,
                 (select Name as visitType from visitcodes  where CodeId=:visitType),
                 (select CodeId from visitcodes  where CodeId=:visitType) as visittypeid,
-                (select CodeId from ecw_visitstatus  where description like :status) as status,:vmid,
+                'PEN',:vmid,
                 :resourceId as ResourceId,
                      primaryservicelocation   as facilityId, (case when userType=1 then uid else
                      DefApptProvForResource end) as doctorID, :generalNotes , :pos,
