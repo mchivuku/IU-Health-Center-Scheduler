@@ -200,9 +200,12 @@ class NewAppointmentController extends BaseController
 
         // No times available return -
         if(empty($result)){
-            $this->view('pages.new-appointment-step2')->viewdata(array('model' => $model,
-                'back_link' => $back_link))->title('Schedule
-             Appointments');
+            return $this->view('pages.new-appointment-step2-noproviders')
+                ->viewdata(array('message' => $this->lang['noProviders'],'visitType'=>$visitType,
+                    'facility'=>$facilityId,'validDateRange'=>$model->validDateRange ,
+                    'back_link' => $back_link))
+                ->title
+                ('Schedule Appointments');
         }
 
 
@@ -236,6 +239,11 @@ class NewAppointmentController extends BaseController
         $first_available_provider_info = $this->providerRepo->getFirstAvailableProviderTimes($facilityId,
             $visitType, $date, $tabId,$session_id);
 
+
+        if(!isset($first_available_provider_info) ||$first_available_provider_info=='')
+        {
+             return '';
+        }
 
 
         $id = $first_available_provider_info['Id'];
@@ -331,7 +339,6 @@ class NewAppointmentController extends BaseController
             $date,$this->getUserSessionId());
 
 
-
         $result['selected_start_time'] = $this->schedulerLogRepo->getSelectedTime($this->getUserSessionId(),
             $facilityId, $visitType, $providerId, $date);
 
@@ -395,6 +402,8 @@ class NewAppointmentController extends BaseController
 
 
         }
+
+
 
         $model->firstAvailableProvider = $result['firstAvailableProvider'];
         $model->visitDuration = $result['visitDuration'];

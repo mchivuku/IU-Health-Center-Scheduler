@@ -205,11 +205,7 @@ function getAvailableTimes(providerId, date, tabId) {
 
 function getAvailableTimeAndDates(providerId, date, tabId, year, month) {
 
-    if(providerId==0)
-    {
-        firstAvailableProviderUpdate();
-    }
-    else{
+
         var params = {
             providerId: providerId,
             visitType: getVisitType(),
@@ -233,7 +229,7 @@ function getAvailableTimeAndDates(providerId, date, tabId, year, month) {
                 getAvailableDates(year, month);
 
             });
-    }
+
 
 
 }

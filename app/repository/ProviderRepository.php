@@ -92,10 +92,8 @@ class ProviderRepository extends BaseRepository
                 ->where('weekday', '=', $raw_sql)->whereRaw('(("'.$d.'">= StartDate and "'.$d.'"<=EndDate) or ("'.$d.'">= StartDate and EndDate is null))')
                 ->orderBy('Name', 'ASC');
 
+
         $providers = $sql->get();
-
-
-
 
         return $providers;
 
@@ -272,10 +270,10 @@ class ProviderRepository extends BaseRepository
 
 
         //SQL Query
-        ProviderRepository::log(null,$all_appt_times_query->toSql().$blocks_query->toSql().$scheduler_log_query->toSql(),
-            null);
+
 
         //1. Group By providers
+
         $provider_times = array();
         foreach($all_providers as $time){
             if(array_key_exists($time->providerId,$provider_times)){
@@ -312,6 +310,7 @@ class ProviderRepository extends BaseRepository
             function($item){return count($item['times'])>0;});
 
 
+
         if($available_providers>1){
             uasort($available_providers, function($a,$b){
                 $al = strtolower($a['LastName']);
@@ -325,16 +324,15 @@ class ProviderRepository extends BaseRepository
         }
 
 
-        // For available provider - split the range into slots
-        ProviderRepository::log('available providers - filtered PHP_EOL');
-        ProviderRepository::log($available_providers);
-
 
         $providerArray= array();
+
+
         foreach ($available_providers as $k=>$v) {
 
             $overlapping_hours = get_overlapping_hr($v['startTime'],$v['endTime'],$scheduleID);
             $time_slots = array();
+
             foreach($v['times'] as $available){
 
                 split_range_into_slots_by_duration($available['Available_from'],
@@ -342,6 +340,7 @@ class ProviderRepository extends BaseRepository
                     $v['minutes'] * 60,
                     $time_slots);
             }
+
 
             if(count($time_slots) > 0){
                 //break the time into slots;
@@ -367,8 +366,6 @@ class ProviderRepository extends BaseRepository
 
                 });
 
-
-
                 $providerArray[$v['Id']] = array('Id' => $v['Id'], 'Name' => $v['Name'],'LastName'=>$v['LastName'],
                     'minutes' => $v['minutes'], 'startTime' => $start, 'endTime' => $end,
                     'times' => $filter_times,'past_times'=>$past_times);
@@ -376,7 +373,6 @@ class ProviderRepository extends BaseRepository
             }
 
         }
-
 
         ProviderRepository::log('provider array - merged/split PHP_EOL');
         ProviderRepository::log($providerArray);
@@ -396,10 +392,12 @@ class ProviderRepository extends BaseRepository
 
             });
 
+
             //nothing was found - previous tabId;
             if(is_null($providers_available_from_time_now)||count($providers_available_from_time_now)==0)
             {
-                return current($providerArray);
+
+                return isset($providerArray) && count($providerArray)>0?current($providerArray):'';
             }
 
 
@@ -465,7 +463,7 @@ class ProviderRepository extends BaseRepository
 
         ProviderRepository::log(current($p));
 
-        return current($p);
+        return isset($p) && count($p)>0?current($p):'';
 
     }
 
@@ -688,9 +686,6 @@ class ProviderRepository extends BaseRepository
             $date = date('Y-m-d', $i);
 
             //check the date if the date is in the valid start and end date range and provider is working.
-            if(!($date>=$provider_info->StartDate && (!isset($provider_info->EndDate) ||
-                    $provider_info->EndDate>=$date) && (in_array(getDayOfTheWeek($date),$weekdays))))
-                continue;
 
 
             //Else continue - date can be used.
@@ -709,13 +704,16 @@ class ProviderRepository extends BaseRepository
                 }
 
                 if ($is_available == true){
-                    $available_dates[] = $date;
+                    if(($date>=$provider_info->StartDate && (!isset($provider_info->EndDate) ||
+                            $provider_info->EndDate>=$date) && (in_array(getDayOfTheWeek($date),$weekdays))))
+                        $available_dates[] = $date;
                 }
 
 
             }else{
-
-                $available_dates[] = $date;
+                if(($date>=$provider_info->StartDate && (!isset($provider_info->EndDate) ||
+                        $provider_info->EndDate>=$date) && (in_array(getDayOfTheWeek($date),$weekdays))))
+                    $available_dates[] = $date;
             }
         }
 
