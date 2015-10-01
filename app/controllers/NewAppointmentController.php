@@ -71,20 +71,46 @@ class NewAppointmentController extends BaseController
     public function getIndex()
     {
         $model = new \NewAppointmentViewModel();
-        $model->selectedFacility = \Input::get('facility');
-        $model->selectedvisitType = \Input::get('visitType');
+        $facility = \Input::get('facility');
+        $visitType = \Input::get('visitType');
+
+
 
         $model->facilities = $this->getFacilities();
-        if (count($model->facilities) > 0) {
-            if (isset($model->selectedFacility)){
-                $facility = $model->selectedFacility;
-            } else {
-                $f = current($model->facilities);
-                $facility = $f->Id;
+        
+        if (count($model->facilities) > 0){
+            foreach($model->facilities as $fac){
+                if($facility==$fac->Id){
+                    $model->selectedFacility=$fac->Id;
+                    break;
+                }
             }
+
+
+            if(!isset($model->selectedFacility)){
+               $first =  reset($model->facilities);
+               $model->selectedFacility = $first->Id;
+            }
+
+
             //chart title of the facilities is linked back to visit type
-            $model->visitTypes = $this->visitTypeRepo->getAllVisitTypes($facility);
+            $model->visitTypes = $this->visitTypeRepo->getAllVisitTypes($model->selectedFacility);
+            foreach($model->visitTypes as $v){
+                if($visitType==$v->Id){
+                    $model->selectedvisitType = $v->Id;
+                    break;
+                }
+            }
+
+
+            if(!isset($model->selectedvisitType)){
+                $first = reset($model->visitTypes);
+                $model->selectedvisitType = $first->Id;
+            }
+
         }
+
+
         return $this->view('pages.new-appointment-step1')
             ->viewdata(array('model' => $model))
             ->title('New Appointment');
