@@ -76,7 +76,7 @@ class AppointmentRepository extends BaseRepository
             ->orderBy('date', 'desc')
             ->orderBy('startTime', 'desc')->get();
 
-
+        $result=array();
         foreach ($appointment_list as $appointment) {
             $appt = new \Appointment();
             $appt->displayFormat = true;
