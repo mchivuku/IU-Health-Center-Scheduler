@@ -292,7 +292,7 @@ class NewAppointmentController extends BaseController
 
         //Available for month
         if ($get_dates) {
-            $hrs = $this->providerRepo->getProviderWorkHoursForMonth($visitType, $facilityId, $id);
+            $hrs = $this->providerRepo->getProviderWorkHoursForMonth($visitType, $facilityId, $id,$date);
 
             $result['available_dates'] = $this->providerRepo->getAvailableDates(date('m', strtotime($date)), date('Y',
                     strtotime($date)),
@@ -378,7 +378,7 @@ class NewAppointmentController extends BaseController
 
         //Available for month
         if ($get_dates){
-            $hrs = $this->providerRepo->getProviderWorkHoursForMonth($visitType, $facilityId, $providerId);
+            $hrs = $this->providerRepo->getProviderWorkHoursForMonth($visitType, $facilityId, $providerId,$date);
             $result['available_dates'] = $this->providerRepo->getAvailableDates(date('m', strtotime($date)), date('Y',
                     strtotime($date)),
                 $providerId, $visitType,$facilityId, $this->getUserSessionId(),
@@ -558,7 +558,13 @@ class NewAppointmentController extends BaseController
 
         $pId = $providerId == self::FIRST_AVAILABLE_PROVIDER ? $firstAvailableProvider : $providerId;
 
-        $provider_workhours = $this->providerRepo->getProviderWorkHoursForMonth($visitType, $facilityId, $pId);
+
+        $datestring = sprintf("%d-%d-01",$year,$month);
+
+        $date =  date("Y-m-d", strtotime($datestring));
+
+
+        $provider_workhours = $this->providerRepo->getProviderWorkHoursForMonth($visitType, $facilityId, $pId,$date);
 
         return $this->providerRepo->getAvailableDates($month, $year,
             $pId, $visitType, $facilityId,$this->getUserSessionId(),

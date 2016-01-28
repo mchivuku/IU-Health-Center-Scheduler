@@ -81,6 +81,7 @@ class ProviderRepository extends BaseRepository
 
         $d = date('Y-m-d',strtotime($date));
 
+
         $raw_sql = $this->build_sql_week_day_clause($date);
 
         $sql =
@@ -89,11 +90,14 @@ class ProviderRepository extends BaseRepository
                 ))
                 ->where('CodeId', '=', $visitType)
                 ->where('facilityId', '=', $facilityId)
-                ->where('weekday', '=', $raw_sql)->whereRaw('(("'.$d.'">= StartDate and "'.$d.'"<=EndDate) or ("'.$d.'">= StartDate and EndDate is null))')
+                ->where('weekday', '=', $raw_sql)
+                ->whereRaw('(("'.$d.'">= StartDate and "'.$d.'"<=EndDate) or ("'.$d.'">= StartDate and EndDate is null))')
                 ->orderBy('Name', 'ASC');
 
 
         $providers = $sql->get();
+
+
 
         return $providers;
 
@@ -110,8 +114,11 @@ class ProviderRepository extends BaseRepository
      *
      * Function to return provider work hours for a month
      */
-    function getProviderWorkHoursForMonth($visitType, $facilityId, $providerId)
+    function getProviderWorkHoursForMonth($visitType, $facilityId, $providerId,$date)
     {
+
+        $d = date('Y-m-d',strtotime($date));
+
 
         $times = \DB::table('iu_scheduler_provider_schedule_info')
             ->select(\DB::Raw('min(StartTime) as StartTime, max(EndTime) as EndTime,  max(minutes) as minutes'
@@ -119,6 +126,7 @@ class ProviderRepository extends BaseRepository
             ->where('CodeId', '=', $visitType)
             ->where('facilityId', '=', $facilityId)
             ->where('Id', '=', $providerId)
+            ->whereRaw('(("'.$d.'">= StartDate and "'.$d.'"<=EndDate) or ("'.$d.'">= StartDate and EndDate is null))')
             ->first();
         return $times;
     }
@@ -596,17 +604,32 @@ class ProviderRepository extends BaseRepository
 
 
         $apptRep = new AppointmentRepository();
+        $datestring = sprintf("%d-%d-01",$year,$month);
+
+
+        $date =  date("Y-m-d", strtotime($datestring));
+
+
+        $providers_working_dates_sql = '(("'.$date.'">= iu_scheduler_provider_schedule_info.StartDate and "'.$date
+            .'"<=iu_scheduler_provider_schedule_info.EndDate) or
+            ("'.$date.'">=
+            iu_scheduler_provider_schedule_info.StartDate and iu_scheduler_provider_schedule_info.EndDate is
+            null))';
 
         $provider_info = \DB::table('iu_scheduler_provider_schedule_info')
             ->where('iu_scheduler_provider_schedule_info.CodeId', '=', $visitType)
             ->where('iu_scheduler_provider_schedule_info.facilityId', '=', $facilityId)
             ->where('iu_scheduler_provider_schedule_info.Id','=',$providerId)
-            ->groupBy('iu_scheduler_provider_schedule_info.StartDate','iu_scheduler_provider_schedule_info.EndDate',
+            ->whereRaw($providers_working_dates_sql)
+            ->groupBy('iu_scheduler_provider_schedule_info.StartDate',
+                'iu_scheduler_provider_schedule_info.EndDate',
                 'iu_scheduler_provider_schedule_info.Id')
             ->select(\DB::Raw(" Id as providerId ,iu_scheduler_provider_schedule_info.StartDate,
                                iu_scheduler_provider_schedule_info.EndDate,
                                group_concat(iu_scheduler_provider_schedule_info.weekday) weekdays")
             )->first();
+
+
 
 
 
