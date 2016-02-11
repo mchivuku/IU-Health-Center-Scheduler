@@ -21,25 +21,30 @@ function split_range_into_slots_by_duration($starttime, $endtime, $duration, &$s
 
     $end_time = strtotime($endtime);
 
-    // initialization
-    if(strtotime(date('H:i', strtotime($starttime) + $duration)) < $end_time){
+    // when time duration is exactly equal
+    if(strtotime(date('H:i', strtotime($starttime) + ($duration))) === $end_time){
+        {
+            if(!in_array($starttime, $slots)){
+                $slots[] = $starttime;
+            }
+            return;
+        }
+    }
+
+
+   // initialization
+   if(strtotime(date('H:i', strtotime($starttime) + $duration)) < $end_time){
         $time = strtotime($starttime);
     }else{
         $time = strtotime(date('H:i', strtotime($starttime) + $duration));
     }
-
-
     while ($time < $end_time) {
-
         //add date as a key in first level array
-       if (!in_array(date("H:i", $time), $slots)){
-             $slots[] = date("H:i", $time);
+        if (!in_array(date("H:i", $time), $slots)){
+            $slots[] = date("H:i", $time);
         }
         $time += $duration;
-
-   }
-
-
+    }
 
 }
 
