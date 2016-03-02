@@ -3,4 +3,6 @@ config/database.php
 config/ldap.php
 config/app.php
 config/constants.php
+config/mail.php
+vendor/
 
