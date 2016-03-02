@@ -54,7 +54,7 @@ return array(
     |
     */
 
-    'from' => array('address' => 'iuhctech@indiana.edu', 'name' => 'IUHCTECH'),
+    'from' => array('address' => '', 'name' => ''),
 
     /*
     |--------------------------------------------------------------------------
