@@ -24,13 +24,14 @@
                   <div class="alert alert-info">{{ Session::get('session-expiration-message') }}</div>
              @endif
 
-
                  @yield('new-appointment-content')
 
+                 @yield('next_back_button')
             </div>
+
         </section>
 
-        @yield('next_back_button')
+
 
 @stop
 

@@ -2202,4 +2202,12 @@ td.ui-datepicker-unselectable:hover {
     #sessioncounter {
         margin-left: 2.25rem;
         margin-right: 2.25rem; } }
+.belt .row {
+    background-color: #4A3C31; }
+.belt .row a:not(.button) {
+    color: #fff; }
 
+#content {
+    padding-bottom: 0; }
+#content > *:last-child {
+    padding-bottom: 40px; }

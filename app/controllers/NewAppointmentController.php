@@ -179,10 +179,7 @@ class NewAppointmentController extends BaseController
 
         $dayOfweek = \Config::get('settings.dayOfweek');
 
-
-        if((\Config::get('settings.weekends') && (getDayOfTheWeek($date)== $dayOfweek['Sat'] || getDayOfTheWeek($date)==
-                $dayOfweek['Sun'])) ||
-        !$valid_facility)
+        if((\Config::get('settings.weekends') && (getDayOfTheWeek($date)== $dayOfweek['Sat'] || getDayOfTheWeek($date)== $dayOfweek['Sun'])) || !$valid_facility)
             return $this->view('pages.new-appointment-step2-noproviders')
                 ->viewdata(array('message' => $this->lang['noProviders'],'visitType'=>$visitType,
                     'facility'=>$facilityId,'validDateRange'=>$model->validDateRange ,
@@ -428,7 +425,6 @@ class NewAppointmentController extends BaseController
 
 
         }
-
 
 
         $model->firstAvailableProvider = $result['firstAvailableProvider'];
@@ -731,7 +727,7 @@ class NewAppointmentController extends BaseController
 
         $email = $this->user_profile->email;
         $name =  $this->user_profile->getName();
-        $subject = $this->lang['Appointment_Creation_Email_Subject'];
+        $subject = $this->lang['Appointment_Creation_Email_Subject']." (Do Not Reply)";
 
         \Mail::send('emails.appointment-confirmation', $data, function($message)use($email,
             $name,$subject)

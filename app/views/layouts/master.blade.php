@@ -38,6 +38,7 @@
     @yield('content')
 
 
+    @include('includes.belt')
  <!-- Footer -->
 @include('...includes.footer')
 

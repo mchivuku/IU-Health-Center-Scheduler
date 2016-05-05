@@ -56,13 +56,13 @@
 @stop
 
 @section('next_back_button')
-<section class="section bg-none">
+
     <div class="row pad extra-padding">
         <a href="{{$back_link}}" class="button back invert">Back</a>
         {{ Form::submit('Next', array('class' => 'button next','id'=>'scheduleSubmit')) }}
 
     </div>
-</section>
+
 @stop
 
 @section('javascript')
