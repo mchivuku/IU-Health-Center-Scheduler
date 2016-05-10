@@ -18,11 +18,8 @@
 
 @section('next_back_button')
 
-<section class="section bg-none">  <div class="row pad extra-padding">
-
     <a href="{{$back_link}}" class="button back invert">Back</a>
-</div>
-</section>
+
 @stop
 
 @section('javascript')
@@ -35,8 +32,7 @@ $(document).ready(function(){
                  beforeShowDay: $.datepicker.noWeekends,
                  minDate: 0,
                  onSelect: function () {
-                 	window.location.href = 'https://scheduler.iuhc.iub.edu/scheduler/' +
-                 	 'newAppointment/schedule?facility='+$('#facility').val()+'&visitType='+$('#visitType').val()+'&date='+
+                 	window.location.href = '{{URL::to("newAppointment/schedule")."?facility="}}'+$('#facility').val()+'&visitType='+$('#visitType').val()+'&date='+
                  	  $(this).val()
                  }
            });

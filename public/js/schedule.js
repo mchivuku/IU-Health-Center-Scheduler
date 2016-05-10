@@ -216,7 +216,7 @@ function getAvailableTimeAndDates(providerId, date, tabId, year, month) {
         };
 
         var get_params_to_send = $.param(params);
-        console.log(get_params_to_send);
+
         $.get('getAvailableTimes',
             get_params_to_send,
             function (data) {
@@ -289,7 +289,7 @@ function firstAvailableProviderUpdate(){
             tabId: gettabId()
         };
 
-        console.log(params);
+
         var url ='schedule?'+$.param(params,true);
 
 

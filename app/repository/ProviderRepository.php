@@ -95,8 +95,8 @@ class ProviderRepository extends BaseRepository
                 ->orderBy('Name', 'ASC');
 
 
-        $providers = $sql->get();
 
+        $providers = $sql->get();
 
 
         return $providers;
@@ -273,15 +273,15 @@ class ProviderRepository extends BaseRepository
             ));
 
 
+
+
         $all_providers = $all_providers_query->unionAll($all_appt_times_query)->unionAll($blocks_query)->unionAll
         ($scheduler_log_query)->get();
 
 
         //SQL Query
 
-
         //1. Group By providers
-
         $provider_times = array();
         foreach($all_providers as $time){
             if(array_key_exists($time->providerId,$provider_times)){
@@ -565,6 +565,8 @@ class ProviderRepository extends BaseRepository
             return $item >= $start && $item <= $end;
 
         });
+
+
 
         if(is_null($filter_times))$filter_times=array();
 

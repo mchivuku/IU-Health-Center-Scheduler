@@ -58,7 +58,7 @@ class AppointmentRepository extends BaseRepository
 
         $string = $this->valid_appt_status_query();
 
-
+        $result=array();
         $appointment_list = \DB::table($this->table)
             ->join('patients', 'enc.patientID', '=', 'patients.pid')
             ->leftJoin('users as resource', 'enc.resourceID', '=', 'resource.uid')
@@ -76,7 +76,7 @@ class AppointmentRepository extends BaseRepository
             ->orderBy('date', 'desc')
             ->orderBy('startTime', 'desc')->get();
 
-        $result=array();
+
         foreach ($appointment_list as $appointment) {
             $appt = new \Appointment();
             $appt->displayFormat = true;

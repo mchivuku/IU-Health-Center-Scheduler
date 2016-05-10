@@ -142,6 +142,8 @@ Route::group(array('prefix' => 'newAppointment'), function () {
 Route::filter('auth.basic', function()
 {
 
+    if(isset($_SESSION['user']) && $_SESSION['user']!="")return;
+
     CASAuthenticate::logon();
 
 });

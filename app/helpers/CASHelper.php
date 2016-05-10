@@ -25,33 +25,25 @@ class CASHelper
     function buildRedirectURL()
     {
 
-        $filename="/var/www/iuhc/comm/hcScheduler/app/caserror.txt";
+        $pageURL = 'http';
 
-        if (!$handle = fopen($filename, 'a')) {
-            echo "Cannot open file ($filename)";
-            exit;
-        }
-
-       //Figure out what the protocol is
-        if (isset($_SERVER['HTTPS'])) {
-            $protocol = "https";
+        if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
+            $pageURL .= "s://";
+            if ($_SERVER["SERVER_PORT"] != "443") {
+                $pageURL .= $_SERVER["HTTP_HOST"] . ":" . $_SERVER["SERVER_PORT"] . $_SERVER["REQUEST_URI"];
+            } else {
+                $pageURL .= $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
+            }
         } else {
-            $protocol = "http";
-        }
-        $server = $_SERVER["SERVER_NAME"];
-        $script_path = $_SERVER["REQUEST_URI"];
-        //If the port differs from the standard http(s) ports, we should preserve that
-        if ((!$_SERVER["SERVER_PORT"] == "80") && (!$_SERVER["SERVER_PORT"] = "443")) {
-            $port = ":{$_SERVER["SERVER_PORT"]}";
-        } else {
-            $port = "";
+            $pageURL .= "://";
+            if ($_SERVER["SERVER_PORT"] != "80") {
+                $pageURL .= $_SERVER["HTTP_HOST"] . ":" . $_SERVER["SERVER_PORT"] . $_SERVER["REQUEST_URI"];
+            } else {
+                $pageURL .= $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
+
+            }
         }
 
-        $pageURL =  urlencode("{$protocol}://{$server}{$port}{$script_path}");
-
-        fwrite($handle, $pageURL.PHP_EOL);
-
-        fclose($handle);
 
         return $pageURL;
     }
