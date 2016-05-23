@@ -38,10 +38,13 @@ function split_range_into_slots_by_duration($starttime, $endtime, $duration, &$s
     }else{
         $time = strtotime(date('H:i', strtotime($starttime) + $duration));
     }
-    while ($time < $end_time) {
+
+    // check the start time for the slot and  end time of the slot
+    while (($time < $end_time) && (($time+$duration)<=$end_time)) {
+
         //add date as a key in first level array
         if (!in_array(date("H:i", $time), $slots)){
-            $slots[] = date("H:i", $time);
+                $slots[] = date("H:i", $time);
         }
         $time += $duration;
     }
